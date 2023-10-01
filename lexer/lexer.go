@@ -40,7 +40,7 @@ func (L *Lexer) NextToken() token.Token {
 	default:
 		if isLetter(L.char) {
 			tok.Literal = L.readIdentifier()
-			tok.Type = token.LookupIdentif(tok.Literal)
+			tok.Type = token.LookupIdent(tok.Literal)
 			return tok
 		} else if isDigit(L.char) {
 			tok.Type = token.INT
