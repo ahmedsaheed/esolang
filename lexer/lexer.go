@@ -6,16 +6,16 @@ type Lexer struct {
 	input        string // source code
 	position     int    // pointer to current char
 	readPosition int    // current reading position after currenct char
-	char         byte   // currenct char under examination
-
-	/*
-	 *The reason for these two “pointers” pointing into our input string
-	 *is the fact that we will need to be able to “peek” further into the
-	 *input and look after the current character to see what comes up next.
-	 *readPosition always points to the “next” character in the input.
-	 *position points to the character in the input that corresponds to the ch byte.”
-	 */
+	char         byte   // current char under examination
 }
+
+/*
+ *The reason for these two “pointers” pointing into our input string
+ *is the fact that we will need to be able to “peek” further into the
+ *input and look after the current character to see what comes up next.
+ *readPosition always points to the “next” character in the input.
+ *position points to the character in the input that corresponds to the ch byte.”
+ */
 
 func New(input string) *Lexer {
 	L := &Lexer{input: input}
