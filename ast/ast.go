@@ -31,11 +31,17 @@ type LetStatement struct {
 	Value Expression
 }
 
-func (ls *LetStatement) statementNode()       {}
-func (ls *LetStatement) TokenLiteral() string { return ls.Token.Literal }
+type ReturnStatement struct {
+	Token       token.Token
+	ReturnValue Expression
+}
 
-func (i *Identifier) expressionNode()      {}
-func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
+func (ls *LetStatement) statementNode()          {}
+func (rs *ReturnStatement) statementNode()       {}
+func (i *Identifier) expressionNode()            {}
+func (i *Identifier) TokenLiteral() string       { return i.Token.Literal }
+func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal }
+func (ls *LetStatement) TokenLiteral() string    { return ls.Token.Literal }
 
 func (p *Program) TokenLiteral() string {
 	if len(p.Statements) > 0 {
