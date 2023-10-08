@@ -19,6 +19,17 @@ const (
 	CALL
 )
 
+var precedence = map[token.TokenType]int{
+	token.EQ:       EQUALS,
+	token.NOT_EQ:   EQUALS,
+	token.LT:       LESSGREATER,
+	token.GT:       LESSGREATER,
+	token.PLUS:     SUM,
+	token.MINUS:    SUM,
+	token.SLASH:    PRODUCT,
+	token.ASTERISK: PRODUCT,
+}
+
 type Parser struct {
 	L              *lexer.Lexer
 	currentToken   token.Token
@@ -50,6 +61,17 @@ func New(L *lexer.Lexer) *Parser {
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
+
+	p.infixParseFns = make(map[token.TokenType]infixParseFn)
+	p.registerInfix(token.PLUS, p.parseInfixExpression)
+	p.registerInfix(token.MINUS, p.parseInfixExpression)
+	p.registerInfix(token.SLASH, p.parseInfixExpression)
+	p.registerInfix(token.ASTERISK, p.parseInfixExpression)
+	p.registerInfix(token.EQ, p.parseInfixExpression)
+	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
+	p.registerInfix(token.LT, p.parseInfixExpression)
+	p.registerInfix(token.GT, p.parseInfixExpression)
+
 	return p
 }
 
@@ -182,6 +204,20 @@ func (P *Parser) parsePrefixExpression() ast.Expression {
 	return expression
 }
 
+func (P *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
+	expression := &ast.InfixExpression{
+		Token:     P.currentToken,
+		Operation: P.currentToken.Literal,
+		Left:      left,
+	}
+
+	precedence := P.currPrecedence()
+	P.nextToken()
+	expression.Right = P.parseExpression(precedence)
+
+	return expression
+}
+
 func (P *Parser) parseExpression(precedence int) ast.Expression {
 	prefix := P.prefixParseFns[P.currentToken.Type]
 	if prefix == nil {
@@ -189,5 +225,30 @@ func (P *Parser) parseExpression(precedence int) ast.Expression {
 		return nil
 	}
 	leftExp := prefix()
+
+	for !P.peekTokenLS(token.SEMICOLON) && precedence < P.peekPrecedence() {
+		infix := P.infixParseFns[P.peekToken.Type]
+		if infix == nil {
+			return leftExp
+		}
+		P.nextToken()
+
+		leftExp = infix(leftExp)
+	}
+
 	return leftExp
+}
+
+func (P *Parser) peekPrecedence() int {
+	if p, ok := precedence[P.peekToken.Type]; ok {
+		return p
+	}
+	return LOWEST
+}
+
+func (P *Parser) currPrecedence() int {
+	if p, ok := precedence[P.currentToken.Type]; ok {
+		return p
+	}
+	return LOWEST
 }
