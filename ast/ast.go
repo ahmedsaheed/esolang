@@ -57,10 +57,15 @@ type PrefixExpression struct {
 }
 
 type InfixExpression struct {
-	Token     token.Token
-	Left      Expression
-	Operation string
-	Right     Expression
+	Token    token.Token
+	Left     Expression
+	Operator string
+	Right    Expression
+}
+
+type Boolean struct {
+	Token token.Token
+	Value bool
 }
 
 func (i *Identifier) expressionNode()      {}
@@ -143,9 +148,13 @@ func (ie *InfixExpression) String() string {
 
 	out.WriteString("(")
 	out.WriteString(ie.Left.String())
-	out.WriteString(" " + ie.Operation + " ")
+	out.WriteString(" " + ie.Operator + " ")
 	out.WriteString(ie.Right.String())
 	out.WriteString(")")
 
 	return out.String()
 }
+
+func (b *Boolean) expressionNode()      {}
+func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
+func (b *Boolean) String() string       { return b.Token.Literal }

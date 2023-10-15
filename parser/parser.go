@@ -71,8 +71,17 @@ func New(L *lexer.Lexer) *Parser {
 	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
 	p.registerInfix(token.LT, p.parseInfixExpression)
 	p.registerInfix(token.GT, p.parseInfixExpression)
+	p.registerPrefix(token.TRUE, p.parseBoolean)
+	p.registerPrefix(token.FALSE, p.parseBoolean)
 
 	return p
+}
+
+func (P *Parser) parseBoolean() ast.Expression {
+	return &ast.Boolean{
+		Token: P.currentToken,
+		Value: P.currentTokenLS(token.TRUE),
+	}
 }
 
 func (P *Parser) parseIdentifier() ast.Expression {
@@ -167,6 +176,7 @@ func (P *Parser) currentTokenLS(t token.TokenType) bool { return P.currentToken.
 func (P *Parser) peekTokenLS(t token.TokenType) bool    { return P.peekToken.Type == t }
 
 func (P *Parser) parseExpressionStatement() *ast.ExpressionStatement {
+	defer untrace(trace("parseExpressionStatement"))
 	stmt := &ast.ExpressionStatement{Token: P.currentToken}
 	stmt.Expression = P.parseExpression(LOWEST)
 
@@ -177,6 +187,7 @@ func (P *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 }
 
 func (P *Parser) parseIntegerLiteral() ast.Expression {
+	defer untrace(trace("parseIntegerLiteral"))
 	lit := &ast.IntegerLiteral{Token: P.currentToken}
 	value, err := strconv.ParseInt(P.currentToken.Literal, 0, 64)
 	if err != nil {
@@ -195,6 +206,7 @@ func (P *Parser) noPrefixParseFnError(t token.TokenType) {
 }
 
 func (P *Parser) parsePrefixExpression() ast.Expression {
+	defer untrace(trace("parsePrefixExpression"))
 	expression := &ast.PrefixExpression{
 		Token:    P.currentToken,
 		Operator: P.currentToken.Literal,
@@ -205,10 +217,11 @@ func (P *Parser) parsePrefixExpression() ast.Expression {
 }
 
 func (P *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
+	defer untrace(trace("parseInfixExpression"))
 	expression := &ast.InfixExpression{
-		Token:     P.currentToken,
-		Operation: P.currentToken.Literal,
-		Left:      left,
+		Token:    P.currentToken,
+		Operator: P.currentToken.Literal,
+		Left:     left,
 	}
 
 	precedence := P.currPrecedence()
@@ -219,6 +232,7 @@ func (P *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 }
 
 func (P *Parser) parseExpression(precedence int) ast.Expression {
+	defer untrace(trace("parseExpression"))
 	prefix := P.prefixParseFns[P.currentToken.Type]
 	if prefix == nil {
 		P.noPrefixParseFnError(P.currentToken.Type)
