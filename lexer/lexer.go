@@ -3,19 +3,11 @@ package lexer
 import "monkey/lang-monkey/token"
 
 type Lexer struct {
-	input        string // source code
-	position     int    // pointer to current char
-	readPosition int    // current reading position after currenct char
-	char         byte   // current char under examination
+	input        string 
+	position     int    
+	readPosition int    
+	char         byte  
 }
-
-/*
- *The reason for these two “pointers” pointing into our input string
- *is the fact that we will need to be able to “peek” further into the
- *input and look after the current character to see what comes up next.
- *readPosition always points to the “next” character in the input.
- *position points to the character in the input that corresponds to the ch byte.”
- */
 
 func New(input string) *Lexer {
 	L := &Lexer{input: input}
@@ -25,7 +17,7 @@ func New(input string) *Lexer {
 
 func (L *Lexer) readChar() {
 	if L.readPosition >= len(L.input) {
-		L.char = 0 // “ASCII code for the "NUL” EOF OR NOTHING READ FROM INPUT
+		L.char = 0 
 	} else {
 		L.char = L.input[L.readPosition]
 	}
@@ -35,7 +27,7 @@ func (L *Lexer) readChar() {
 
 func (L *Lexer) peekChar() byte {
 	if L.readPosition >= len(L.input) {
-		return 0 // “ASCII code for the "NUL” EOF OR NOTHING READ FROM INPUT
+		return 0
 	} else {
 		return L.input[L.readPosition]
 	}
@@ -136,7 +128,7 @@ func isLetter(char byte) bool {
 }
 
 func isDigit(char byte) bool {
-	return '0' <= char && char <= '9' // whether the byte is a Latin digit between 0 and 9
+	return '0' <= char && char <= '9' 
 }
 
 func (L *Lexer) skipWhiteSpaces() {
