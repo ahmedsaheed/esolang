@@ -7,8 +7,8 @@ type TokenType string
 
 // Token represents a token
 type Token struct {
-	Type    TokenType
-	Literal string
+	Type    TokenType // Type of token
+	Literal string    // Literal value of token
 }
 
 const (
