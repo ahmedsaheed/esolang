@@ -1,3 +1,6 @@
+/*
+Package repl is a minimal Read-Eval-Print-Loop.
+*/
 package repl
 
 import (
@@ -10,6 +13,7 @@ import (
 
 const PROMPT = ">>"
 
+// Start starts the Read-Eval-Print-Loop.
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 
