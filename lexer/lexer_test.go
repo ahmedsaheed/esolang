@@ -40,7 +40,7 @@ func TestNextToken(t *testing.T) {
 
 }
 
-func TestBasicMonkeySyntax(t *testing.T) {
+func TestBasicSyntax(t *testing.T) {
 	input := `let five = 5;
 let ten = 10;
 
