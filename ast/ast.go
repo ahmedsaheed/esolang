@@ -1,3 +1,7 @@
+/*
+Package ast implements the Abstract Syntax Tree for the Monkey programming language.
+*/
+
 package ast
 
 import (
@@ -6,21 +10,28 @@ import (
 	"strings"
 )
 
+// Node is the interface that all nodes in the AST implement.
 type Node interface {
 	TokenLiteral() string
 	String() string
 }
 
+// Statement is the interface that all statement nodes in the AST implement.
 type Statement interface {
 	Node
 	statementNode()
 }
 
+// Expression is the interface that all expression nodes in the AST implement.
 type Expression interface {
 	Node
 	expressionNode()
 }
 
+/*
+IntegerLiteral represents an integer literal.
+For example, `5`.
+*/
 type IntegerLiteral struct {
 	Token token.Token
 	Value int64
@@ -30,33 +41,57 @@ type Program struct {
 	Statements []Statement
 }
 
+/*
+Identifier represents an identifier.
+For example, `x`.
+*/
 type Identifier struct {
 	Token token.Token
 	Value string
 }
 
+/*
+ExpressionStatement represents an expression statement.
+For example, `5 + 5;`.
+*/
 type ExpressionStatement struct {
 	Token      token.Token
 	Expression Expression
 }
 
+/*
+LetStatement represents a let statement.
+For example, `let x = 5;`.
+*/
 type LetStatement struct {
 	Token token.Token // token.LET
 	Name  *Identifier
 	Value Expression
 }
 
+/*
+ReturnStatement represents a return statement.
+For example, `return 5;`.
+*/
 type ReturnStatement struct {
 	Token       token.Token
 	ReturnValue Expression
 }
 
+/*
+PrefixExpression represents a prefix expression.
+For example, the `-` in `-5`.
+*/
 type PrefixExpression struct {
 	Token    token.Token
 	Operator string
 	Right    Expression
 }
 
+/*
+InfixExpression represents an infix expression.
+For example, the `+` in `5 + 5`.
+*/
 type InfixExpression struct {
 	Token    token.Token
 	Left     Expression
@@ -64,11 +99,20 @@ type InfixExpression struct {
 	Right    Expression
 }
 
+/*
+Boolean represents a boolean value.
+`true` or `false`.
+*/
 type Boolean struct {
 	Token token.Token
 	Value bool
 }
 
+/*
+BlockStatement represents a block statement.
+
+	A block statement is a sequence of statements enclosed in braces.
+*/
 type BlockStatement struct {
 	Token      token.Token
 	Statements []Statement
