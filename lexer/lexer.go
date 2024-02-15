@@ -6,8 +6,10 @@ package lexer
 
 import "monkey/lang-monkey/token"
 
-// Lexer represents a lexical analyzer.
-// It processes syntax or source code character by character.
+/*
+Lexer represents a lexical analyzer.
+It processes syntax or source code character by character.
+*/
 type Lexer struct {
 	input        string // The input syntax or source code.
 	position     int    // The current position in the input (pointer to the current character).
@@ -42,9 +44,11 @@ func (L *Lexer) peekChar() byte {
 	}
 }
 
-// NextToken returns the next token in the input.
-// It skips white spaces and returns the next token.
-// It returns a token with the type of ILLEGAL if the character is not recognised.
+/*
+NextToken returns the next token in the input.
+It skips white spaces and returns the next token.
+It returns a token with the type of ILLEGAL if the character is not recognised.
+*/
 func (L *Lexer) NextToken() token.Token {
 	var tok token.Token
 	L.skipWhiteSpaces()
