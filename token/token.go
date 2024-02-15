@@ -1,7 +1,11 @@
+/*
+Package token defines the token type and the token struct.
+*/
 package token
 
 type TokenType string
 
+// Token represents a token
 type Token struct {
 	Type    TokenType
 	Literal string
@@ -37,6 +41,7 @@ const (
 	NOT_EQ    = "!="
 )
 
+// Keywords are reserved words
 var keywords = map[string]TokenType{
 	"fn":     FUNCTION,
 	"let":    LET,
@@ -47,6 +52,7 @@ var keywords = map[string]TokenType{
 	"return": RETURN,
 }
 
+// LookupIdent checks if the identifier is a keyword
 func LookupIdent(ident string) TokenType {
 	if tok, ok := keywords[ident]; ok {
 		return tok
