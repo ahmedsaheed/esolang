@@ -1,3 +1,6 @@
+/*
+Package parser implements the core top-down recursive descent parser i.e a Pratt parser
+*/
 package parser
 
 import (
@@ -19,6 +22,7 @@ const (
 	CALL
 )
 
+// precedence map to determine the precedence of the operators
 var precedence = map[token.TokenType]int{
 	token.EQ:       EQUALS,
 	token.NOT_EQ:   EQUALS,
@@ -30,24 +34,32 @@ var precedence = map[token.TokenType]int{
 	token.ASTERISK: PRODUCT,
 }
 
+// Parser is the core struct for the parser
 type Parser struct {
-	L              *lexer.Lexer
-	currentToken   token.Token
-	peekToken      token.Token
-	errors         []string
-	prefixParseFns map[token.TokenType]prefixParseFn
-	infixParseFns  map[token.TokenType]infixParseFn
+	L              *lexer.Lexer                      // lexer
+	currentToken   token.Token                       // current token
+	peekToken      token.Token                       // next token
+	errors         []string                          // errors
+	prefixParseFns map[token.TokenType]prefixParseFn // prefix parse functions
+	infixParseFns  map[token.TokenType]infixParseFn  // infix parse functions
 }
 
 type (
-	prefixParseFn func() ast.Expression
-	infixParseFn  func(ast.Expression) ast.Expression
+	prefixParseFn func() ast.Expression               // prefix parse function
+	infixParseFn  func(ast.Expression) ast.Expression // infix parse function
 )
 
+// Errors returns the errors encountered during parsing
 func (P *Parser) Errors() []string {
 	return P.errors
 }
 
+/*
+	New creates a new parser
+
+* @param L *lexer.Lexer
+* @return *Parser
+*/
 func New(L *lexer.Lexer) *Parser {
 	p := &Parser{
 		L:      L,
@@ -79,6 +91,11 @@ func New(L *lexer.Lexer) *Parser {
 	return p
 }
 
+/*
+parseGroupedExpression parses a grouped expression
+
+	expression like (5 + 5) or (5 * 5)
+*/
 func (P *Parser) parseGroupedExpression() ast.Expression {
 	P.nextToken()
 	exp := P.parseExpression(LOWEST)
@@ -88,6 +105,12 @@ func (P *Parser) parseGroupedExpression() ast.Expression {
 	}
 	return exp
 }
+
+/*
+parseIfExpression parses an if expression
+
+	expression like if (x < y) {x} else {y}
+*/
 func (P *Parser) parseIfExpression() ast.Expression {
 	expression := &ast.IfExpression{Token: P.currentToken}
 
@@ -120,6 +143,12 @@ func (P *Parser) parseIfExpression() ast.Expression {
 
 	return expression
 }
+
+/*
+parseBoolean parses a boolean expression
+
+	expression like true or false
+*/
 func (P *Parser) parseBoolean() ast.Expression {
 	return &ast.Boolean{
 		Token: P.currentToken,
@@ -127,20 +156,36 @@ func (P *Parser) parseBoolean() ast.Expression {
 	}
 }
 
+/*
+parseIdentifier parses an identifier
+
+	expression like x or y
+*/
 func (P *Parser) parseIdentifier() ast.Expression {
 	return &ast.Identifier{Token: P.currentToken, Value: P.currentToken.Literal}
 }
 
+/*
+peekError returns an error message when the next token is not as expected
+*/
 func (P *Parser) peekError(t token.TokenType) {
 	msg := fmt.Sprintf("expected next token to be %s, got %s instead", t, P.peekToken.Type)
 	P.errors = append(P.errors, msg)
 }
 
+/*
+nextToken moves to the next token
+*/
 func (P *Parser) nextToken() {
 	P.currentToken = P.peekToken
 	P.peekToken = P.L.NextToken()
 }
 
+/*
+ParseProgram parses the program
+
+	such as let x = 5; let y = 10; return x + y;
+*/
 func (P *Parser) ParseProgram() *ast.Program {
 	program := &ast.Program{}
 	program.Statements = []ast.Statement{}
@@ -155,6 +200,11 @@ func (P *Parser) ParseProgram() *ast.Program {
 	return program
 }
 
+/*
+parseStatement parses a statement
+
+	parses a statement such as let x = 5; or return x + y;
+*/
 func (P *Parser) parseStatement() ast.Statement {
 	switch P.currentToken.Type {
 	case token.LET:
@@ -166,14 +216,17 @@ func (P *Parser) parseStatement() ast.Statement {
 	}
 }
 
+// registerPrefix registers a prefix parse function
 func (P *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFn) {
 	P.prefixParseFns[tokenType] = fn
 }
 
+// registerInfix registers an infix parse function
 func (P *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
 	P.infixParseFns[tokenType] = fn
 }
 
+// parseReturnStatement parses a return statement
 func (P *Parser) parseReturnStatement() *ast.ReturnStatement {
 	stmt := &ast.ReturnStatement{Token: P.currentToken}
 	P.nextToken()
@@ -184,6 +237,7 @@ func (P *Parser) parseReturnStatement() *ast.ReturnStatement {
 	return stmt
 }
 
+// parseLetStatement parses a let statement
 func (P *Parser) parseLetStatement() *ast.LetStatement {
 	stmt := &ast.LetStatement{Token: P.currentToken}
 
@@ -205,6 +259,7 @@ func (P *Parser) parseLetStatement() *ast.LetStatement {
 	return stmt
 }
 
+// expectPeek checks if the next token is as expected - returns a boolean
 func (P *Parser) expectPeek(t token.TokenType) bool {
 	if P.peekTokenLS(t) {
 		P.nextToken()
@@ -215,9 +270,13 @@ func (P *Parser) expectPeek(t token.TokenType) bool {
 	}
 }
 
+// currentTokenLS checks if the current token is as expected - returns a boolean
 func (P *Parser) currentTokenLS(t token.TokenType) bool { return P.currentToken.Type == t }
-func (P *Parser) peekTokenLS(t token.TokenType) bool    { return P.peekToken.Type == t }
 
+// peekTokenLS checks if the next token is as expected - returns a boolean
+func (P *Parser) peekTokenLS(t token.TokenType) bool { return P.peekToken.Type == t }
+
+// parseExpressionStatement parses an expression statement such as 5 + 5 or x * y;
 func (P *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	defer untrace(trace("parseExpressionStatement"))
 	stmt := &ast.ExpressionStatement{Token: P.currentToken}
@@ -229,6 +288,7 @@ func (P *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	return stmt
 }
 
+// parseIntegerLiteral parses an integer literal such as 5 or 10
 func (P *Parser) parseIntegerLiteral() ast.Expression {
 	defer untrace(trace("parseIntegerLiteral"))
 	lit := &ast.IntegerLiteral{Token: P.currentToken}
@@ -243,11 +303,13 @@ func (P *Parser) parseIntegerLiteral() ast.Expression {
 
 }
 
+// noPrefixParseFnError returns an error message when no prefix parse function is found
 func (P *Parser) noPrefixParseFnError(t token.TokenType) {
 	msg := fmt.Sprintf("no prefix parse function for %s found", t)
 	P.errors = append(P.errors, msg)
 }
 
+// parsePrefixExpression parses a prefix expression such as -5 or !5
 func (P *Parser) parsePrefixExpression() ast.Expression {
 	defer untrace(trace("parsePrefixExpression"))
 	expression := &ast.PrefixExpression{
@@ -259,6 +321,7 @@ func (P *Parser) parsePrefixExpression() ast.Expression {
 	return expression
 }
 
+// parseInfixExpression parses an infix expression such as 5 + 5 or x * y
 func (P *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	defer untrace(trace("parseInfixExpression"))
 	expression := &ast.InfixExpression{
@@ -274,6 +337,7 @@ func (P *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	return expression
 }
 
+// parseExpression parses an expression such as 5 + 5 or x * y
 func (P *Parser) parseExpression(precedence int) ast.Expression {
 	defer untrace(trace("parseExpression"))
 	prefix := P.prefixParseFns[P.currentToken.Type]
@@ -296,6 +360,7 @@ func (P *Parser) parseExpression(precedence int) ast.Expression {
 	return leftExp
 }
 
+// peekPrecedence returns the precedence of the next token
 func (P *Parser) peekPrecedence() int {
 	if p, ok := precedence[P.peekToken.Type]; ok {
 		return p
@@ -303,6 +368,7 @@ func (P *Parser) peekPrecedence() int {
 	return LOWEST
 }
 
+// currPrecedence returns the precedence of the current token
 func (P *Parser) currPrecedence() int {
 	if p, ok := precedence[P.currentToken.Type]; ok {
 		return p
@@ -310,6 +376,7 @@ func (P *Parser) currPrecedence() int {
 	return LOWEST
 }
 
+// parseBlockStatement parses a block statement such as {x + y;} or {y != x;}
 func (P *Parser) parseBlockStatement() *ast.BlockStatement {
 	block := &ast.BlockStatement{Token: P.currentToken}
 	block.Statements = []ast.Statement{}
@@ -327,6 +394,7 @@ func (P *Parser) parseBlockStatement() *ast.BlockStatement {
 	return block
 }
 
+// parseFunctionLiteral parses a function literal such as fn(x, y) {x + y}
 func (P *Parser) parseFunctionLiteral() ast.Expression {
 	literal := &ast.FunctionLiteral{Token: P.currentToken}
 	if !P.expectPeek(token.LPAREN) {
@@ -344,6 +412,7 @@ func (P *Parser) parseFunctionLiteral() ast.Expression {
 
 }
 
+// parseFunctionParameters parses the parameters of a function
 func (P *Parser) parseFunctionParameters() []*ast.Identifier {
 	identifiers := []*ast.Identifier{}
 
