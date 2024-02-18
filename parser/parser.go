@@ -32,6 +32,7 @@ var precedence = map[token.TokenType]int{
 	token.MINUS:    SUM,
 	token.SLASH:    PRODUCT,
 	token.ASTERISK: PRODUCT,
+	token.LPAREN:   CALL,
 }
 
 // Parser is the core struct for the parser
@@ -88,6 +89,7 @@ func New(L *lexer.Lexer) *Parser {
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
 	p.registerPrefix(token.IF, p.parseIfExpression)
 	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
+	p.registerInfix(token.LPAREN, p.parseCallExpression)
 	return p
 }
 
@@ -270,10 +272,10 @@ func (P *Parser) expectPeek(t token.TokenType) bool {
 	}
 }
 
-// currentTokenLS checks if the current token is as expected - returns a boolean
+// currentTokenLS checks if the current matches the expected tokenType - returns a boolean
 func (P *Parser) currentTokenLS(t token.TokenType) bool { return P.currentToken.Type == t }
 
-// peekTokenLS checks if the next token is as expected - returns a boolean
+// peekTokenLS checks if the next token matches the expected tokenType - returns a boolean
 func (P *Parser) peekTokenLS(t token.TokenType) bool { return P.peekToken.Type == t }
 
 // parseExpressionStatement parses an expression statement such as 5 + 5 or x * y;
@@ -439,4 +441,45 @@ func (P *Parser) parseFunctionParameters() []*ast.Identifier {
 	}
 
 	return identifiers
+}
+
+// parseCallExpression parses a call expression such as add(5, 5) or add(5, 10)
+func (P *Parser) parseCallExpression(function ast.Expression) ast.Expression {
+	// construct the call expression
+	exp := &ast.CallExpression{Token: P.currentToken, Function: function}
+	// parse the arguments
+	exp.Arguments = P.parseCallArguments()
+	// return the call expression
+	return exp
+}
+
+/*
+parseCallArguments parses the arguments of a call expression
+*/
+func (P *Parser) parseCallArguments() []ast.Expression {
+	args := []ast.Expression{}
+
+	// no arguments
+	if P.peekTokenLS(token.RPAREN) {
+		P.nextToken()
+		return args
+	}
+
+	// skip the LPAREN
+	P.nextToken()
+	args = append(args, P.parseExpression(LOWEST))
+
+	// get args separated by commas
+	for P.peekTokenLS(token.COMMA) {
+		P.nextToken()
+		P.nextToken()
+		args = append(args, P.parseExpression(LOWEST))
+	}
+
+	// check for RPAREN
+	if !P.expectPeek(token.RPAREN) {
+		return nil
+	}
+	// return slice of arguments as expressions
+	return args
 }
