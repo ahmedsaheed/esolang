@@ -232,8 +232,8 @@ func (P *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
 func (P *Parser) parseReturnStatement() *ast.ReturnStatement {
 	stmt := &ast.ReturnStatement{Token: P.currentToken}
 	P.nextToken()
-	// TODO: Skipping expression until we encounter a semicolon
-	if !P.currentTokenLS(token.SEMICOLON) {
+	stmt.ReturnValue = P.parseExpression(LOWEST)
+	if P.peekTokenLS(token.SEMICOLON) {
 		P.nextToken()
 	}
 	return stmt
@@ -253,11 +253,14 @@ func (P *Parser) parseLetStatement() *ast.LetStatement {
 		return nil
 	}
 
-	//TODO: Skip expressions till encounter semicolons
+	P.nextToken()
 
-	for !P.currentTokenLS(token.SEMICOLON) {
+	stmt.Value = P.parseExpression(LOWEST)
+
+	if P.peekTokenLS(token.SEMICOLON) {
 		P.nextToken()
 	}
+
 	return stmt
 }
 

@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"io"
 	"monkey/lang-monkey/lexer"
-	"monkey/lang-monkey/token"
+	"monkey/lang-monkey/parser"
 )
 
 const PROMPT = ">>"
@@ -25,9 +25,23 @@ func Start(in io.Reader, out io.Writer) {
 		}
 		line := scanner.Text()
 		L := lexer.New(line)
+		P := parser.New(L)
 
-		for tok := L.NextToken(); tok.Type != token.EOF; tok = L.NextToken() {
-			fmt.Fprintf(out, "%+v\n", tok)
+		program := P.ParseProgram()
+
+		if len(P.Errors()) != 0 {
+			printParserErrors(out, P.Errors())
+			continue
 		}
+
+		io.WriteString(out, program.String())
+		io.WriteString(out, "\n")
+
+	}
+}
+
+func printParserErrors(out io.Writer, errors []string) {
+	for _, msg := range errors {
+		io.WriteString(out, "\t"+msg+"\n")
 	}
 }
