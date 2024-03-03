@@ -96,14 +96,31 @@ func TestIfElseExpression(t *testing.T) {
 	}
 }
 
-func testNullObject(t *testing.T, evaluated object.Object) bool {
-	if evaluated != NULL {
-		t.Errorf("object is not NULL. got=%T (%+v)", evaluated, evaluated)
-		return false
+func TestReturnStatements(t *testing.T) {
+	tests := []struct {
+		input string
+		expected int64
+	}{
+		{"return 10;", 10},
+		{"return 10; 9;", 10},
+		{"return 50 / 5; 9;", 10},
+		{"10; return 50; 5;", 50},
+		{`
+		if (10 > 1) {
+			if (10 > 1) {
+				return 10;
+			}
+			return 1;
+		}
+		`, 10,
+		},
 	}
-	return true	
-}
 
+	for _, test := range tests {
+		evaluated := testEval(test.input)
+		testIntegerObject(t, evaluated, test.expected)
+	}
+}
 // evaluating prefix expressions
 func TestBangOperator(t *testing.T) {
 	tests := []struct {
@@ -155,6 +172,13 @@ func testIntegerObject(t *testing.T, obj object.Object ,expected int64) bool {
 
 }
 
+func testNullObject(t *testing.T, evaluated object.Object) bool {
+	if evaluated != NULL {
+		t.Errorf("object is not NULL. got=%T (%+v)", evaluated, evaluated)
+		return false
+	}
+	return true	
+}
 func testEval(input string) object.Object {
 	lexer := lexer.New(input)
 	parser := parser.New(lexer)
