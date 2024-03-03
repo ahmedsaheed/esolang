@@ -184,7 +184,7 @@ func (P *Parser) nextToken() {
 }
 
 /*
-ParseProgram parses the program
+ParseProgram parses the program to create an AST
 
 	such as let x = 5; let y = 10; return x + y;
 */

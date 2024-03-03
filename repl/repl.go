@@ -5,6 +5,7 @@ package repl
 
 import (
 	"bufio"
+	"esolang/lang-esolang/evaluator"
 	"esolang/lang-esolang/lexer"
 	"esolang/lang-esolang/parser"
 	"fmt"
@@ -24,17 +25,17 @@ func Start(in io.Reader, out io.Writer) {
 			return
 		}
 		line := scanner.Text()
-		L := lexer.New(line)
-		P := parser.New(L)
+		lexer := lexer.New(line)
+		parser := parser.New(lexer)
 
-		program := P.ParseProgram()
+		program := parser.ParseProgram()
 
-		if len(P.Errors()) != 0 {
-			printParserErrors(out, P.Errors())
+		if len(parser.Errors()) != 0 {
+			printParserErrors(out, parser.Errors())
 			continue
 		}
-
-		io.WriteString(out, program.String())
+		evaluated := evaluator.Eval(program)
+		io.WriteString(out, evaluated.Inspect())
 		io.WriteString(out, "\n")
 
 	}
