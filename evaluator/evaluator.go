@@ -52,7 +52,6 @@ func evalInfixExpression(operator string, leftOperand, rightOperand object.Objec
 
 // evalIntegerInfixExpression evaluates is where the actual arithmetic operations for + , - , / and * performed
 func evalIntegerInfixExpression(operator string, leftOperand, rightOperand object.Object) object.Object {
-	
 	leftValue := leftOperand.(*object.Integer).Value
 	rightValue := rightOperand.(*object.Integer).Value
 	
@@ -65,6 +64,14 @@ func evalIntegerInfixExpression(operator string, leftOperand, rightOperand objec
 			return &object.Integer{Value: leftValue * rightValue}
 		case "/":
 			return &object.Integer{Value: leftValue / rightValue}
+		case "<": 
+			return nativeBoolToBooleanObject(leftValue < rightValue)
+		case ">":
+			return nativeBoolToBooleanObject(leftValue > rightValue)
+		case "==":
+			return nativeBoolToBooleanObject(leftValue == rightValue)
+		case "!=":
+			return nativeBoolToBooleanObject(leftValue != rightValue)
 		default:
 			return NULL
 	}
@@ -103,7 +110,7 @@ func evalBangOperatorExpression(right object.Object) object.Object {
 		return FALSE
 	}		 
 }
-
+// nativeBoolToBooleanObject converts a native bool to a boolean object
 func nativeBoolToBooleanObject(input bool) *object.Boolean {
 	if input {
 		return TRUE
