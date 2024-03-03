@@ -4,10 +4,10 @@ Package parser implements the core top-down recursive descent parser i.e a Pratt
 package parser
 
 import (
+	"esolang/lang-esolang/ast"
+	"esolang/lang-esolang/lexer"
+	"esolang/lang-esolang/token"
 	"fmt"
-	"monkey/lang-monkey/ast"
-	"monkey/lang-monkey/lexer"
-	"monkey/lang-monkey/token"
 	"strconv"
 )
 

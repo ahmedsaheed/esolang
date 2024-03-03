@@ -1,9 +1,9 @@
 package parser
 
 import (
+	"esolang/lang-esolang/ast"
+	"esolang/lang-esolang/lexer"
 	"fmt"
-	"monkey/lang-monkey/ast"
-	"monkey/lang-monkey/lexer"
 	"testing"
 )
 
@@ -769,7 +769,7 @@ func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
 	}
 
 	if ident.Value != value {
-		t.Errorf("ident.Valuei not %s. got=%s jsj", value, ident.Value)
+		t.Errorf("ident.Value not %s. got=%s jsj", value, ident.Value)
 		return false
 	}
 

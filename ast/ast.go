@@ -6,7 +6,7 @@ package ast
 
 import (
 	"bytes"
-	"monkey/lang-monkey/token"
+	"esolang/lang-esolang/token"
 	"strings"
 )
 

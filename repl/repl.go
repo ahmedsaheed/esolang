@@ -5,10 +5,10 @@ package repl
 
 import (
 	"bufio"
+	"esolang/lang-esolang/lexer"
+	"esolang/lang-esolang/parser"
 	"fmt"
 	"io"
-	"monkey/lang-monkey/lexer"
-	"monkey/lang-monkey/parser"
 )
 
 const PROMPT = ">>"

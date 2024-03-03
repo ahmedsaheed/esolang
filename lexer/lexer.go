@@ -4,7 +4,7 @@ It goes through the input and outputs the next recognised token by calling `next
 */
 package lexer
 
-import "monkey/lang-monkey/token"
+import "esolang/lang-esolang/token"
 
 /*
 Lexer represents a lexical analyzer.

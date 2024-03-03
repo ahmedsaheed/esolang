@@ -1,8 +1,8 @@
 package main
 
 import (
+	"esolang/lang-esolang/repl"
 	"fmt"
-	"monkey/lang-monkey/repl"
 	"os"
 	"os/user"
 )
