@@ -69,6 +69,41 @@ func TestEvaluateBooleanExpression(t *testing.T) {
 	}
 }
 
+func TestIfElseExpression(t *testing.T) {
+	tests := []struct {
+		input string
+		expected interface{}
+	}{
+		{"if (!true) {10}", nil},
+		{"if (true) {10}", 10},
+		{"if (false) {10}", nil},
+		{"if (1) {10}", 10},
+		{"if (1 < 2) {10}", 10},
+		{"if (1 > 2) {10}", nil},
+		{"if (1 > 2) {10} else {20}", 20},
+		{"if (1 < 2) {10} else {20}", 10},
+	}
+
+	for _, test := range tests {
+		evaluated := testEval(test.input)
+		integer, ok := test.expected.(int)
+		if ok {
+			testIntegerObject(t, evaluated, int64(integer))
+		} else {
+			testNullObject(t, evaluated)
+		}
+
+	}
+}
+
+func testNullObject(t *testing.T, evaluated object.Object) bool {
+	if evaluated != NULL {
+		t.Errorf("object is not NULL. got=%T (%+v)", evaluated, evaluated)
+		return false
+	}
+	return true	
+}
+
 // evaluating prefix expressions
 func TestBangOperator(t *testing.T) {
 	tests := []struct {
