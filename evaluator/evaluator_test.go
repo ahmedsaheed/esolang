@@ -141,6 +141,42 @@ func TestBangOperator(t *testing.T) {
 	}
 }
 
+
+func TestErrorHandling(t *testing.T) {
+	tests := []struct{
+		input string
+		expectedMessage string
+	}{
+		{"10 + true;", "type mismatch: INTEGER + BOOLEAN"},
+		{"10 + true; 10;", "type mismatch: INTEGER + BOOLEAN"},
+		{"-true", "unknown operator: -BOOLEAN"},
+		{"true + false;", "unknown operator: BOOLEAN + BOOLEAN"},
+		{"5; true + false; 5", "unknown operator: BOOLEAN + BOOLEAN"},
+		{"if (10 > 1) {true + false;}", "unknown operator: BOOLEAN + BOOLEAN"},
+		{`
+		if (10 > 1) {
+			if (10 > 1) {
+				return true + false;
+			}
+			return 1;
+		}
+		`, "unknown operator: BOOLEAN + BOOLEAN",
+		},
+	}
+
+	for _, test := range tests {
+		evaluated := testEval(test.input)
+		errObj, ok := evaluated.(*object.Error)
+		if !ok {
+			t.Errorf("no error object returned. got=%T(%+v)", evaluated, evaluated)
+			continue
+		}
+		if errObj.Message != test.expectedMessage {
+			t.Errorf("wrong error message. expected=%q, got=%q", test.expectedMessage, errObj.Message)
+		}
+	}
+}
+
 func testBooleanObject(t *testing.T, evaluated object.Object, b bool) bool {
 	boolean, ok := evaluated.(*object.Boolean)
 	if !ok {
@@ -179,6 +215,7 @@ func testNullObject(t *testing.T, evaluated object.Object) bool {
 	}
 	return true	
 }
+
 func testEval(input string) object.Object {
 	lexer := lexer.New(input)
 	parser := parser.New(lexer)
