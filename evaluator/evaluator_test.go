@@ -37,9 +37,41 @@ func TestEvaluateIntegerExpression(t *testing.T) {
 	}
 }
 
-//func t *testing.T) {
-//
-//}
+func TestFunctionObject(t *testing.T) {
+	input := "fn(x) { x + 2; };"
+	evaluated := testEval(input)
+	fn, ok := evaluated.(*object.Function)
+	if !ok {
+		t.Fatalf("object is not Function. got=%T (%+v)", evaluated, evaluated)
+	}
+	if len(fn.Parameters) != 1 {
+		t.Fatalf("function has wrong parameters. Parameters=%+v", fn.Parameters)
+	}
+	if fn.Parameters[0].String() != "x" {
+		t.Fatalf("parameter is not 'x'. got=%q", fn.Parameters[0])
+	}
+	if fn.Body.String() != "(x + 2)" {
+		t.Fatalf("body is not 'x + 2'. got=%q", fn.Body.String())
+	}
+}
+
+func TestFunctionApplication(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"let fiver = fn(x) { x; }; fiver(5);", 5},
+		{"let fiver = fn(x) { return x; }; fiver(5);", 5},
+		{"let doubler = fn(x) { x * 2; }; doubler(5);", 10},
+		{"let adder = fn(x, y) { x + y; }; adder(5, 5);", 10},
+		{"let adder = fn(x, y) { x + y; }; adder(5 + 5, adder(5, 5));", 20},
+		{"fn(x) { x; }(5)", 5},
+	}
+
+	for _, test := range tests {
+		testIntegerObject(t, testEval(test.input), test.expected)
+	}
+}
 
 func TestEvaluateBooleanExpression(t *testing.T) {
 	tests := []struct {
