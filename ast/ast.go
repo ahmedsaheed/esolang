@@ -252,7 +252,11 @@ func (ie *IfExpression) String() string {
 
 /*
 FunctionLiteral represents a function literal.
-For example, `fn(x, y) { x + y; }`.
+
+	For example, `fn(x, y) { x + y; }`.
+	fn is the actual token literal.
+	x and y are the parameters - an array of identifiers.
+	x + y; is the body - a block statement.
 */
 type FunctionLiteral struct {
 	Token      token.Token

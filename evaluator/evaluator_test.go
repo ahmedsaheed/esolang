@@ -37,6 +37,10 @@ func TestEvaluateIntegerExpression(t *testing.T) {
 	}
 }
 
+//func t *testing.T) {
+//
+//}
+
 func TestEvaluateBooleanExpression(t *testing.T) {
 	tests := []struct {
 		input    string
