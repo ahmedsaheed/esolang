@@ -9,7 +9,7 @@ import (
 
 func TestEvaluateIntegerExpression(t *testing.T) {
 	tests := []struct {
-		input   string
+		input    string
 		expected int64
 	}{
 		{"5", 5},
@@ -27,7 +27,7 @@ func TestEvaluateIntegerExpression(t *testing.T) {
 		{"3 * (3 * 3) + 10", 37},
 		{"(5 + 10 * 2 + 15 / 3) * 2 + -10", 50},
 		{"100 + 10 / 50 + 20", 120},
-		{"40 - 10 + 90 /2", 75 },
+		{"40 - 10 + 90 /2", 75},
 		{"(80-20 + 100) / 2", 80},
 	}
 
@@ -38,8 +38,8 @@ func TestEvaluateIntegerExpression(t *testing.T) {
 }
 
 func TestEvaluateBooleanExpression(t *testing.T) {
-	tests := []struct{
-		input string
+	tests := []struct {
+		input    string
 		expected bool
 	}{
 		{"true", true},
@@ -71,7 +71,7 @@ func TestEvaluateBooleanExpression(t *testing.T) {
 
 func TestIfElseExpression(t *testing.T) {
 	tests := []struct {
-		input string
+		input    string
 		expected interface{}
 	}{
 		{"if (!true) {10}", nil},
@@ -96,9 +96,25 @@ func TestIfElseExpression(t *testing.T) {
 	}
 }
 
+func TestLetStatements(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"let a = 5; a;", 5},
+		{"let a = 10 * 10; a;", 100},
+		{"let a = 10; let b = a; b;", 10},
+		{"let a = 5; let b = a; let c = a + b + 5; c;", 15},
+	}
+
+	for _, test := range tests {
+		testIntegerObject(t, testEval(test.input), test.expected)
+	}
+}
+
 func TestReturnStatements(t *testing.T) {
 	tests := []struct {
-		input string
+		input    string
 		expected int64
 	}{
 		{"return 10;", 10},
@@ -121,10 +137,11 @@ func TestReturnStatements(t *testing.T) {
 		testIntegerObject(t, evaluated, test.expected)
 	}
 }
+
 // evaluating prefix expressions
 func TestBangOperator(t *testing.T) {
 	tests := []struct {
-		input string
+		input    string
 		expected bool
 	}{
 		{"!true", false},
@@ -141,10 +158,9 @@ func TestBangOperator(t *testing.T) {
 	}
 }
 
-
 func TestErrorHandling(t *testing.T) {
-	tests := []struct{
-		input string
+	tests := []struct {
+		input           string
 		expectedMessage string
 	}{
 		{"10 + true;", "type mismatch: INTEGER + BOOLEAN"},
@@ -162,6 +178,7 @@ func TestErrorHandling(t *testing.T) {
 		}
 		`, "unknown operator: BOOLEAN + BOOLEAN",
 		},
+		{"foobar", "identifier not found: foobar"},
 	}
 
 	for _, test := range tests {
@@ -190,8 +207,7 @@ func testBooleanObject(t *testing.T, evaluated object.Object, b bool) bool {
 	return true
 }
 
-
-func testIntegerObject(t *testing.T, obj object.Object ,expected int64) bool {
+func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 	evaluatedIntegerObject, ok := obj.(*object.Integer)
 
 	if !ok {
@@ -205,7 +221,6 @@ func testIntegerObject(t *testing.T, obj object.Object ,expected int64) bool {
 	}
 	return true
 
-
 }
 
 func testNullObject(t *testing.T, evaluated object.Object) bool {
@@ -213,12 +228,13 @@ func testNullObject(t *testing.T, evaluated object.Object) bool {
 		t.Errorf("object is not NULL. got=%T (%+v)", evaluated, evaluated)
 		return false
 	}
-	return true	
+	return true
 }
 
 func testEval(input string) object.Object {
 	lexer := lexer.New(input)
 	parser := parser.New(lexer)
+	environment := object.NewEnvironment()
 	program := parser.ParseProgram()
-	return Eval(program)
+	return Eval(program, environment)
 }

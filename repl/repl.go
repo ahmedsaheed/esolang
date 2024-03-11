@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"esolang/lang-esolang/evaluator"
 	"esolang/lang-esolang/lexer"
+	"esolang/lang-esolang/object"
 	"esolang/lang-esolang/parser"
 	"fmt"
 	"io"
@@ -17,6 +18,7 @@ const PROMPT = ">>"
 // Start starts the Read-Eval-Print-Loop.
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
+	environmnet := object.NewEnvironment()
 
 	for {
 		fmt.Fprintf(out, PROMPT)
@@ -34,10 +36,11 @@ func Start(in io.Reader, out io.Writer) {
 			printParserErrors(out, parser.Errors())
 			continue
 		}
-		evaluated := evaluator.Eval(program)
-		io.WriteString(out, evaluated.Inspect())
-		io.WriteString(out, "\n")
-
+		evaluated := evaluator.Eval(program, environmnet)
+		if evaluated != nil {
+			io.WriteString(out, evaluated.Inspect())
+			io.WriteString(out, "\n")
+		}
 	}
 }
 
