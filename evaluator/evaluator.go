@@ -44,6 +44,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		}
 		return evalPrefixExpression(node.Operator, right)
 
+	case *ast.StringLiteral:
+		return &object.String{Value: node.Value}
+
 	case *ast.InfixExpression:
 		left := Eval(node.Left, env)
 		if isError(left) {

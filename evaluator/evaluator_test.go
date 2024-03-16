@@ -159,6 +159,18 @@ func TestLetStatements(t *testing.T) {
 	}
 }
 
+func TestStringLiteral(t *testing.T) {
+	var input string  = `"Welcome aboard"`
+	evaluated := testEval(input)
+	str, ok := evaluated.(*object.String)
+	if !ok {
+		t.Fatalf("Type mismatch: object is not String. got=%T (%+v)", evaluated, evaluated)
+	}
+	if str.Value != "Welcome aboard" {
+		t.Errorf("String value don't match. got=%q, want=%q", str.Value, input)
+	}
+}
+
 func TestReturnStatements(t *testing.T) {
 	tests := []struct {
 		input    string
