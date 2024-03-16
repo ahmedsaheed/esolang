@@ -39,6 +39,7 @@ const (
 	RETURN    = "RETURN"
 	EQ        = "=="
 	NOT_EQ    = "!="
+	STRING    = "STRING"
 )
 
 // Keywords are reserved words

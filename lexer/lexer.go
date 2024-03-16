@@ -74,6 +74,9 @@ func (L *Lexer) NextToken() token.Token {
 		} else {
 			tok = newToken(token.ASSIGN, L.char)
 		}
+	case '"':
+		tok.Type = token.STRING
+		tok.Literal = L.readString()
 	case ';':
 		tok = newToken(token.SEMICOLON, L.char)
 	case '(':
@@ -121,6 +124,19 @@ func (L *Lexer) NextToken() token.Token {
 // newToken creates a new token with the given type and character.
 func newToken(tokenType token.TokenType, ch byte) token.Token {
 	return token.Token{Type: tokenType, Literal: string(ch)}
+}
+
+
+func (L *Lexer) readString() string {
+	position := L.position + 1
+	for {
+		L.readChar()
+		if L.char == '"' || L.char == 0 {
+			break
+		}
+	}
+	return L.input[position:L.position]
+	
 }
 
 // readIdentifier reads the next identifier in the input and returns it.
