@@ -108,6 +108,25 @@ func TestIdentifierExpression(t *testing.T) {
 	}
 }
 
+
+func TestStringLiteralExpression(t *testing.T) {
+	var input string = `"hello world";`
+	L := lexer.New(input)
+	P := New(L)
+	program := P.ParseProgram()
+	checkParserErrors(t, P)
+
+	stmt := program.Statements[0].(*ast.ExpressionStatement)
+	literal, ok := stmt.Expression.(*ast.StringLiteral)
+
+	if !ok {
+		t.Fatalf("expression not *ast.StringLiteral. got=%T", stmt.Expression)
+	}
+	if literal.Value != "hello world" {
+		t.Errorf("literal.Value not %s. got=%s", "hello world", literal.Value)
+	}
+}
+
 func TestIntegerLiteralExpression(t *testing.T) {
 	input := `5;`
 	l := lexer.New(input)
