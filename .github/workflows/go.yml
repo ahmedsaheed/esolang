@@ -1,28 +1,27 @@
 # This workflow will build a golang project
 
-name: Monkey test
+name: Esolang Test
 
 on:
-  workflow_dispatch:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    workflow_dispatch:
+    push:
+        branches: ['main']
+    pull_request:
+        branches: ['main']
 
 jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
 
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
+            - name: Set up Go
+              uses: actions/setup-go@v4
+              with:
+                  go-version: '1.21.x'
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.21.x'
+            - name: Build
+              run: go build -v ./...
 
-    - name: Build
-      run: go build -v ./...
-
-    - name: Test
-      run: go test -coverpkg=./... ./...
+            - name: Test
+              run: go test -coverpkg=./... ./...
