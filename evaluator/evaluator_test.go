@@ -55,6 +55,39 @@ func TestFunctionObject(t *testing.T) {
 	}
 }
 
+
+func TestBuiltinFunctions(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{`count("")`, 0},
+		{`count("four")`, 4},
+		{`count("hello world")`, 11},
+		{`count(1)`, "argument to `count` not supported, got INTEGER"},
+		{`count("one", "two")`, "wrong number of arguments. got=2, want=1"},
+	}
+
+
+	for _, test := range tests {
+		evaluated := testEval(test.input)
+		switch expected := test.expected.(type) {
+		case int:
+			testIntegerObject(t, evaluated, int64(expected))
+		case string:
+			errObj, ok := evaluated.(*object.Error)
+			if !ok {
+				t.Errorf("object is not Error. got=%T (%+v)", evaluated, evaluated)
+				continue
+			}
+			if errObj.Message != expected {
+				t.Errorf("wrong error message. expected=%q, got=%q", expected, errObj.Message)
+			}
+		}
+
+	}
+}
+
 func TestFunctionApplication(t *testing.T) {
 	tests := []struct {
 		input    string
