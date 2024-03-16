@@ -171,6 +171,21 @@ func TestStringLiteral(t *testing.T) {
 	}
 }
 
+func TestStringConcatenation(t *testing.T) {
+	input := `"String" + " " + "Concatenation"`
+	evaluated := testEval(input)
+	str, ok := evaluated.(*object.String)
+
+	if !ok {
+		t.Fatalf("Type mismatch: object is not String. got=%T (%+v)", evaluated, evaluated)
+	}
+
+	if str.Value != "String Concatenation" {
+		t.Errorf("String value don't match. got=%q, want=%q", str.Value, "String Concatenation")
+	}
+
+}
+
 func TestReturnStatements(t *testing.T) {
 	tests := []struct {
 		input    string
@@ -238,6 +253,7 @@ func TestErrorHandling(t *testing.T) {
 		`, "unknown operator: BOOLEAN + BOOLEAN",
 		},
 		{"foobar", "identifier not found: foobar"},
+		{`"string" - "string"`, "unknown operator: STRING - STRING"},
 	}
 
 	for _, test := range tests {

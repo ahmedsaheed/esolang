@@ -182,6 +182,8 @@ func evalInfixExpression(operator string, leftOperand, rightOperand object.Objec
 		return evalIntegerInfixExpression(operator, leftOperand, rightOperand)
 	case operator == "==":
 		return nativeBoolToBooleanObject(leftOperand == rightOperand)
+	case leftOperand.Type() == object.STRING_OBJ && rightOperand.Type() == object.STRING_OBJ:
+		return evalStringInfixExpression(operator, leftOperand, rightOperand)
 	case operator == "!=":
 		return nativeBoolToBooleanObject(leftOperand != rightOperand)
 	case leftOperand.Type() != rightOperand.Type():
@@ -189,6 +191,16 @@ func evalInfixExpression(operator string, leftOperand, rightOperand object.Objec
 	default:
 		return newError("unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
 	}
+}
+
+// evalStringInfixExpression evaluates the string concatenation
+func evalStringInfixExpression(operator string, leftOperand, rightOperand object.Object) object.Object {
+	if operator != "+" {
+		return newError("unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
+	}
+	leftValue := leftOperand.(*object.String).Value
+	rightValue := rightOperand.(*object.String).Value
+	return &object.String{Value: leftValue + rightValue}
 }
 
 // evalIntegerInfixExpression evaluates is where the actual arithmetic operations for + , - , / and * performed
