@@ -60,6 +60,7 @@ if (5 < 10) {
 10 != 9;
 "stringTest"
 "string test"
+[5, 10];
 `
 	tests := []struct {
 		expectedType    token.TokenType
@@ -140,7 +141,12 @@ if (5 < 10) {
 		{token.SEMICOLON, ";"},
 		{token.STRING, "stringTest"},
         {token.STRING, "string test"},
-
+		{token.LBRACKET, "["},
+		{token.INT, "5"},
+		{token.COMMA, ","},
+		{token.INT, "10"},
+		{token.RBRACKET, "]"},
+		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
 	l := New(input)
