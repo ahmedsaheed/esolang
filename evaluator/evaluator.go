@@ -79,6 +79,13 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
 
+	case *ast.ArrayLiteral:
+		elements := evalExpressions(node.Elements, env)
+		if len(elements) == 1 && isError(elements[0]) {
+			return elements[0]
+		}
+		return &object.Array{Elements: elements}
+
 	case *ast.CallExpression:
 		function := Eval(node.Function, env)
 		if isError(function) {
@@ -104,12 +111,12 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 //
 func applyFunction(fn object.Object, args []object.Object) object.Object {
 	switch fn := fn.(type) {
-	
+
 	case *object.Function:
 		extendedEnv := extendFunctionEnv(fn, args)
 		evaluated := Eval(fn.Body, extendedEnv)
 		return unwrapReturnValue(evaluated)
-	
+
 	case *object.Builtin:
 		return fn.Fn(args...)
 	default:
@@ -131,7 +138,6 @@ func extendFunctionEnv(function *object.Function, args []object.Object) *object.
 	}
 	return env
 }
-
 
 func evalExpressions(expression []ast.Expression, env *object.Environment) []object.Object {
 	var result []object.Object
