@@ -2,7 +2,6 @@ package evaluator
 
 import "esolang/lang-esolang/object"
 
-
 var builtins = map[string]*object.Builtin{
 	"count": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
@@ -10,8 +9,9 @@ var builtins = map[string]*object.Builtin{
 				return newError("wrong number of arguments. got=%d, want=1",
 					len(args))
 			}
-
 			switch arg := args[0].(type) {
+			case *object.Array:
+				return &object.Integer{Value: int64(len(arg.Elements))}
 			case *object.String:
 				return &object.Integer{Value: int64(len(arg.Value))}
 			default:
