@@ -174,6 +174,21 @@ func TestIfElseExpression(t *testing.T) {
 	}
 }
 
+func TestWhileLoopExpression(t *testing.T) {
+	input := `
+	let sum = 0;
+	let start = 1;
+	let upto = 100;
+	while (start < upto){
+		let sum = sum + start;
+		let start = start + 1;
+	}
+	sum
+	`
+	evaluated := testEval(input)
+	testIntegerObject(t, evaluated, 4950)
+}
+
 func TestLetStatements(t *testing.T) {
 	tests := []struct {
 		input    string

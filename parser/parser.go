@@ -94,7 +94,7 @@ func New(L *lexer.Lexer) *Parser {
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
 	p.registerPrefix(token.STRING, p.parseStringLiteral)
 	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
-	p.registerPrefix(token.FOR, p.parseForLoopExpression)
+	p.registerPrefix(token.WHILE, p.parseWhileLoopExpression)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
 	p.registerPrefix(token.LBRACE, p.parseHashLiteral)
 
@@ -544,8 +544,8 @@ func (P *Parser) parseIndexExpression(leftExpression ast.Expression) ast.Express
 	return exp
 }
 
-func (P *Parser) parseForLoopExpression() ast.Expression {
-	expression := &ast.ForLoopExpression{Token: P.currentToken}
+func (P *Parser) parseWhileLoopExpression() ast.Expression {
+	expression := &ast.WhileLoopExpression{Token: P.currentToken}
 	if !P.expectPeek(token.LPAREN) {
 		return nil
 	}

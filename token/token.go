@@ -43,7 +43,7 @@ const (
 	LBRACKET  = "["
 	RBRACKET  = "]"
 	COLON     = ":"
-	FOR       = "FOR"
+	WHILE     = "WHILE"
 )
 
 // Keywords are reserved words
@@ -55,7 +55,7 @@ var keywords = map[string]TokenType{
 	"if":     IF,
 	"else":   ELSE,
 	"return": RETURN,
-	"for":    FOR,
+	"while":  WHILE,
 }
 
 // LookupIdent checks if the identifier is a keyword

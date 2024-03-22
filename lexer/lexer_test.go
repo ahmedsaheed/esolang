@@ -62,7 +62,7 @@ if (5 < 10) {
 "string test"
 [5, 10];
 {"key": "value"}
-for
+while
 `
 	tests := []struct {
 		expectedType    token.TokenType
@@ -154,7 +154,7 @@ for
 		{token.COLON, ":"},
 		{token.STRING, "value"},
 		{token.RBRACE, "}"},
-		{token.FOR, "for"},
+		{token.WHILE, "while"},
 		{token.EOF, ""},
 	}
 	l := New(input)

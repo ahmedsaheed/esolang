@@ -57,7 +57,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return right
 		}
 		return evalInfixExpression(node.Operator, left, right)
-
+	case *ast.WhileLoopExpression:
+		return evalWhileLoopExpression(node, env)
 	case *ast.LetStatement:
 		val := Eval(node.Value, env)
 		if isError(val) {
@@ -144,6 +145,28 @@ func evalArrayIndexExpression(array object.Object, index object.Object) object.O
 	}
 
 	return arrayObject.Elements[idx]
+}
+
+func evalWhileLoopExpression(flExpression *ast.WhileLoopExpression, env *object.Environment) object.Object {
+	var result object.Object
+
+	for {
+		condition := Eval(flExpression.Condition, env)
+		if isError(condition) {
+			return condition
+		}
+
+		if isTruthy(condition) {
+			result = Eval(flExpression.Consequence, env)
+		} else {
+			break
+		}
+	}
+
+	if result != nil {
+		return result
+	}
+	return &object.Null{}
 }
 
 func evalHashIndexExpression(hash object.Object, index object.Object) object.Object {

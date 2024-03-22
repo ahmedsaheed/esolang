@@ -322,17 +322,17 @@ func (sl *StringLiteral) expressionNode()      {}
 func (sl *StringLiteral) TokenLiteral() string { return sl.Token.Literal }
 func (sl *StringLiteral) String() string       { return sl.Token.Literal }
 
-type ForLoopExpression struct {
+type WhileLoopExpression struct {
 	Token       token.Token
 	Condition   Expression
 	Consequence *BlockStatement
 }
 
-func (fle ForLoopExpression) expressionNode()      {}
-func (fle ForLoopExpression) TokenLiteral() string { return fle.Token.Literal }
-func (fle ForLoopExpression) String() string {
+func (fle WhileLoopExpression) expressionNode()      {}
+func (fle WhileLoopExpression) TokenLiteral() string { return fle.Token.Literal }
+func (fle WhileLoopExpression) String() string {
 	var output bytes.Buffer
-	output.WriteString("for (")
+	output.WriteString("while (")
 	output.WriteString(fle.Condition.String())
 	output.WriteString(") {")
 	output.WriteString(fle.Consequence.String())

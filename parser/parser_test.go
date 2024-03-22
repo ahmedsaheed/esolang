@@ -668,8 +668,8 @@ func TestIfElseExpression(t *testing.T) {
 	}
 }
 
-func TestForLoopExpression(t *testing.T) {
-	input := `for(a<b){ let a=a+1; }`
+func TestWhileLoopExpression(t *testing.T) {
+	input := `while(a<b){ let a=a+1; }`
 	l := lexer.New(input)
 	p := New(l)
 	program := p.ParseProgram()
@@ -686,7 +686,7 @@ func TestForLoopExpression(t *testing.T) {
 			program.Statements[0])
 	}
 
-	exp, ok := stmt.Expression.(*ast.ForLoopExpression)
+	exp, ok := stmt.Expression.(*ast.WhileLoopExpression)
 	if !ok {
 		t.Fatalf("stmt.Expression is not ast.ForLoopExpression. got=%T",
 			stmt.Expression)
