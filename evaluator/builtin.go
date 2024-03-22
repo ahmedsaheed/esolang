@@ -106,7 +106,6 @@ var builtins = map[string]*object.Builtin{
 				arr.Elements = arr.Elements[:length-1]
 				return last
 			}
-			return NULL
 		},
 	},
 	"array_append": &object.Builtin{

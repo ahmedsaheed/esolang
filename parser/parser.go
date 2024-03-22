@@ -288,7 +288,7 @@ func (P *Parser) peekTokenLS(t token.TokenType) bool { return P.peekToken.Type =
 
 // parseExpressionStatement parses an expression statement such as 5 + 5 or x * y;
 func (P *Parser) parseExpressionStatement() *ast.ExpressionStatement {
-	defer untrace(trace("parseExpressionStatement"))
+	// defer untrace(trace("parseExpressionStatement"))
 	stmt := &ast.ExpressionStatement{Token: P.currentToken}
 	stmt.Expression = P.parseExpression(LOWEST)
 
@@ -300,7 +300,7 @@ func (P *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 
 // parseIntegerLiteral parses an integer literal such as 5 or 10
 func (P *Parser) parseIntegerLiteral() ast.Expression {
-	defer untrace(trace("parseIntegerLiteral"))
+	// defer untrace(trace("parseIntegerLiteral"))
 	lit := &ast.IntegerLiteral{Token: P.currentToken}
 	value, err := strconv.ParseInt(P.currentToken.Literal, 0, 64)
 	if err != nil {
@@ -321,7 +321,7 @@ func (P *Parser) noPrefixParseFnError(t token.TokenType) {
 
 // parsePrefixExpression parses a prefix expression such as -5 or !5
 func (P *Parser) parsePrefixExpression() ast.Expression {
-	defer untrace(trace("parsePrefixExpression"))
+	// defer untrace(trace("parsePrefixExpression"))
 	expression := &ast.PrefixExpression{
 		Token:    P.currentToken,
 		Operator: P.currentToken.Literal,
@@ -333,7 +333,7 @@ func (P *Parser) parsePrefixExpression() ast.Expression {
 
 // parseInfixExpression parses an infix expression such as 5 + 5 or x * y
 func (P *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
-	defer untrace(trace("parseInfixExpression"))
+	// defer untrace(trace("parseInfixExpression"))
 	expression := &ast.InfixExpression{
 		Token:    P.currentToken,
 		Operator: P.currentToken.Literal,
@@ -349,7 +349,7 @@ func (P *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 
 // parseExpression parses an expression such as 5 + 5 or x * y
 func (P *Parser) parseExpression(precedence int) ast.Expression {
-	defer untrace(trace("parseExpression"))
+	// defer untrace(trace("parseExpression"))
 	prefix := P.prefixParseFns[P.currentToken.Type]
 	if prefix == nil {
 		P.noPrefixParseFnError(P.currentToken.Type)

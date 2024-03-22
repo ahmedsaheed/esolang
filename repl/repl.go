@@ -11,6 +11,9 @@ import (
 	"esolang/lang-esolang/parser"
 	"fmt"
 	"io"
+	"os"
+
+	"github.com/charmbracelet/log"
 )
 
 const PROMPT = ">>"
@@ -19,7 +22,10 @@ const PROMPT = ">>"
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 	environmnet := object.NewEnvironment()
-
+	logger := log.New(os.Stderr)
+	logger.SetReportTimestamp(false)
+	logger.SetReportCaller(false)
+	logger.SetLevel(log.DebugLevel)
 	for {
 		fmt.Fprintf(out, PROMPT)
 		scanned := scanner.Scan()
@@ -33,19 +39,24 @@ func Start(in io.Reader, out io.Writer) {
 		program := parser.ParseProgram()
 
 		if len(parser.Errors()) != 0 {
-			printParserErrors(out, parser.Errors())
+			printParserErrors(parser.Errors(), logger)
 			continue
 		}
 		evaluated := evaluator.Eval(program, environmnet)
 		if evaluated != nil {
-			io.WriteString(out, evaluated.Inspect())
-			io.WriteString(out, "\n")
+			message := evaluated.Inspect()
+			if len(message) > 5 && message[:5] == "ERROR" {
+				logger.Error(message[6:])
+			} else {
+				logger.Info(message)
+				io.WriteString(out, "\n")
+			}
 		}
 	}
 }
 
-func printParserErrors(out io.Writer, errors []string) {
+func printParserErrors(errors []string, log *log.Logger) {
 	for _, msg := range errors {
-		io.WriteString(out, "\t"+msg+"\n")
+		log.Error(msg)
 	}
 }
