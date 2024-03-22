@@ -94,6 +94,7 @@ func New(L *lexer.Lexer) *Parser {
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
 	p.registerPrefix(token.STRING, p.parseStringLiteral)
 	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
+	p.registerPrefix(token.FOR, p.parseForLoopExpression)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
 	p.registerPrefix(token.LBRACE, p.parseHashLiteral)
 
@@ -541,6 +542,24 @@ func (P *Parser) parseIndexExpression(leftExpression ast.Expression) ast.Express
 	}
 
 	return exp
+}
+
+func (P *Parser) parseForLoopExpression() ast.Expression {
+	expression := &ast.ForLoopExpression{Token: P.currentToken}
+	if !P.expectPeek(token.LPAREN) {
+		return nil
+	}
+
+	P.nextToken()
+	expression.Condition = P.parseExpression(LOWEST)
+	if !P.expectPeek(token.RPAREN) {
+		return nil
+	}
+	if !P.expectPeek(token.LBRACE) {
+		return nil
+	}
+	expression.Consequence = P.parseBlockStatement()
+	return expression
 }
 
 // parseHashLiteral parses a hash literal

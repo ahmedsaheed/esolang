@@ -668,6 +668,51 @@ func TestIfElseExpression(t *testing.T) {
 	}
 }
 
+func TestForLoopExpression(t *testing.T) {
+	input := `for(a<b){ let a=a+1; }`
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program has not enough statements. got=%d",
+			len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T",
+			program.Statements[0])
+	}
+
+	exp, ok := stmt.Expression.(*ast.ForLoopExpression)
+	if !ok {
+		t.Fatalf("stmt.Expression is not ast.ForLoopExpression. got=%T",
+			stmt.Expression)
+	}
+
+	if !testInfixExpression(t, exp.Condition, "a", "<", "b") {
+		return
+	}
+
+	if len(exp.Consequence.Statements) != 1 {
+		t.Fatalf("consequence is not 1 statements. got=%d\n",
+			len(exp.Consequence.Statements))
+	}
+	consequence, ok := exp.Consequence.Statements[0].(*ast.LetStatement)
+
+	if !ok {
+		t.Fatalf("Statements[0] is not ast.LetStatement. got=%T",
+			exp.Consequence.Statements[0])
+	}
+
+	if !testLetStatement(t, consequence, "a") {
+		t.Fatalf("exp.Consequence is not LetStatement")
+	}
+
+}
+
 func TestFunctionLiteralParsing(t *testing.T) {
 	input := `fn(x,y){ x + y; }`
 
