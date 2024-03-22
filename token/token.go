@@ -40,8 +40,9 @@ const (
 	EQ        = "=="
 	NOT_EQ    = "!="
 	STRING    = "STRING"
-	LBRACKET   = "["
-	RBRACKET   = "]"
+	LBRACKET  = "["
+	RBRACKET  = "]"
+	COLON     = ":"
 )
 
 // Keywords are reserved words
