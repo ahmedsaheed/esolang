@@ -95,6 +95,8 @@ func New(L *lexer.Lexer) *Parser {
 	p.registerPrefix(token.STRING, p.parseStringLiteral)
 	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
+	p.registerPrefix(token.LBRACE, p.parseHashLiteral)
+
 	return p
 }
 
@@ -539,4 +541,33 @@ func (P *Parser) parseIndexExpression(leftExpression ast.Expression) ast.Express
 	}
 
 	return exp
+}
+
+// parseHashLiteral parses a hash literal
+// hash literals are of the form {key: value, key: value}
+func (P *Parser) parseHashLiteral() ast.Expression {
+	hash := &ast.HashLiteral{Token: P.currentToken}
+	hash.Pairs = make(map[ast.Expression]ast.Expression)
+
+	for !P.peekTokenLS(token.RBRACE) {
+		P.nextToken()
+
+		key := P.parseExpression(LOWEST)
+
+		if !P.expectPeek(token.COLON) {
+			return nil
+		}
+
+		P.nextToken()
+		value := P.parseExpression(LOWEST)
+
+		hash.Pairs[key] = value
+		if !P.peekTokenLS(token.RBRACE) && !P.expectPeek(token.COMMA) {
+			return nil
+		}
+	}
+	if !P.expectPeek(token.RBRACE) {
+		return nil
+	}
+	return hash
 }
