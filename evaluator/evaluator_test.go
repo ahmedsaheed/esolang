@@ -351,6 +351,31 @@ func TestHashLiterals(t *testing.T) {
 	}
 }
 
+func TestHashIndexExpressions(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected interface{}
+	}{
+		{`{"key": 5}["key"]`, 5},
+		{`{"key": 5}["notKey"]`, nil},
+		{`let key = "key"; {"key": 5}[key]`, 5},
+		{`{}["key"]`, nil},
+		{`{5: 5}[5]`, 5},
+		{`{true: 5}[true]`, 5},
+		{`{false: 5}[false]`, 5},
+	}
+
+	for _, test := range tests {
+		evaluated := testEval(test.input)
+		integer, ok := test.expected.(int)
+		if ok {
+			testIntegerObject(t, evaluated, int64(integer))
+		} else {
+			testNullObject(t, evaluated)
+		}
+	}
+}
+
 func TestErrorHandling(t *testing.T) {
 	tests := []struct {
 		input           string
@@ -373,6 +398,7 @@ func TestErrorHandling(t *testing.T) {
 		},
 		{"foobar", "identifier not found: foobar"},
 		{`"string" - "string"`, "unknown operator: STRING - STRING"},
+		{`{"key": "Value"}[fn(x) {x}];`, "unusable as hash key: FUNCTION"},
 	}
 
 	for _, test := range tests {
