@@ -1,0 +1,16 @@
+let fizzBuzz = fn(n, arr){
+    let i = 1;
+    while(i < n){
+      let dx = false;
+      if(i % 15 == 0){array_append(arr, "FizzBuzz"); let dx=true;};
+      if (i % 3 == 0){array_append(arr, "Fizz"); let dx = true;}
+      if(i % 5 == 0){array_append(arr, "Buzz"); let dx=true;}
+      if (dx == false){array_append(arr, i)};
+    let i = i + 1; }
+arr }
+
+let sqr = fn(x){x * x}
+
+println("Hello World")
+println(sqr(9))
+println(fizzBuzz(100, []))
