@@ -35,3 +35,22 @@ List of features & Sources
 ## Performance
 
 The performance could be improved. At current its mediocre. Evaluation stage seems to be hindering speed as its a recursive decent which traverses each AST node and interprets what its sees. I'm looking into a bytecode compilable solution which runs on a VM. This would improve the performance significantly.
+
+FizzBuzz in Esolang
+
+```js
+let fizzBuzz = fn(num, res){
+  let i = 1;
+  while(i < num) {
+    let divided = false;
+    if(i % 15 == 0){array_append(res, "FizzBuzz"); let divided = true; };
+    if(i % 3 == 0){array_append(res, "Fizz"); let divided = true;};
+    if(i % 5 == 0){array_append(res, "Bizz"); let divided = true;};
+    if(dev == false){array_append(res, i);} let i = i + 1;}
+  return res;
+}
+
+let res = array_new();
+let result = fizzBuzz(100, res);
+println(result); // println(fizzBuzz(100, res))
+```

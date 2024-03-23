@@ -18,6 +18,7 @@ const (
 	LESSGREATER
 	SUM
 	PRODUCT
+	MODULUS
 	PREFIX
 	CALL
 	INDEX
@@ -31,6 +32,7 @@ var precedence = map[token.TokenType]int{
 	token.GT:       LESSGREATER,
 	token.PLUS:     SUM,
 	token.MINUS:    SUM,
+	token.MOD:      MODULUS,
 	token.SLASH:    PRODUCT,
 	token.ASTERISK: PRODUCT,
 	token.LPAREN:   CALL,
@@ -86,6 +88,7 @@ func New(L *lexer.Lexer) *Parser {
 	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
 	p.registerInfix(token.LT, p.parseInfixExpression)
 	p.registerInfix(token.GT, p.parseInfixExpression)
+	p.registerInfix(token.MOD, p.parseInfixExpression)
 	p.registerPrefix(token.TRUE, p.parseBoolean)
 	p.registerPrefix(token.FALSE, p.parseBoolean)
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)

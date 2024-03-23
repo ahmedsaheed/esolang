@@ -44,6 +44,7 @@ const (
 	RBRACKET  = "]"
 	COLON     = ":"
 	WHILE     = "WHILE"
+	MOD       = "%"
 )
 
 // Keywords are reserved words
