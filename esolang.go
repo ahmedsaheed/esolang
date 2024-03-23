@@ -19,6 +19,7 @@ func main() {
 	}
 
 	if len(flag.Args()) > 0 {
+		file := flag.Args()[0]
 		inputFile, err := os.ReadFile(file)
 
 		if err != nil {
