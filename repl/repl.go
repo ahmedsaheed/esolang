@@ -5,6 +5,7 @@ package repl
 
 import (
 	"bufio"
+	_ "embed"
 	"esolang/lang-esolang/evaluator"
 	"esolang/lang-esolang/lexer"
 	"esolang/lang-esolang/object"
@@ -19,13 +20,13 @@ import (
 
 const PROMPT = ">>"
 
-func Execute(input string) {
+func Execute(input string, stdLib string) {
 	environmnet := object.NewEnvironment()
 	logger := generateLogger()
-	evaluteInput(input, logger, environmnet)
+	evaluteInput(input, logger, environmnet, stdLib)
 }
 
-func Start(in io.Reader, out io.Writer) {
+func Start(in io.Reader, out io.Writer, stdLib string) {
 	user, err := user.Current()
 	if err != nil {
 		panic(err)
@@ -50,22 +51,28 @@ func Start(in io.Reader, out io.Writer) {
 			fmt.Println("Goodbye!")
 			return
 		} else {
-			evaluteInput(line, logger, environmnet)
+			evaluteInput(line, logger, environmnet, stdLib)
 		}
 
 	}
 }
 
-func evaluteInput(input string, log *log.Logger, environmnet *object.Environment) {
-	lexer := lexer.New(input)
-	parser := parser.New(lexer)
+func evaluteInput(input string, log *log.Logger, environmnet *object.Environment, stdLib string) {
+	initialLexer := lexer.New(input)
+	initialParser := parser.New(initialLexer)
 
-	program := parser.ParseProgram()
+	program := initialParser.ParseProgram()
 
-	if len(parser.Errors()) != 0 {
-		printParserErrors(parser.Errors(), log)
+	if len(initialParser.Errors()) != 0 {
+		printParserErrors(initialParser.Errors(), log)
 		return
 	}
+
+	libLexer := lexer.New(stdLib)
+	libParser := parser.New(libLexer)
+	libProgram := libParser.ParseProgram()
+	evaluator.Eval(libProgram, environmnet)
+
 	evaluated := evaluator.Eval(program, environmnet)
 	if evaluated != nil {
 		output := evaluated.Inspect()

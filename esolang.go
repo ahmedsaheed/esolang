@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"esolang/lang-esolang/repl"
 	"flag"
 	"os"
@@ -9,13 +10,16 @@ import (
 	"github.com/charmbracelet/log"
 )
 
+//go:embed stdlib/stdlib.eso
+var lib string
+
 func main() {
 	replMode := flag.Bool("repl", false, "Start the repl")
 	logger := log.New(os.Stderr)
 	flag.Parse()
 
 	if *replMode {
-		repl.Start(os.Stdin, os.Stdout)
+		repl.Start(os.Stdin, os.Stdout, lib)
 	}
 
 	if len(flag.Args()) > 0 {
@@ -32,7 +36,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		repl.Execute(string(inputFile))
+		repl.Execute(string(inputFile), lib)
 	} else {
 		logger.Warn("No file provided. Please provide a file to run or use the -repl flag to start the repl.")
 		logger.Warn("Usage: esolang <path-to-filename>")
