@@ -231,7 +231,10 @@ var Builtins = map[string]*object.Builtin{
 		},
 	},
 	"ReadFile": &object.Builtin{
-		Fn: ReadFile,
+		Fn: readFile,
+	},
+	"WriteFile": &object.Builtin{
+		Fn: writeFile,
 	},
 }
 
