@@ -1,12 +1,15 @@
-package evaluator
+package builtins
 
 import (
 	"esolang/lang-esolang/object"
+
 	"fmt"
 	"sort"
 )
 
-var builtins = map[string]*object.Builtin{
+var NULL = &object.Null{}
+
+var Builtins = map[string]*object.Builtin{
 	"count": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
@@ -219,4 +222,19 @@ var builtins = map[string]*object.Builtin{
 			return NULL
 		},
 	},
+	"print": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			for _, arg := range args {
+				fmt.Print(arg.Inspect())
+			}
+			return NULL
+		},
+	},
+	"ReadFile": &object.Builtin{
+		Fn: ReadFile,
+	},
+}
+
+func newError(format string, a ...interface{}) *object.Error {
+	return &object.Error{Message: fmt.Sprintf(format, a...)}
 }

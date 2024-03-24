@@ -2,6 +2,7 @@ package evaluator
 
 import (
 	"esolang/lang-esolang/ast"
+	"esolang/lang-esolang/builtins"
 	"esolang/lang-esolang/object"
 	"fmt"
 )
@@ -231,7 +232,7 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 	if val, ok := env.Get(node.Value); ok {
 		return val
 	}
-	if builtin, ok := builtins[node.Value]; ok {
+	if builtin, ok := builtins.Builtins[node.Value]; ok {
 		return builtin
 	}
 	return newError("identifier not found: " + node.Value)
@@ -409,6 +410,10 @@ func evalStatements(statements []ast.Statement, env *object.Environment) object.
 
 func newError(format string, a ...interface{}) *object.Error {
 	return &object.Error{Message: fmt.Sprintf(format, a...)}
+}
+
+func NewError(format string, a ...interface{}) *object.Error {
+	return newError(format, a)
 }
 
 func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) object.Object {
