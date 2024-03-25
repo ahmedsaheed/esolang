@@ -1,3 +1,5 @@
+// This is a comment - should be ignored when lexing
+
 let fizzBuzz = fn(n, arr){
     let i = 1;
     while(i < n){
@@ -8,6 +10,8 @@ let fizzBuzz = fn(n, arr){
       if (dx == false){array_append(arr, i)};
     let i = i + 1; }
 arr }
+
+// This is a comment - should be ignored when lexing
 
 let sqr = fn(x){x * x}
 

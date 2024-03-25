@@ -52,6 +52,11 @@ It returns a token with the type of ILLEGAL if the character is not recognised.
 func (L *Lexer) NextToken() token.Token {
 	var tok token.Token
 	L.skipWhiteSpaces()
+
+	if L.char == '/' && L.peekChar() == '/' {
+		L.skipComment()
+		return (L.NextToken())
+	}
 	switch L.char {
 	default:
 		if isLetter(L.char) {
@@ -144,6 +149,13 @@ func (L *Lexer) readString() string {
 	}
 	return L.input[position:L.position]
 
+}
+
+func (L *Lexer) skipComment() {
+	for L.char != '\n' && L.char != 0 {
+		L.readChar()
+	}
+	L.skipWhiteSpaces()
 }
 
 // readIdentifier reads the next identifier in the input and returns it.
