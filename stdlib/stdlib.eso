@@ -1,21 +1,42 @@
-let array_reduce = fn(arr, initial, func) {
+// array functions
+
+// array_reduce executes a user-supplied "reducer" callback function on each element of the array,
+let array_reduce = fn(arr, initial, reducerFn) {
     let iter = fn(arr, result) {
         if (count(arr) == 0) {
              result
         } else {
-             iter(array_rest(arr), func(result, array_getFirst(arr)));
+             iter(array_rest(arr), reducerFn(result, array_getFirst(arr)));
         }
     };
     iter(arr, initial);
 }
 
-let array_map = fn(arr, func) {
+// array_map  returns the array populated with the results of calling a provided
+// map function on every element in the calling array.
+let array_map = fn(arr, mapFn) {
     let iter = fn(arr, accum) {
         if (count(arr) == 0) {
             accum
         } else {
-            iter(array_rest(arr), array_append(accum, func(array_getFirst(arr))));
+            iter(array_rest(arr), array_append(accum, mapFn(array_getFirst(arr))));
         }
     };
     iter(arr, []);
+}
+
+// array_includes determines whether an array includes a certain value among its entries,
+// returning true or false as appropriate.
+let array_includes = fn(arr, searchElement) {
+    let arrLen = count(arr);
+    let i = 0;
+    let result = false;
+    while (i < arrLen) {
+        if (arr[i] == searchElement) {
+            let result = true;
+            result;
+        }
+        let i = i + 1;
+    }
+    result
 }
