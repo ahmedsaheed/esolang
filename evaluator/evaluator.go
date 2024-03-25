@@ -275,6 +275,10 @@ func evalInfixExpression(operator string, leftOperand, rightOperand object.Objec
 		return evalStringInfixExpression(operator, leftOperand, rightOperand)
 	case operator == "!=":
 		return nativeBoolToBooleanObject(leftOperand != rightOperand)
+	case operator == "&&":
+		return nativeBoolToBooleanObject(objectToNativeBoolean(leftOperand) && objectToNativeBoolean(rightOperand))
+	case operator == "-|":
+		return nativeBoolToBooleanObject(objectToNativeBoolean(leftOperand) || objectToNativeBoolean(rightOperand))
 	case leftOperand.Type() != rightOperand.Type():
 		return newError("type mismatch: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
 	default:
@@ -445,4 +449,35 @@ func isError(obj object.Object) bool {
 		return obj.Type() == object.ERROR_OBJ
 	}
 	return false
+}
+
+func objectToNativeBoolean(o object.Object) bool {
+	if r, ok := o.(*object.ReturnValue); ok {
+		o = r.Value
+	}
+	switch obj := o.(type) {
+	case *object.Boolean:
+		return obj.Value
+	case *object.String:
+		return obj.Value != ""
+	case *object.Null:
+		return false
+	case *object.Integer:
+		if obj.Value == 0 {
+			return false
+		}
+		return true
+	case *object.Array:
+		if len(obj.Elements) == 0 {
+			return false
+		}
+		return true
+	case *object.Hash:
+		if len(obj.Pairs) == 0 {
+			return false
+		}
+		return true
+	default:
+		return true
+	}
 }

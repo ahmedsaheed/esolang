@@ -45,6 +45,8 @@ const (
 	COLON     = ":"
 	WHILE     = "WHILE"
 	MOD       = "%"
+	AND       = "&&"
+	OR        = "-|"
 )
 
 // Keywords are reserved words

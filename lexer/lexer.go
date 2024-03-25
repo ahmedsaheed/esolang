@@ -79,6 +79,15 @@ func (L *Lexer) NextToken() token.Token {
 		} else {
 			tok = newToken(token.ASSIGN, L.char)
 		}
+	case '&':
+		if L.peekChar() == '&' {
+			char := L.char
+			L.readChar()
+			literal := string(char) + string(L.char)
+			tok = token.Token{Type: token.AND, Literal: literal}
+		} else {
+			tok = newToken(token.ILLEGAL, L.char)
+		}
 	case ':':
 		tok = newToken(token.COLON, L.char)
 	case '%':
@@ -121,7 +130,14 @@ func (L *Lexer) NextToken() token.Token {
 	case '*':
 		tok = newToken(token.ASTERISK, L.char)
 	case '-':
-		tok = newToken(token.MINUS, L.char)
+		if L.peekChar() == '|' {
+			char := L.char
+			L.readChar()
+			literal := string(char) + string(L.char)
+			tok = token.Token{Type: token.OR, Literal: literal}
+		} else {
+			tok = newToken(token.MINUS, L.char)
+		}
 	case '<':
 		tok = newToken(token.LT, L.char)
 	case '>':

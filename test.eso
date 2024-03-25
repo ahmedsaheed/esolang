@@ -4,17 +4,34 @@ let fizzBuzz = fn(n, arr){
     let i = 1;
     while(i < n){
       let dx = false;
-      if(i % 15 == 0){array_append(arr, "FizzBuzz"); let dx=true;};
+      if(i % 5 == 0){array_append(arr, "FizzBuzz"); let dx=true;};
       if (i % 3 == 0){array_append(arr, "Fizz"); let dx = true;}
       if(i % 5 == 0){array_append(arr, "Buzz"); let dx=true;}
       if (dx == false){array_append(arr, i)};
     let i = i + 1; }
 arr }
+println(fizzBuzz(100, []))
 
 // This is a comment - should be ignored when lexing
 
-let sqr = fn(x){x * x}
+// lets take logical operators for a spin
+let testLogicalOperators = fn() {
+   let a = 10;
+   let b = 20;
+    if (a  > 0 && b > 0) {
+        println("AND test: Both values are greater than 0");
+    }
+    else {
+        println("AND test: Both values are less than 0");
+    }
+     let a = 1;
+    let b = 20;
+    if (a > 0 -| b > 0) {
+        println("OR test: At least one value is greater than 0");
+    }
+    else {
+        println("OR test: Both values are less than 0");
+    }
+}
 
-println("Hello World")
-println(sqr(9))
-println(fizzBuzz(100, []))
+testLogicalOperators();
