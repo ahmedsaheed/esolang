@@ -1,3 +1,21 @@
-let sayHello = fn() {
-   print("Hello, World!");
+let array_reduce = fn(arr, initial, func) {
+    let iter = fn(arr, result) {
+        if (count(arr) == 0) {
+             result
+        } else {
+             iter(array_rest(arr), func(result, array_getFirst(arr)));
+        }
+    };
+    iter(arr, initial);
+}
+
+let array_map = fn(arr, func) {
+    let iter = fn(arr, accum) {
+        if (count(arr) == 0) {
+            accum
+        } else {
+            iter(array_rest(arr), array_append(accum, func(array_getFirst(arr))));
+        }
+    };
+    iter(arr, []);
 }
