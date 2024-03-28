@@ -69,9 +69,22 @@
     </head>
     <body>
         <h1>The Esolang Playground</h1>
+        <p>
+            Welcome to the Esolang Playground! Here you can write and run code
+            in Esolang, a simple, fun, and easy-to-learn programming language.
+        </p>
         <div id="code"></div>
 
         {{ template "form" . }}
+
+        <form>
+            <select id="codesamples">
+                <option value="1">Hello, World</option>
+                <option value="2">FizzBuzz</option>
+                <option value="3">Array Sum</option>
+                <option value="4">Fibonacci</option>
+            </select>
+        </form>
         <hr />
         {{ template "evaluatedView" . }}
 
@@ -79,25 +92,7 @@
             CodeMirror.commands.autocomplete = function (cm) {
                 CodeMirror.showHint(cm, CodeMirror.hint.html);
             };
-            var initialCode = `
-// You can edit this code!
-// Click here and start typing.
-let sumArray = fn(arr) {
-    let currIdx = 0;
-    let arrLength = count(arr);
-    let sum = 0;
 
-    while(currIdx < arrLength) {
-        let sum = sum + arr[currIdx];
-        let currIdx = currIdx + 1;
-    }
-
-  sum;
-}
-
-let testArray = array_new(1,2,3,4,5);
-sumArray(testArray);
-              `;
             window.onload = function () {
                 editor = CodeMirror(document.getElementById("code"), {
                     mode: "text/javascript",
@@ -110,9 +105,81 @@ sumArray(testArray);
                     extraKeys: {
                         "Ctrl-Space": "autocomplete",
                     },
-                    value: "" + initialCode + "",
+                    value: "" + sampleCodes.helloWorld + "",
                 });
             };
+
+            var sampleCodes = {
+                helloWorld: `
+// You can edit this code!
+// Click here and start typing.
+
+print("Hello, World!");
+`,
+                fizzBuzz: `
+let fizzBuzz = fn(n, arr){
+  let i = 1;
+  while(i < n){
+    let dx = false;
+    if(i % 15 == 0){array_append(arr, "FizzBuzz"); let dx=true;};
+    if (i % 3 == 0){array_append(arr, "Fizz"); let dx = true;}
+    if(i % 5 == 0){array_append(arr, "Buzz"); let dx=true;}
+    if (dx == false){array_append(arr, i)};
+    let i = i + 1;
+  }
+  arr;
+}
+
+fizzBuzz(100, []);
+`,
+                arraySum: `
+// You can edit this code!
+// Click here and start typing.
+
+let sumArray = fn(arr) {
+  let currIdx = 0;
+  let arrLength = count(arr);
+  let sum = 0;
+
+  while(currIdx < arrLength) {
+        let sum = sum + arr[currIdx];
+        let currIdx = currIdx + 1;
+  }
+
+  sum;
+}
+
+sumArray(array_new(1,2,3,4,5));
+`,
+
+                fibonacci: `
+// A fibonacci function that returns the Nth Fibonacci number.
+// Note the recursive call of fibonacci itself!
+
+let fibonacci = fn(x) {
+   if (x == 0) {0} else {
+   if (x == 1) {1} else {
+   fibonacci(x - 1) + fibonacci(x - 2);
+   }
+  }
+}
+
+fibonacci(9)
+`,
+            };
+
+            const sb = document.querySelector("#codesamples");
+            sb.addEventListener("change", function () {
+                if (sb.selectedIndex == 0) {
+                    editor.setValue(sampleCodes.helloWorld);
+                } else if (sb.selectedIndex == 1) {
+                    editor.setValue(sampleCodes.fizzBuzz);
+                } else if (sb.selectedIndex == 2) {
+                    editor.setValue(sampleCodes.arraySum);
+                } else if (sb.selectedIndex == 3) {
+                    editor.setValue(sampleCodes.fibonacci);
+                }
+            });
 
             document
                 .querySelector("form")
