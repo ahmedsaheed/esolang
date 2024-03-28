@@ -4,7 +4,7 @@ let fizzBuzz = fn(n, arr){
     let i = 1;
     while(i < n){
       let dx = false;
-      if(i % 5 == 0){array_append(arr, "FizzBuzz"); let dx=true;};
+      if(i % 15 == 0){array_append(arr, "FizzBuzz"); let dx=true;};
       if (i % 3 == 0){array_append(arr, "Fizz"); let dx = true;}
       if(i % 5 == 0){array_append(arr, "Buzz"); let dx=true;}
       if (dx == false){array_append(arr, i)};
@@ -35,3 +35,21 @@ let testLogicalOperators = fn() {
 }
 
 testLogicalOperators();
+
+// sum an array
+let sumArray = fn(arr) {
+
+     let currIdx = 0;
+     let arrLength = count(arr);
+     let sum = 0;
+
+    while(currIdx < arrLength) {
+        let sum = sum + arr[currIdx];
+        let currIdx = currIdx + 1;
+    }
+
+    sum;
+}
+
+let testArray = array_new(1,2,3,4,5);
+sumArray(testArray);

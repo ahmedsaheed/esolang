@@ -1,0 +1,143 @@
+{{ block "index" . }}
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
+        <link
+            rel="stylesheet"
+            href="http://esironal.github.io/cmtouch/lib/codemirror.css"
+        />
+        <link
+            rel="stylesheet"
+            href="http://esironal.github.io/cmtouch/addon/hint/show-hint.css"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap"
+            rel="stylesheet"
+        />
+        <script src="http://esironal.github.io/cmtouch/lib/codemirror.js"></script>
+        <script src="http://esironal.github.io/cmtouch/addon/hint/show-hint.js"></script>
+        <script src="http://esironal.github.io/cmtouch/addon/hint/xml-hint.js"></script>
+        <script src="http://esironal.github.io/cmtouch/addon/hint/html-hint.js"></script>
+        <script src="http://esironal.github.io/cmtouch/mode/xml/xml.js"></script>
+        <script src="http://esironal.github.io/cmtouch/mode/javascript/javascript.js"></script>
+        <script src="http://esironal.github.io/cmtouch/mode/css/css.js"></script>
+        <script src="http://esironal.github.io/cmtouch/mode/htmlmixed/htmlmixed.js"></script>
+        <script src="http://esironal.github.io/cmtouch/addon/selection/active-line.js"></script>
+        <script src="http://esironal.github.io/cmtouch/addon/edit/matchbrackets.js"></script>
+
+        <link
+            rel="stylesheet"
+            href="http://esironal.github.io/cmtouch/theme/neonsyntax.css"
+        />
+
+        <style type="text/css">
+            body {
+                background: black;
+                color: whitesmoke;
+                font-family: "Fira Mono", monospace;
+                font-weight: 400;
+            }
+            .CodeMirror {
+                font-size: 15px;
+                width: 80%;
+                height: 100%;
+                margin: 0 auto;
+                font-family: "Fira Mono", monospace;
+                font-weight: 400;
+            }
+            button {
+                background-color: rebeccapurple;
+                border: none;
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: pointer;
+                font-family: "Fira Mono", monospace;
+            }
+        </style>
+        <title>Home</title>
+    </head>
+    <body>
+        <h1>The Esolang Playground</h1>
+        <div id="code"></div>
+
+        {{ template "form" . }}
+        <hr />
+        {{ template "evaluatedView" . }}
+
+        <script type="text/javascript">
+            CodeMirror.commands.autocomplete = function (cm) {
+                CodeMirror.showHint(cm, CodeMirror.hint.html);
+            };
+            var initialCode = `
+// You can edit this code!
+// Click here and start typing.
+let sumArray = fn(arr) {
+    let currIdx = 0;
+    let arrLength = count(arr);
+    let sum = 0;
+
+    while(currIdx < arrLength) {
+        let sum = sum + arr[currIdx];
+        let currIdx = currIdx + 1;
+    }
+
+  sum;
+}
+
+let testArray = array_new(1,2,3,4,5);
+sumArray(testArray);
+              `;
+            window.onload = function () {
+                editor = CodeMirror(document.getElementById("code"), {
+                    mode: "text/javascript",
+                    theme: "neonsyntax",
+                    lineWrapping: true,
+                    lineNumbers: true,
+                    styleActiveLine: true,
+                    matchBrackets: true,
+
+                    extraKeys: {
+                        "Ctrl-Space": "autocomplete",
+                    },
+                    value: "" + initialCode + "",
+                });
+            };
+
+            document
+                .querySelector("form")
+                .addEventListener("submit", function () {
+                    var code = editor.getValue();
+                    console.log(code);
+                    this.querySelector("textarea[name='sourceCode']").value =
+                        code;
+                });
+        </script>
+    </body>
+</html>
+{{ end }} {{block "form" .}}
+<form hx-swap="outerHTML" hx-target="#evaluated" hx-post="/playground">
+    <textarea name="sourceCode" hidden></textarea>
+    <button type="submit">Run</button>
+</form>
+{{end}} {{ block "evaluatedView" . }}
+
+<div id="evaluated">
+    {{ range .Esos }}
+    <div>
+        <span>{{ .SourceCode }}</span>
+    </div>
+    {{ end }}
+</div>
+
+{{ end }}

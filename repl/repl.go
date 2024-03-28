@@ -83,6 +83,25 @@ func evaluteInput(input string, log *log.Logger, environmnet *object.Environment
 		}
 	}
 }
+func EvlauateFromPlayground(input string) string {
+	initialLexer := lexer.New(input)
+	initialParser := parser.New(initialLexer)
+	environmnet := object.NewEnvironment()
+	program := initialParser.ParseProgram()
+
+	if len(initialParser.Errors()) != 0 {
+	    return initialParser.Errors()[0]
+    }
+
+	evaluated := evaluator.Eval(program, environmnet)
+	if evaluated != nil {
+		output := evaluated.Inspect()
+        return output
+	} else {
+        return "ERROR: No output found"
+    }
+}
+
 
 func generateLogger() *log.Logger {
 	logger := log.New(os.Stderr)

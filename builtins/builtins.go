@@ -5,6 +5,7 @@ import (
 
 	"fmt"
 	"sort"
+	"strings"
 )
 
 var NULL = &object.Null{}
@@ -239,18 +240,23 @@ var Builtins = map[string]*object.Builtin{
 	},
 	"println": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
+			toBePrinted := []string{}
 			for _, arg := range args {
+				toBePrinted = append(toBePrinted, arg.Inspect())
 				fmt.Println(arg.Inspect())
 			}
-			return NULL
+			return &object.String{Value: strings.Join(toBePrinted, "\n")}
+			// dont return null
 		},
 	},
 	"print": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
+			toBePrinted := []string{}
 			for _, arg := range args {
 				fmt.Print(arg.Inspect())
+				toBePrinted = append(toBePrinted, arg.Inspect())
 			}
-			return NULL
+			return &object.String{Value: strings.Join(toBePrinted, " ")}
 		},
 	},
 	"ReadFile": &object.Builtin{
