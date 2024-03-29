@@ -265,6 +265,9 @@ var Builtins = map[string]*object.Builtin{
 	"WriteFile": &object.Builtin{
 		Fn: writeFile,
 	},
+	"Http": &object.Builtin{
+		Fn: _http,
+	},
 }
 
 func newError(format string, a ...interface{}) *object.Error {

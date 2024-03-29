@@ -157,6 +157,19 @@ func (h *Hash) Inspect() string {
 	pairs := []string{}
 
 	for _, pair := range h.Pairs {
+		// wrap string key & value with double quotes
+
+		if pair.Key.Type() == STRING_OBJ && pair.Value.Type() == STRING_OBJ {
+			pairs = append(pairs, fmt.Sprintf("\"%s\": \"%s\"", pair.Key.Inspect(), pair.Value.Inspect()))
+			continue
+		} else if pair.Value.Type() == STRING_OBJ {
+			pairs = append(pairs, fmt.Sprintf("%s: \"%s\"", pair.Key.Inspect(), pair.Value.Inspect()))
+			continue
+		} else if pair.Key.Type() == STRING_OBJ {
+			pairs = append(pairs, fmt.Sprintf("\"%s\": %s", pair.Key.Inspect(), pair.Value.Inspect()))
+			continue
+		}
+
 		pairs = append(pairs, fmt.Sprintf("%s: %s", pair.Key.Inspect(), pair.Value.Inspect()))
 	}
 

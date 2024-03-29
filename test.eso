@@ -1,16 +1,27 @@
 // This is a comment - should be ignored when lexing
 
-let fizzBuzz = fn(n, arr){
-    let i = 1;
-    while(i < n){
-      let dx = false;
-      if(i % 15 == 0){array_append(arr, "FizzBuzz"); let dx=true;};
-      if (i % 3 == 0){array_append(arr, "Fizz"); let dx = true;}
-      if(i % 5 == 0){array_append(arr, "Buzz"); let dx=true;}
-      if (dx == false){array_append(arr, i)};
-    let i = i + 1; }
-arr }
-println(fizzBuzz(100, []))
+let fizzBuzz = fn(n, arr) {
+  let i = 1;
+  while (i < n + 1) {
+    if (i % 15 == 0) {
+      array_append(arr, "FizzBuzz");
+    } else {
+      if (i % 3 == 0) {
+        array_append(arr, "Fizz");
+      } else {
+        if (i % 5 == 0) {
+          array_append(arr, "Buzz");
+    } else {
+       array_append(arr, i);
+      }
+      }
+    }
+    let i = i+ 1;
+  }
+  arr;
+}
+
+println(fizzBuzz(20, []));
 
 // This is a comment - should be ignored when lexing
 

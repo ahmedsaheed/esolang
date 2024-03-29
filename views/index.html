@@ -99,6 +99,7 @@
                     <option value="2">FizzBuzz</option>
                     <option value="3">Array Sum</option>
                     <option value="4">Fibonacci</option>
+                    <option value="5">HTTP Post req</option>
                 </select>
             </form>
         </div>
@@ -191,6 +192,19 @@ let fibonacci = fn(x) {
 
 fibonacci(9)
 `,
+
+                    httpPost: `
+
+let loginUrl = "https://json-placeholder.mock.beeceptor.com/login"
+
+Http("POST", loginUrl, {
+    // Uncomment the following lines to test the success case
+    // "username": "foo",
+    // "password": "success-password"
+
+    "username": "user123",
+    "password": "failed-password"
+})`,
                 };
 
                 function clearEvaluated() {
@@ -210,6 +224,9 @@ fibonacci(9)
                         clearEvaluated();
                     } else if (sb.selectedIndex == 3) {
                         editor.setValue(sampleCodes.fibonacci);
+                        clearEvaluated();
+                    } else if (sb.selectedIndex == 4) {
+                        editor.setValue(sampleCodes.httpPost);
                         clearEvaluated();
                     }
                 });
