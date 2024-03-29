@@ -30,42 +30,60 @@
         <script src="http://esironal.github.io/cmtouch/mode/htmlmixed/htmlmixed.js"></script>
         <script src="http://esironal.github.io/cmtouch/addon/selection/active-line.js"></script>
         <script src="http://esironal.github.io/cmtouch/addon/edit/matchbrackets.js"></script>
-
+        <!-- rubyblue -->
         <link
             rel="stylesheet"
-            href="http://esironal.github.io/cmtouch/theme/neonsyntax.css"
+            href="http://esironal.github.io/cmtouch/theme/3024-night.css"
         />
 
         <style type="text/css">
             body {
-                background: black;
+                /* background: #112435; */
+                /* color: white; */
+                background: #090300;
+                color: #d6d5d4;
                 color: whitesmoke;
                 font-family: "Fira Mono", monospace;
                 font-weight: 400;
             }
+            .left-half,
+            .right-half {
+                /* left half has more flex than right  */
+                flex: 2;
+            }
+
             .CodeMirror {
                 font-size: 15px;
-                width: 80%;
+                width: 100%;
                 height: 100%;
-                margin: 0 auto;
+                /* margin: 0 auto; */
                 font-family: "Fira Mono", monospace;
                 font-weight: 400;
             }
             button {
-                background-color: rebeccapurple;
-                border: none;
-                color: white;
-                padding: 15px 32px;
-                text-align: center;
-                text-decoration: none;
-                display: inline-block;
-                font-size: 16px;
-                margin: 4px 2px;
+                background: #0a0a0a;
+                color: hsla(0, 0%, 93%, 1);
+                font-size: 1em;
+                padding: 0.5em 1em;
+                border: 1px solid hsla(0, 0%, 18%, 1);
+                border-radius: 128px;
+                padding: 0 12px
+                height: 40px;
                 cursor: pointer;
-                font-family: "Fira Mono", monospace;
+            }
+
+            .CodeMirror-vscrollbar::-webkit-scrollbar {
+              width: 0.5rem;
+            }
+            .CodeMirror-vscrollbar::-webkit-scrollbar-track {
+              background: transparent
+            }
+            .CodeMirror-vscrollbar::-webkit-scrollbar-thumb {
+              border-radius: 0.815rem;
+              background-color: #484845;
             }
         </style>
-        <title>Home</title>
+        <title>Esolang Playground - The esolang scripting language</title>
     </head>
     <body>
         <h1>The Esolang Playground</h1>
@@ -73,75 +91,84 @@
             Welcome to the Esolang Playground! Here you can write and run code
             in Esolang, a simple, fun, and easy-to-learn programming language.
         </p>
-        <div id="code"></div>
+        <div style="display: flex; justify-content: space-between; width: 50vw">
+            {{ template "form" . }}
+            <form>
+                <select id="codesamples">
+                    <option value="1">Hello, World</option>
+                    <option value="2">FizzBuzz</option>
+                    <option value="3">Array Sum</option>
+                    <option value="4">Fibonacci</option>
+                </select>
+            </form>
+        </div>
+        <div style="display: flex; height: 70vh">
+            <div id="code" class="left-half"></div>
+            <div class="right-half" style="padding: 5px">
+                {{ template "evaluatedView" . }}
+            </div>
 
-        {{ template "form" . }}
+            <script type="text/javascript">
+                CodeMirror.commands.autocomplete = function (cm) {
+                    CodeMirror.showHint(cm, CodeMirror.hint.html);
+                };
 
-        <form>
-            <select id="codesamples">
-                <option value="1">Hello, World</option>
-                <option value="2">FizzBuzz</option>
-                <option value="3">Array Sum</option>
-                <option value="4">Fibonacci</option>
-            </select>
-        </form>
-        <hr />
-        {{ template "evaluatedView" . }}
+                window.onload = function () {
+                    editor = CodeMirror(document.getElementById("code"), {
+                        mode: "text/javascript",
+                        theme: "3024-night",
+                        lineWrapping: true,
+                        lineNumbers: true,
+                        styleActiveLine: true,
+                        matchBrackets: true,
 
-        <script type="text/javascript">
-            CodeMirror.commands.autocomplete = function (cm) {
-                CodeMirror.showHint(cm, CodeMirror.hint.html);
-            };
+                        extraKeys: {
+                            "Ctrl-Space": "autocomplete",
+                        },
+                        value: "" + sampleCodes.helloWorld + "",
+                    });
+                };
 
-            window.onload = function () {
-                editor = CodeMirror(document.getElementById("code"), {
-                    mode: "text/javascript",
-                    theme: "neonsyntax",
-                    lineWrapping: true,
-                    lineNumbers: true,
-                    styleActiveLine: true,
-                    matchBrackets: true,
-
-                    extraKeys: {
-                        "Ctrl-Space": "autocomplete",
-                    },
-                    value: "" + sampleCodes.helloWorld + "",
-                });
-            };
-
-            var sampleCodes = {
-                helloWorld: `
+                var sampleCodes = {
+                    helloWorld: `
 // You can edit this code!
 // Click here and start typing.
 
 print("Hello, World!");
 `,
-                fizzBuzz: `
-let fizzBuzz = fn(n, arr){
+                    fizzBuzz: `
+let fizzBuzz = fn(n, arr) {
   let i = 1;
-  while(i < n){
-    let dx = false;
-    if(i % 15 == 0){array_append(arr, "FizzBuzz"); let dx=true;};
-    if (i % 3 == 0){array_append(arr, "Fizz"); let dx = true;}
-    if(i % 5 == 0){array_append(arr, "Buzz"); let dx=true;}
-    if (dx == false){array_append(arr, i)};
-    let i = i + 1;
+  while (i < n + 1) {
+    if (i % 15 == 0) {
+      array_append(arr, "FizzBuzz");
+    } else {
+      if (i % 3 == 0) {
+        array_append(arr, "Fizz");
+      } else {
+        if (i % 5 == 0) {
+          array_append(arr, "Buzz");
+    } else {
+       array_append(arr, i);
+      }
+      }
+    }
+    let i = i+ 1;
   }
   arr;
 }
 
-fizzBuzz(100, []);
+fizzBuzz(20, []);
 `,
-                arraySum: `
+                    arraySum: `
 // You can edit this code!
 // Click here and start typing.
 
 let sumArray = fn(arr) {
   let currIdx = 0;
-  let arrLength = count(arr);
   let sum = 0;
 
-  while(currIdx < arrLength) {
+  while(currIdx < count(arr)) {
         let sum = sum + arr[currIdx];
         let currIdx = currIdx + 1;
   }
@@ -152,44 +179,52 @@ let sumArray = fn(arr) {
 sumArray(array_new(1,2,3,4,5));
 `,
 
-                fibonacci: `
+                    fibonacci: `
 // A fibonacci function that returns the Nth Fibonacci number.
 // Note the recursive call of fibonacci itself!
 
 let fibonacci = fn(x) {
-   if (x == 0) {0} else {
-   if (x == 1) {1} else {
-   fibonacci(x - 1) + fibonacci(x - 2);
-   }
+   if (x < 2) {x} else {
+    fibonacci(x - 1) + fibonacci(x - 2);
   }
 }
 
 fibonacci(9)
 `,
-            };
+                };
 
-            const sb = document.querySelector("#codesamples");
-            sb.addEventListener("change", function () {
-                if (sb.selectedIndex == 0) {
-                    editor.setValue(sampleCodes.helloWorld);
-                } else if (sb.selectedIndex == 1) {
-                    editor.setValue(sampleCodes.fizzBuzz);
-                } else if (sb.selectedIndex == 2) {
-                    editor.setValue(sampleCodes.arraySum);
-                } else if (sb.selectedIndex == 3) {
-                    editor.setValue(sampleCodes.fibonacci);
+                function clearEvaluated() {
+                    document.querySelector("#evaluated").innerHTML = "";
                 }
-            });
 
-            document
-                .querySelector("form")
-                .addEventListener("submit", function () {
-                    var code = editor.getValue();
-                    console.log(code);
-                    this.querySelector("textarea[name='sourceCode']").value =
-                        code;
+                const sb = document.querySelector("#codesamples");
+                sb.addEventListener("change", function () {
+                    if (sb.selectedIndex == 0) {
+                        editor.setValue(sampleCodes.helloWorld);
+                        clearEvaluated();
+                    } else if (sb.selectedIndex == 1) {
+                        editor.setValue(sampleCodes.fizzBuzz);
+                        clearEvaluated();
+                    } else if (sb.selectedIndex == 2) {
+                        editor.setValue(sampleCodes.arraySum);
+                        clearEvaluated();
+                    } else if (sb.selectedIndex == 3) {
+                        editor.setValue(sampleCodes.fibonacci);
+                        clearEvaluated();
+                    }
                 });
-        </script>
+
+                document
+                    .querySelector("form")
+                    .addEventListener("submit", function () {
+                        var code = editor.getValue();
+                        console.log(code);
+                        this.querySelector(
+                            "textarea[name='sourceCode']",
+                        ).value = code;
+                    });
+            </script>
+        </div>
     </body>
 </html>
 {{ end }} {{block "form" .}}
@@ -200,6 +235,7 @@ fibonacci(9)
 {{end}} {{ block "evaluatedView" . }}
 
 <div id="evaluated">
+    <h2>Output</h2>
     {{ range .Esos }}
     <div>
         <span>{{ .SourceCode }}</span>
