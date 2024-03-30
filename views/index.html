@@ -41,22 +41,21 @@
                 /* background: #112435; */
                 /* color: white; */
                 background: #090300;
-                color: #d6d5d4;
                 color: whitesmoke;
                 font-family: "Fira Mono", monospace;
                 font-weight: 400;
+                width: 90vw;
+                max-width: 100vw;
             }
             .left-half,
             .right-half {
-                /* left half has more flex than right  */
-                flex: 2;
+                flex: 1;
             }
 
             .CodeMirror {
                 font-size: 15px;
                 width: 100%;
                 height: 100%;
-                /* margin: 0 auto; */
                 font-family: "Fira Mono", monospace;
                 font-weight: 400;
             }
@@ -245,7 +244,7 @@ Http("POST", loginUrl, {
     </body>
 </html>
 {{ end }} {{block "form" .}}
-<form hx-swap="outerHTML" hx-target="#evaluated" hx-post="/playground">
+<form hx-swap="innerHTML" hx-target="#evaluated" hx-post="/playground">
     <textarea name="sourceCode" hidden></textarea>
     <button type="submit">Run</button>
 </form>
@@ -255,7 +254,7 @@ Http("POST", loginUrl, {
     <h2>Output</h2>
     {{ range .Esos }}
     <div>
-        <span>{{ .SourceCode }}</span>
+        <span> {{ .SourceCode }} </span>
     </div>
     {{ end }}
 </div>
