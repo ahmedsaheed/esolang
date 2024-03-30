@@ -59,6 +59,7 @@ func main() {
 	})
 
 	e.POST("/playground", func(c echo.Context) error {
+		//  curl -X POST -F 'sourceCode=println("hi mom")' http://localhost:8080/playground
 		sc := c.FormValue("sourceCode")
 		playGroundRes := repl.EvlauateFromPlayground(sc)
 		clear(data.Esos)
