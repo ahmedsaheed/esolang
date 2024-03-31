@@ -13,6 +13,7 @@ import (
 //go:embed stdlib/stdlib.eso
 var lib string
 
+// build using: go build -tags netgo -ldflags '-s -w' -o esolang
 func main() {
 	replMode := flag.Bool("repl", false, "Start the repl")
 	logger := log.New(os.Stderr)
