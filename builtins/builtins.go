@@ -54,6 +54,14 @@ var Builtins = map[string]*object.Builtin{
 	"Http": &object.Builtin{
 		Fn: _http,
 	},
+	"typeOf": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%d, want=1", len(args))
+			}
+			return &object.String{Value: string(args[0].Type())}
+		},
+	},
 }
 
 func newError(format string, a ...interface{}) *object.Error {
