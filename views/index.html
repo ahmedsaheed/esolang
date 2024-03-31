@@ -1,142 +1,182 @@
 {{ block "index" . }}
 
 <!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
-        <link
-            rel="stylesheet"
-            href="http://esironal.github.io/cmtouch/lib/codemirror.css"
-        />
-        <link
-            rel="stylesheet"
-            href="http://esironal.github.io/cmtouch/addon/hint/show-hint.css"
-        />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap"
-            rel="stylesheet"
-        />
-        <script src="http://esironal.github.io/cmtouch/lib/codemirror.js"></script>
-        <script src="http://esironal.github.io/cmtouch/addon/hint/show-hint.js"></script>
-        <script src="http://esironal.github.io/cmtouch/addon/hint/xml-hint.js"></script>
-        <script src="http://esironal.github.io/cmtouch/addon/hint/html-hint.js"></script>
-        <script src="http://esironal.github.io/cmtouch/mode/xml/xml.js"></script>
-        <script src="http://esironal.github.io/cmtouch/mode/javascript/javascript.js"></script>
-        <script src="http://esironal.github.io/cmtouch/mode/css/css.js"></script>
-        <script src="http://esironal.github.io/cmtouch/mode/htmlmixed/htmlmixed.js"></script>
-        <script src="http://esironal.github.io/cmtouch/addon/selection/active-line.js"></script>
-        <script src="http://esironal.github.io/cmtouch/addon/edit/matchbrackets.js"></script>
-        <!-- rubyblue -->
-        <link
-            rel="stylesheet"
-            href="http://esironal.github.io/cmtouch/theme/3024-night.css"
-        />
+<!-- BE SUPER CAREFUL EDITTING THIS FILE - IT BREAKS EASILY -->
+<html lang="en" class="h-full !max-h-screen">
 
-        <style type="text/css">
-            body {
-                /* background: #112435; */
-                /* color: white; */
-                background: #090300;
-                color: whitesmoke;
-                font-family: "Fira Mono", monospace;
-                font-weight: 400;
-                width: 90vw;
-                max-width: 100vw;
-            }
-            .left-half,
-            .right-half {
-                flex: 1;
-            }
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
+    <link rel="stylesheet" href="http://esironal.github.io/cmtouch/lib/codemirror.css" />
+    <link rel="stylesheet" href="http://esironal.github.io/cmtouch/addon/hint/show-hint.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="http://esironal.github.io/cmtouch/lib/codemirror.js"></script>
+    <script src="http://esironal.github.io/cmtouch/addon/hint/show-hint.js"></script>
+    <script src="http://esironal.github.io/cmtouch/addon/hint/xml-hint.js"></script>
+    <script src="http://esironal.github.io/cmtouch/addon/hint/html-hint.js"></script>
+    <script src="http://esironal.github.io/cmtouch/mode/xml/xml.js"></script>
+    <script src="http://esironal.github.io/cmtouch/mode/javascript/javascript.js"></script>
+    <script src="http://esironal.github.io/cmtouch/mode/css/css.js"></script>
+    <script src="http://esironal.github.io/cmtouch/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="http://esironal.github.io/cmtouch/addon/selection/active-line.js"></script>
+    <script src="http://esironal.github.io/cmtouch/addon/edit/matchbrackets.js"></script>
+    <link rel="stylesheet" href="http://esironal.github.io/cmtouch/theme/base16-dark.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <style type="text/css">
+        body {
+            font-family: "Roboto Mono", "Fira Mono", monospace;
+            color: hsla(0, 0%, 93%, 1);
+        }
 
-            .CodeMirror {
-                font-size: 15px;
-                width: 100%;
-                height: 100%;
-                font-family: "Fira Mono", monospace;
-                font-weight: 400;
-            }
-            button {
-                background: #0a0a0a;
-                color: hsla(0, 0%, 93%, 1);
-                font-size: 1em;
-                padding: 0.5em 1em;
-                border: 1px solid hsla(0, 0%, 18%, 1);
-                border-radius: 128px;
-                padding: 0 12px
-                height: 40px;
-                cursor: pointer;
-            }
+        .bg-code-background {
+            background-color: #151515;
+        }
 
-            .CodeMirror-vscrollbar::-webkit-scrollbar {
-              width: 0.5rem;
-            }
-            .CodeMirror-vscrollbar::-webkit-scrollbar-track {
-              background: transparent
-            }
-            .CodeMirror-vscrollbar::-webkit-scrollbar-thumb {
-              border-radius: 0.815rem;
-              background-color: #484845;
-            }
-        </style>
-        <title>Esolang Playground - The esolang scripting language</title>
-    </head>
-    <body>
-        <h1>The Esolang Playground</h1>
-        <p>
-            Welcome to the Esolang Playground! Here you can write and run code
-            in Esolang, a simple, fun, and easy-to-learn programming language.
-        </p>
-        <div style="display: flex; justify-content: space-between; width: 50vw">
-            {{ template "form" . }}
-            <form>
-                <select id="codesamples">
-                    <option value="1">Hello, World</option>
-                    <option value="2">FizzBuzz</option>
-                    <option value="3">Array Sum</option>
-                    <option value="4">Fibonacci</option>
-                    <option value="5">HTTP Post req</option>
-                </select>
-            </form>
-        </div>
-        <div style="display: flex; height: 70vh">
-            <div id="code" class="left-half"></div>
-            <div class="right-half" style="padding: 5px">
-                {{ template "evaluatedView" . }}
+        #pane-1 {
+            border-left: 1px solid;
+            border-color: rgb(34, 34, 34);
+            background-color: rgba(21, 21, 21, 1) !important;
+
+        }
+
+        .CodeMirror {
+            font-size: 18px;
+            width: 100%;
+            font-family: "Roboto Mono", "Fira Mono", monospace;
+            font-weight: 400;
+            height: -webkit-fill-available;
+        }
+
+        .CodeMirror-vscrollbar::-webkit-scrollbar {
+            width: 0.5rem;
+        }
+
+        .CodeMirror-vscrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .CodeMirror-vscrollbar::-webkit-scrollbar-thumb {
+            border-radius: 0.815rem;
+            background-color: #484845;
+        }
+    </style>
+    <title>Esolang Playground - The esolang scripting language</title>
+</head>
+
+<body class="dark bg-code-background flex flex-col h-full max-h-screen">
+    <h1 class="text-3xl text-white  p-4"> Esolang Playground</h1>
+
+    <p class="text-white p-4"> Welcome to the Esolang Playground! Here you can write and run code in Esolang, a simple,
+        fun, and easy-to-learn scripting language. </p>
+    <div class="flex h-full overflow-hidden">
+        <div id="panes" class="flex-1 flex flex-col md:flex-row max-h-fit">
+            <div id="pane-0" class="flex flex-col h-4/6 md:h-full w-full md:w-[60%]">
+                <div id="code" class="flex-1 flex flex-col overflow-auto"></div>
+                <div class="bg-code-background w-full bottom-0">
+                    <div class="flex gap-7 w-full justify-between md:justify-end items-center px-2">
+                        {{ template "form" .}}
+                        <form>
+                            <select id="codesamples" class="bg-code-background text-white border-none">
+                                <option value="1">Hello, World</option>
+                                <option value="2">Fibonacci</option>
+                                <option value="3">Array Sum</option>
+                                <option value="4">FizzBuzz</option>
+                                <option value="5">HTTP Post req</option>
+                            </select>
+                        </form>
+                        <button id="share"
+                            class="flex btn btn-sm space-x-2 mr-4 items-center justify-center px-2 h-8 m-4 space-x-2 border border-white rounded text-sm text-white hover:text-[#000] hover:bg-white hover:border-none">
+                            <span>Share</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="32" viewBox="0 0 24 24">
+                                <path fill="currentColor" fill-rule="evenodd"
+                                    d="M13.803 5.333c0-1.84 1.5-3.333 3.348-3.333A3.341 3.341 0 0 1 20.5 5.333c0 1.841-1.5 3.334-3.349 3.334a3.346 3.346 0 0 1-2.384-.994l-4.635 3.156a3.336 3.336 0 0 1-.182 1.917l5.082 3.34a3.346 3.346 0 0 1 2.12-.753a3.341 3.341 0 0 1 3.348 3.334C20.5 20.507 19 22 17.151 22a3.341 3.341 0 0 1-3.348-3.333a3.3 3.3 0 0 1 .289-1.356L9.05 14a3.346 3.346 0 0 1-2.202.821A3.34 3.34 0 0 1 3.5 11.487a3.34 3.34 0 0 1 3.348-3.333c1.064 0 2.01.493 2.623 1.261l4.493-3.059a3.317 3.317 0 0 1-.161-1.023"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <button id="run"
+                            class="flex btn btn-sm space-x-2 mr-4 items-center justify-center px-2 h-8 m-4 space-x-2 border border-white rounded text-sm text-white hover:text-[#000] hover:bg-white hover:border-none">
+                            <span class="text-lighter">RUN
+
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="32" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M8 17.175V6.825q0-.425.3-.713t.7-.287q.125 0 .263.037t.262.113l8.15 5.175q.225.15.338.375t.112.475q0 .25-.112.475t-.338.375l-8.15 5.175q-.125.075-.262.113T9 18.175q-.4 0-.7-.288t-.3-.712m2-1.825L15.25 12L10 8.65z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <script type="text/javascript">
-                CodeMirror.commands.autocomplete = function (cm) {
-                    CodeMirror.showHint(cm, CodeMirror.hint.html);
-                };
+            <div id="pane-1" class="flex flex-col h-2/6 md:h-full w-full md:w-[40%] bg-stone-800">
 
-                window.onload = function () {
-                    editor = CodeMirror(document.getElementById("code"), {
-                        mode: "text/javascript",
-                        theme: "3024-night",
-                        lineWrapping: true,
-                        lineNumbers: true,
-                        styleActiveLine: true,
-                        matchBrackets: true,
+                <div class="flex justify-between text-white">
 
-                        extraKeys: {
-                            "Ctrl-Space": "autocomplete",
-                        },
-                        value: "" + sampleCodes.helloWorld + "",
-                    });
-                };
+                    <button class="hidden md:flex border-b-2 border-transparent p-4">
+                        Output
+                    </button>
 
-                var sampleCodes = {
-                    helloWorld: `
+                    <button
+                        class="clear-output-btn hidden md:flex items-center justify-center px-2 h-8 m-4 space-x-2 border border-white rounded text-sm text-white hover:text-[#000] hover:bg-white hover:border-none">
+                        <span> Clear </span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="32" viewBox="0 0 24 24">
+                            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5">
+                                <path
+                                    d="M20.5 6h-17m15.333 2.5l-.46 6.9c-.177 2.654-.265 3.981-1.13 4.79c-.865.81-2.195.81-4.856.81h-.774c-2.66 0-3.99 0-4.856-.81c-.865-.809-.953-2.136-1.13-4.79l-.46-6.9" />
+                                <path d="M9.17 4a3.001 3.001 0 0 1 5.66 0" opacity=".5" />
+                            </g>
+                        </svg>
+
+                    </button>
+
+                </div>
+                <div
+                    class="flex flex-col justify-between space-y-4 border-dark-separator_30 border-t output-container overflow-auto">
+                    <div id="output" class="h-auto flex-col overflow-auto p-4 text-white" x-show="output"></div>
+                </div>
+                <button id="clear-output"
+                    class="clear-output-btn flex md:hidden items-center justify-center px-2 h-8 m-4 space-x-2 border border-white rounded text-sm text-white hover:text-[#000] hover:bg-white hover:border-none max-w-fit">
+                    <span> Clear </span>
+
+                </button>
+                {{ template "evaluatedView" .}}
+
+            </div>
+        </div>
+    </div>
+    </div>
+    <script type="text/javascript">
+        CodeMirror.commands.autocomplete = function (cm) {
+            CodeMirror.showHint(cm, CodeMirror.hint.html);
+        };
+
+        window.onload = function () {
+            editor = CodeMirror(document.getElementById("code"), {
+                mode: "text/javascript",
+                theme: "base16-dark",
+                lineWrapping: true,
+                lineNumbers: true,
+                styleActiveLine: true,
+                matchBrackets: true,
+
+                extraKeys: {
+                    "Ctrl-Space": "autocomplete",
+                },
+                value: "" + sampleCodes.helloWorld + "",
+            });
+        };
+
+        var sampleCodes = {
+            helloWorld: `
 // You can edit this code!
 // Click here and start typing.
 
 print("Hello, World!");
 `,
-                    fizzBuzz: `
+            fizzBuzz: `
 let fizzBuzz = fn(n, arr) {
   let i = 1;
   while (i < n + 1) {
@@ -160,7 +200,7 @@ let fizzBuzz = fn(n, arr) {
 
 fizzBuzz(20, []);
 `,
-                    arraySum: `
+            arraySum: `
 // You can edit this code!
 // Click here and start typing.
 
@@ -179,7 +219,7 @@ let sumArray = fn(arr) {
 sumArray(array_new(1,2,3,4,5));
 `,
 
-                    fibonacci: `
+            fibonacci: `
 // A fibonacci function that returns the Nth Fibonacci number.
 // Note the recursive call of fibonacci itself!
 
@@ -189,72 +229,108 @@ let fibonacci = fn(x) {
   }
 }
 
-fibonacci(9)
+let x = 20
+print("fibonnaci of", x , "is", fibonacci(x))
 `,
 
-                    httpPost: `
+            httpPost: `
 
 let loginUrl = "https://json-placeholder.mock.beeceptor.com/login"
 
-Http("POST", loginUrl, {
-    // Uncomment the following lines to test the success case
+let resp = Http("POST", loginUrl, {
+    // Uncomment the following lines to test a success case
     // "username": "foo",
     // "password": "success-password"
 
     "username": "user123",
     "password": "failed-password"
-})`,
-                };
+})
 
-                function clearEvaluated() {
-                    document.querySelector("#evaluated").innerHTML = "";
-                }
+resp["StatusCode"]
+// Try resp["Body"] or resp["Body"]["message"] to see the response body
+`,
+        };
 
-                const sb = document.querySelector("#codesamples");
-                sb.addEventListener("change", function () {
-                    if (sb.selectedIndex == 0) {
-                        editor.setValue(sampleCodes.helloWorld);
-                        clearEvaluated();
-                    } else if (sb.selectedIndex == 1) {
-                        editor.setValue(sampleCodes.fizzBuzz);
-                        clearEvaluated();
-                    } else if (sb.selectedIndex == 2) {
-                        editor.setValue(sampleCodes.arraySum);
-                        clearEvaluated();
-                    } else if (sb.selectedIndex == 3) {
-                        editor.setValue(sampleCodes.fibonacci);
-                        clearEvaluated();
-                    } else if (sb.selectedIndex == 4) {
-                        editor.setValue(sampleCodes.httpPost);
-                        clearEvaluated();
-                    }
-                });
+        function clearEvaluated() {
+            document.querySelector("#evaluated").innerHTML = "";
+        }
 
-                document
-                    .querySelector("form")
-                    .addEventListener("submit", function () {
-                        var code = editor.getValue();
-                        console.log(code);
-                        this.querySelector(
-                            "textarea[name='sourceCode']",
-                        ).value = code;
-                    });
-            </script>
-        </div>
-    </body>
+        const sb = document.querySelector("#codesamples");
+        sb.addEventListener("change", function () {
+            if (sb.selectedIndex == 0) {
+                editor.setValue(sampleCodes.helloWorld);
+                clearEvaluated();
+            } else if (sb.selectedIndex == 3) {
+                editor.setValue(sampleCodes.fizzBuzz);
+                clearEvaluated();
+            } else if (sb.selectedIndex == 2) {
+                editor.setValue(sampleCodes.arraySum);
+                clearEvaluated();
+            } else if (sb.selectedIndex == 1) {
+                editor.setValue(sampleCodes.fibonacci);
+                clearEvaluated();
+            } else if (sb.selectedIndex == 4) {
+                editor.setValue(sampleCodes.httpPost);
+                clearEvaluated();
+            }
+        });
+
+        const form = document.querySelector("form");
+
+        form.addEventListener("keydown", function (event) {
+            if (
+                event.key === "Enter" &&
+                (event.ctrlKey || event.metaKey)
+            ) {
+                // Check for both Ctrl (Windows/Linux) and Cmd (macOS)
+                event.preventDefault(); // Prevent default form submission
+                this.submit(); // Submit the fosrm
+            }
+        });
+
+        form.addEventListener("submit", function () {
+            var code = editor.getValue();
+            console.log(code);
+            // Set the value of the hidden textarea to the cm-code
+            this.querySelector(
+                "textarea[name='sourceCode']",
+            ).value = code;
+        });
+
+        // get the run button
+        const submitButton = document.getElementById("form_button");
+        const runButton = document.getElementById("run");
+
+        // add event listener to the run button
+        runButton.addEventListener("click", function () {
+            // submit the form
+            submitButton.click();
+        });
+
+        // get the clear output button
+        const clearOutputButton = document.getElementById("clear-output");
+        clearOutputButton.addEventListener("click", function () {
+            document.getElementById("output").innerHTML = "";
+        });
+
+
+    </script>
+    </div>
+    </div>
+</body>
+
 </html>
 {{ end }} {{block "form" .}}
 <form hx-swap="innerHTML" hx-target="#evaluated" hx-post="/playground">
     <textarea name="sourceCode" hidden></textarea>
-    <button type="submit">Run</button>
+    <button id="form_button" type="submit" hidden>Run</button>
 </form>
 {{end}} {{ block "evaluatedView" . }}
 
 <div id="evaluated">
-    <h2>Output</h2>
     {{ range .Esos }}
     <div>
-        <span> {{ .SourceCode }} </span>
+        <span style="color: cyan; left: 10px; white-space: pre-wrap;"> {{ .SourceCode }} </span>
     </div>
     {{ end }}
 </div>
