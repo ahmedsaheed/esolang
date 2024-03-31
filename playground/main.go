@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"io"
 	"net/http"
+	"os"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -66,6 +67,9 @@ func main() {
 		data.Esos = append(data.Esos, newEsolangConstruct(sc, playGroundRes))
 		return c.Render(http.StatusOK, "evaluatedView", data)
 	})
-
-	e.Logger.Fatal(e.Start(":8080"))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	e.Logger.Fatal(e.Start(":" + port))
 }
