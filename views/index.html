@@ -137,11 +137,6 @@
                     class="flex flex-col justify-between space-y-4 border-dark-separator_30 border-t output-container overflow-auto">
                     <div id="output" class="h-auto flex-col overflow-auto p-4 text-white" x-show="output"></div>
                 </div>
-                <button id="clear-output"
-                    class="clear-output-btn flex md:hidden items-center justify-center px-2 h-8 m-4 space-x-2 border border-white rounded text-sm text-white hover:text-[#000] hover:bg-white hover:border-none max-w-fit">
-                    <span> Clear </span>
-
-                </button>
                 {{ template "evaluatedView" .}}
 
             </div>
@@ -308,9 +303,13 @@ resp["StatusCode"]
         });
 
         // get the clear output button
-        const clearOutputButton = document.getElementById("clear-output");
+        const clearOutputButton = document.getElementsByClassName("clear-output-btn")[0];
         clearOutputButton.addEventListener("click", function () {
-            document.getElementById("output").innerHTML = "";
+            var evlautedBlock = document.getElementById("evaluated")
+            while (evlautedBlock.firstChild) {
+                evlautedBlock.removeChild(evlautedBlock.firstChild);
+            }
+
         });
 
 
@@ -327,12 +326,11 @@ resp["StatusCode"]
 </form>
 {{end}} {{ block "evaluatedView" . }}
 
-<div id="evaluated">
+<span id="evaluated" class="mx-2" style="color: cyan; white-space: pre-wrap;">
     {{ range .Esos }}
-    <div>
-        <span style="color: cyan; left: 10px; white-space: pre-wrap;"> {{ .SourceCode }} </span>
-    </div>
+    {{ .SourceCode }}
     {{ end }}
-</div>
+</span>
+
 
 {{ end }}

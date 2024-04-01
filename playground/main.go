@@ -63,7 +63,7 @@ func main() {
 		//  curl -X POST -F 'sourceCode=println("hi mom")' http://localhost:8080/playground
 		sc := c.FormValue("sourceCode")
 		playGroundRes := repl.EvlauateFromPlayground(sc)
-		clear(data.Esos)
+		data.Esos = nil
 		data.Esos = append(data.Esos, newEsolangConstruct(sc, playGroundRes))
 		return c.Render(http.StatusOK, "evaluatedView", data)
 	})
