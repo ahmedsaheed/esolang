@@ -8,10 +8,10 @@ import (
 /*
 readFile reads a file and returns the content of the file as a string
 
-	@param fileLocation string path to the file
-	@exception wrong number of arguments.
-	@exception wrong type of arguments.
-	@exception I/O Error: possible errors reading file
+	@param args ...object.Object
+	@exception wrong number of arguments. got=%d, want=1
+	@exception wrong type of arguments. got=%s, want=%s
+	@exception I/O Error: possible error reading file
 */
 func readFile(args ...object.Object) object.Object {
 	if len(args) != 1 {
