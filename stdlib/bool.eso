@@ -1,0 +1,33 @@
+
+// Returns the and of two boolean values, it evaluates both args
+// It's the fnuction equivalent of the && operator
+// It's useful for Higher Order Functions that require a function as an argument
+// let testAnd = and(false, true) -> false
+let and = fn(a, b) { a && b }
+
+
+// Returns the or of two boolean values, it evaluates both args
+// It's the fnuction equivalent of the -| operator
+let or = fn(a, b) { a -| b }
+
+// Returns the opposite bool value.
+// It's the fnuction equivalent of the ! operator
+
+let negate = fn(a) {
+    if (typeOf(a) != "BOOLEAN") {
+        let type = typeof(a)
+        //return "ERROR: Expected a boolean value but got a " + type
+    }
+    if (a) { false }
+    else { true }
+}
+
+
+// Runs a callback fn if the given bool is `False` otherwise returns a default value
+let guard = fn(requirement, consequence, otherwise) {
+    if (requirement) {
+        return consequence
+    } else {
+        return otherwise()
+    }
+}

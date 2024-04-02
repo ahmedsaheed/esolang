@@ -54,6 +54,9 @@ var Builtins = map[string]*object.Builtin{
 	"Http": &object.Builtin{
 		Fn: _http,
 	},
+	"HttpServe": &object.Builtin{
+		Fn: _httpServeAndListen,
+	},
 	"typeOf": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
