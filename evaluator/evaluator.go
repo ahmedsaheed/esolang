@@ -269,10 +269,10 @@ func evalInfixExpression(operator string, leftOperand, rightOperand object.Objec
 	switch {
 	case leftOperand.Type() == object.INTEGER_OBJ && rightOperand.Type() == object.INTEGER_OBJ:
 		return evalIntegerInfixExpression(operator, leftOperand, rightOperand)
-	case operator == "==":
-		return nativeBoolToBooleanObject(leftOperand == rightOperand)
 	case leftOperand.Type() == object.STRING_OBJ && rightOperand.Type() == object.STRING_OBJ:
 		return evalStringInfixExpression(operator, leftOperand, rightOperand)
+	case operator == "==":
+		return nativeBoolToBooleanObject(leftOperand == rightOperand)
 	case operator == "!=":
 		return nativeBoolToBooleanObject(leftOperand != rightOperand)
 	case operator == "&&":
@@ -288,12 +288,18 @@ func evalInfixExpression(operator string, leftOperand, rightOperand object.Objec
 
 // evalStringInfixExpression evaluates the string concatenation
 func evalStringInfixExpression(operator string, leftOperand, rightOperand object.Object) object.Object {
-	if operator != "+" {
-		return newError("unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
-	}
 	leftValue := leftOperand.(*object.String).Value
 	rightValue := rightOperand.(*object.String).Value
-	return &object.String{Value: leftValue + rightValue}
+	switch operator {
+	case "+":
+		return &object.String{Value: leftValue + rightValue}
+	case "==":
+		return nativeBoolToBooleanObject(leftValue == rightValue)
+	case "!=":
+		return nativeBoolToBooleanObject(leftValue != rightValue)
+	default:
+		return newError("unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
+	}
 }
 
 // evalIntegerInfixExpression evaluates is where the actual arithmetic operations for + , - , / and * performed
