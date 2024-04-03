@@ -8,9 +8,7 @@ import (
 /*
 writeFile writes data to a named file, creating it if necessary
 
-	@param args ...object.Object
-	@expectedParam args[0] string path to the file
-	@expectedParam args[1] string content to write to the file
+	@param args fileLocation, content, flag (optional)
 	@exception wrong number of arguments.
 	@exception wrong type of arguments.
 	@exception I/O Error: possible error writing to file
