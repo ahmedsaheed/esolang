@@ -1,0 +1,63 @@
+
+// Returns the and of two boolean values, it evaluates both args
+// It's the fnuction equivalent of the && operator
+// It's useful for Higher Order Functions that require a function as an argument
+//
+// ## Example
+// let testAnd = and(false, true) -> false
+//
+let and = fn(a, b) { a && b }
+
+
+// Returns the or of two boolean values, it evaluates both args
+// It's the function equivalent of the -| operator
+//
+// ## Examples
+// let testOr = or(false, true) -> true
+//
+
+let or = fn(a, b) { a -| b }
+
+// Returns the opposite bool value.
+// It's the function equivalent of the ! operator
+//
+// ## Examples
+// let testNot = not(true) -> false
+// let testNot = not(false) -> true
+//
+
+let negate = fn(a) {
+    if (typeOf(a) != "BOOLEAN") {
+        let type = typeof(a)
+        //return "ERROR: Expected a boolean value but got a " + type
+    }
+    if (a) { false }
+    else { true }
+}
+
+
+// Runs a callback fn if the given bool is `False` otherwise returns a default value
+// Can simulate an early return in a function found in other languages
+//
+// ## Examples
+//
+// let name = ""
+// let testGuard = guard(name == "", "Welcome", fn() { "Hello " + name })
+// testGuard -> "Welcome"
+//
+//let name = "John"
+//let testGuard = guard(name == "", "Welcome", fn() { "Hello " + name })
+//testGuard -> "Hello John"
+//
+
+let guard = fn(requirement, consequence, otherwise) {
+    if (requirement) { consequence }
+    else { otherwise() }
+}
+
+
+// Runs a callback fn if the given bool is `True`, otherwise returns a callback alternative fn
+let lazy_guard = fn(requirement, consequence, otherwise) {
+    if (requirement) { consequence() }
+    else { otherwise() }
+}
