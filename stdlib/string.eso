@@ -1,0 +1,46 @@
+// Strings in esolang are UTF-8 encoded.
+// They can be written in your code as text surrounded by `"double quotes"`.
+
+//Determine if a string is empty
+//
+//Example
+//is_empty("")
+// => true
+//is_empty("esolang")
+// => false
+//
+
+let is_empty = fn(s) { s == "" };
+
+// Returns the number of grapheme clusters in a string.
+//
+// Example:
+// string_len("esolang")
+// => 7
+// string_len("ß↑e̊")
+// => 3
+
+let string_len = fn(s) { count(s) };
+
+
+// Reverse a string.
+// This function has to iterate across the whole `String` so it runs in linear
+// time.
+//
+// ## Examples
+//
+// string_reverse("stressed")
+// -> "desserts"
+//
+let string_reverse = fn(s){
+    let reversed = "";
+    let idx = count(s);
+    while (idx > 0) {
+        let idx = idx - 1;
+        let reversed = reversed + s[idx];
+    }
+    reversed
+};
+
+
+// Create a new Sting with all graphemmes in the input sting converted to uppercase.
