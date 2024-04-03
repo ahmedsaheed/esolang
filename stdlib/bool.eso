@@ -29,9 +29,10 @@ let or = fn(a, b) { a -| b }
 let negate = fn(a) {
     if (typeOf(a) != "BOOLEAN") {
         let type = typeof(a)
-        //return "ERROR: Expected a boolean value but got a " + type
+        return "ERROR: Expected a boolean value but got a " + type
     }
-    if (a) { false }
+    let isTrue = a == true
+    if (isTrue) { false }
     else { true }
 }
 
@@ -51,13 +52,16 @@ let negate = fn(a) {
 //
 
 let guard = fn(requirement, consequence, otherwise) {
-    if (requirement) { consequence }
+    let isTruthy = requirement == true
+    print(isTruthy)
+    if (isTruthy) { consequence }
     else { otherwise() }
 }
 
 
 // Runs a callback fn if the given bool is `True`, otherwise returns a callback alternative fn
 let lazy_guard = fn(requirement, consequence, otherwise) {
+     let isTruthy = requirement == true
     if (requirement) { consequence() }
     else { otherwise() }
 }
