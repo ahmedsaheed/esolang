@@ -10,8 +10,15 @@ import (
 	"github.com/charmbracelet/log"
 )
 
-//go:embed stdlib/stdlib.eso
-var lib string
+//go:embed stdlib/array.eso
+var ArrayUtils string
+
+//go:embed stdlib/bool.eso
+var BoolUtils string
+
+//go:embed stdlib/string.eso
+var StringUtils string
+var lib = ArrayUtils + "\n" + BoolUtils + "\n" + StringUtils
 
 // build using: go build -tags netgo -ldflags '-s -w' -o esolang
 func main() {
