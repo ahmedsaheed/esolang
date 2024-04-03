@@ -130,6 +130,8 @@ func evalIndexExpression(left object.Object, index object.Object) object.Object 
 		return evalArrayIndexExpression(left, index)
 	case left.Type() == object.HASH_OBJ:
 		return evalHashIndexExpression(left, index)
+	case left.Type() == object.STRING_OBJ:
+		return evalStringIndexExpression(left, index)
 	default:
 		return newError("index operator not supported: %s", left.Type())
 	}
@@ -146,6 +148,16 @@ func evalArrayIndexExpression(array object.Object, index object.Object) object.O
 	}
 
 	return arrayObject.Elements[idx]
+}
+
+func evalStringIndexExpression(str object.Object, index object.Object) object.Object {
+	strObj := str.(*object.String)
+	idx := index.(*object.Integer).Value
+
+	if idx < 0 || idx >= int64(len(strObj.Value)) {
+		return NULL
+	}
+	return &object.String{Value: string(strObj.Value[idx])}
 }
 
 func evalWhileLoopExpression(flExpression *ast.WhileLoopExpression, env *object.Environment) object.Object {
