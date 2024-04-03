@@ -43,4 +43,113 @@ let string_reverse = fn(s){
 };
 
 
-// Create a new Sting with all graphemmes in the input sting converted to uppercase.
+// Create a new String with all graphemmes in the input sting converted to uppercase.
+//
+// Example:
+// string_ToUpper("esolang")
+// -> "ESOLANG"
+//
+
+let string_ToUpper = fn(s) {
+    _string_map(s, fn(c) { _upperCase(c) })
+ };
+
+// Create a new String with all graphemmes in the input sting converted to lowercase.
+//
+// Example:
+// string_ToLower("ESOLANG")
+// -> "esolang"
+//
+let string_ToLower = fn(s) {
+    _string_map(s, fn(c) { _lowerCase(c) })
+};
+
+// string_substring returns a substring of s starting at start and ending at end.
+// If start is negative, it will start from the beginning of the string.
+// If end is greater than the length of the string, it will end at the end of the string.
+// Indexing is 1-based.
+//
+// Example:
+// string_substring("esolang", 3, 7)
+// -> "lang"
+//
+
+let string_substring = fn(s, start, end) {
+    let result = "";
+    let idx = start;
+    if (end > count(s)) {
+        let end = count(s);
+    }
+    if (start < 0) {
+        let idx = 0;
+    }
+
+    while (idx < end) {
+        let result = result + s[idx];
+        let idx = idx + 1;
+    }
+    result
+};
+
+// string_contains reports whether substr is within s.
+//
+// Example:
+// string_contains("esolang", "lang")
+// -> true
+//
+// string_contains("esolang", "this")
+// -> false
+
+let string_contains = fn(s, substr) { _constains(s, substr) };
+
+
+
+
+// string_starts_with reports whether s starts with prefix.
+//
+// Example:
+// string_starts_with("esolang", "eso")
+// -> true
+//
+let string_starts_with = fn(s, prefix) {
+    let idx = 0;
+    let checkerString = "";
+    let prefix_len = count(prefix);
+    while (idx < prefix_len) {
+        let checkerString = checkerString + s[idx];
+        let idx = idx + 1;
+    }
+    checkerString == prefix
+};
+
+// string_ends_with reports whether s ends with suffix.
+//
+// Example:
+// string_ends_with("esolang", "lang")
+// -> true
+//
+// string_ends_with("esolang", "eso")
+// -> false
+//
+let string_ends_with = fn(s, suffix) {
+    let idx = count(s) - count(suffix);
+    let checkerString = "";
+    let suffix_len = count(suffix);
+    while (idx < count(s)) {
+        let checkerString = checkerString + s[idx];
+        let idx = idx + 1;
+    }
+    checkerString == suffix
+};
+
+
+
+let string_map = fn(s, f) {
+    let result = "";
+    let idx = 0;
+    while (idx < count(s)) {
+        let result = result + f(s[idx]);
+        let idx = idx + 1;
+    }
+    result
+};

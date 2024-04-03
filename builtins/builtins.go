@@ -2,6 +2,7 @@ package builtins
 
 import (
 	"esolang/lang-esolang/object"
+	"strings"
 
 	"fmt"
 )
@@ -54,12 +55,52 @@ var Builtins = map[string]*object.Builtin{
 	"Http": &object.Builtin{
 		Fn: _http,
 	},
+	// "HttpServe": &object.Builtin{
+	// 	Fn: _httpServeAndListen,
+	// },
 	"typeOf": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
 				return newError("wrong number of arguments. got=%d, want=1", len(args))
 			}
 			return &object.String{Value: string(args[0].Type())}
+		},
+	},
+	"_upperCase": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%d, want=1", len(args))
+			}
+			if args[0].Type() != object.STRING_OBJ {
+				return newError("argument to `upperCase` must be STRING, got %s", args[0].Type())
+			}
+			upperCased := strings.ToUpper(args[0].(*object.String).Value)
+			return &object.String{Value: upperCased}
+		},
+	},
+
+	"_lowerCase": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 1 {
+				return newError("wrong number of arguments. got=%d, want=1", len(args))
+			}
+			if args[0].Type() != object.STRING_OBJ {
+				return newError("argument to `lowerCase` must be STRING, got %s", args[0].Type())
+			}
+			lowerCased := strings.ToLower(args[0].(*object.String).Value)
+			return &object.String{Value: lowerCased}
+		},
+	},
+	"_contains": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) != 2 {
+				return newError("wrong number of arguments. got=%d, want=2", len(args))
+			}
+			if args[0].Type() != object.STRING_OBJ || args[1].Type() != object.STRING_OBJ {
+				return newError("arguments to `contains` must be STRING, got %s", args[0].Type())
+			}
+			contains := strings.Contains(args[0].(*object.String).Value, args[1].(*object.String).Value)
+			return &object.Boolean{Value: contains}
 		},
 	},
 }

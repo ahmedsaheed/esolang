@@ -245,6 +245,9 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 		return val
 	}
 	if builtin, ok := builtins.Builtins[node.Value]; ok {
+		// if strings.HasPrefix(node.Value, "_") {
+		// 	return newError("identifier not found: " + node.Value)
+		// }
 		return builtin
 	}
 	return newError("identifier not found: " + node.Value)
