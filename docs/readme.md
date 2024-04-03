@@ -1,18 +1,35 @@
-# Documentation - Esolang
+# Esolang
 
-Esolang is a minimal interpreted scripting language that syntactically looks like F# programming language. It is a simple language that is designed to be easy to learn and use. It offers familiar programming language features such as variable bindings, conditionals, and loops, as well function literals, higher order functions and closures.
+Esolang is a beginner friendly dynamically typed scripting language quick prototyping and learning functional programming.
 
-It's implementation can be expressions passed into a repl or a file with the extension `.esolang` and run with the command `esolang <file>.esolang`.
+## Installation
 
-Its a portable interpreted language with a Pratt parser and a tree-walking interpreter. It is written in Golang and can be easily extended to be compiled and ran in a virtual machine.
+```bash
+go get github.com/ahmedsaheed/esolang
+```
+
+or via homebrew
+
+```bash
+brew tap ahmedsaheed/esolang
+brew install esolang
+```
+
+## Usage
+
+Try it out now in a sandbox environment on your browser via the [esolang playground](https://esolang.onrender.com/).
+
+Eso Expressions can evaluated on your terminal using the built-in repl
+by running the command `esolang -repl` or via a file on your preferred text editor with the `.eso` extension and running the command `esolang -file <filename>`.
 
 ## Overview
 
-| Page               | Description                                                            |
-| ------------------ | ---------------------------------------------------------------------- |
-| Syntax & Semantics | Overview of the esolang syntax & semantics                             |
-| Examples           | Code samples in esolang                                                |
-| Internals          | Overview of the inner workings and the code of interpreter / evaluator |
+| Page               | Description                                |
+| ------------------ | ------------------------------------------ |
+| Syntax & Semantics | Overview of the esolang syntax & semantics |
+| Examples           | Code samples in esolang                    |
+| Internals          | Overview of the inner workings of esolang  |
+| Built-in Functions | List of built-in functions in esolang      |
 
 ## Inspiration
 
@@ -36,21 +53,7 @@ List of features & Sources
 
 The performance could be improved. At current its mediocre. Evaluation stage seems to be hindering speed as its a recursive decent which traverses each AST node and interprets what its sees. I'm looking into a bytecode compilable solution which runs on a VM. This would improve the performance significantly.
 
-FizzBuzz in Esolang
-
-```js
-let fizzBuzz = fn(num, res){
-  let i = 1;
-  while(i < num) {
-    let divided = false;
-    if(i % 15 == 0){array_append(res, "FizzBuzz"); let divided = true; };
-    if(i % 3 == 0){array_append(res, "Fizz"); let divided = true;};
-    if(i % 5 == 0){array_append(res, "Bizz"); let divided = true;};
-    if(dev == false){array_append(res, i);} let i = i + 1;}
-  return res;
-}
-
-let res = array_new();
-let result = fizzBuzz(100, res);
-println(result); // println(fizzBuzz(100, res))
-```
+| Command                             |     Mean [ms] | Min [ms] | Max [ms] |      Relative |
+| :---------------------------------- | ------------: | -------: | -------: | ------------: |
+| `esolang ./benchmarkings/bench.eso` | 607.4 ± 326.3 |    487.3 |   1532.3 | 24.58 ± 17.50 |
+| `python3 ./benchmarkings/bench.py`  |   24.7 ± 11.5 |     21.0 |    107.2 |          1.00 |
