@@ -24,34 +24,43 @@ by running the command `esolang -repl` or via a file on your preferred text edit
 
 ## Overview
 
-| Page               | Description                                |
-| ------------------ | ------------------------------------------ |
-| Syntax & Semantics | Overview of the esolang syntax & semantics |
-| Examples           | Code samples in esolang                    |
-| Internals          | Overview of the inner workings of esolang  |
-| Built-in Functions | List of built-in functions in esolang      |
+| Page                          | Description                                |
+| ----------------------------- | ------------------------------------------ |
+| [Language Overview](./eso.md) | Overview of the esolang syntax & semantics |
+| Examples                      | Code samples in esolang                    |
+| Internals                     | Overview of the inner workings of esolang  |
+| Built-in Functions            | List of built-in functions in esolang      |
 
 ## Inspiration
 
-This scripting language is highly inspired by the book [Writing an Interpreter in Go](https://interpreterbook.com/) by Thorsten Ball and [Crafting Interpreters](https://craftinginterpreters.com/) by Bob Nystrom. Also some takeaway from the [Structural and Interpretation of Computer Programs - SICP](https://web.mit.edu/6.001/6.037/sicp.pdf) by Harold Abelson and Gerald Jay Sussman. And [loads of blog posts](https://journal.stuffwithstuff.com/category/parsing/) from Bob Nystrom.
+This scripting language draws its core concepts from the aclaimed works of Thorson Ball's [(Writing an Interpreter in Go)](https://interpreterbook.com/), Bob Nystrom [(Crafting Interpretes)](https://craftinginterpreters.com/), and the foundational [SICP](https://web.mit.edu/6.001/6.037/sicp.pdf).
 
-Also some concepts are gather from primary languages like golang, python, javascript, and basic arithmetic.
+> To make the language more approachable it borrows familiar concepts from popular languages like JavaScript, Golang, Ocaml as well as basic arithmetics principals
 
-List of features & Sources
+### List of features
 
-| Features               | Inspration       | Description                                        |
-| ---------------------- | ---------------- | -------------------------------------------------- |
-| Variable Bindings      | Ocaml & JS       | Variable bindings are done using `let` keyword     |
-| Conditionals           | C-Family, Golang | Conditionals are done using `if` keyword           |
-| Loops                  | C-Family, Golang | Loops are done using `for` keyword                 |
-| Function Literals      | Golang           | Function literals are done using `fn` keyword      |
-| Higher Order Functions | JavaScript       | Higher order functions are done using `fn` keyword |
-| Closures               | Golang           | Closures are done using `fn` keyword               |
-| Lexer Error Messages   | Rust             | Rigid error messages just like rust                |
+| Features                   | Inspration       | Description                                                      |
+| -------------------------- | ---------------- | ---------------------------------------------------------------- |
+| Variable Bindings          | Ocaml & JS       | Variable bindings are done using `let` keyword                   |
+| Conditionals               | C-Family, Golang | Conditionals are done using `if` keyword                         |
+| Loops                      | C-Family, Golang | Loops are done using `while` keyword                             |
+| Arrays                     | JavaScript       | Easy initialiasation of dictionary using `[]` or `array_new()`   |
+| Hash                       | JavaScript       | A key value pair data structure `student = {"name": "John Doe"}` |
+| Function Literals          | Golang           | Function literals are done using `fn` keyword                    |
+| Higher Order Functions     | JavaScript       | Higher order functions are done using `fn` keyword               |
+| Closures                   | Golang           | Closures are done using `fn` keyword                             |
+| Error Messages             | Rust             | Rigid error messages                                             |
+| Tons of built-in functions | Golang           | Battries includes functions to get you up an running ASAP        |
 
 ## Performance
 
-The performance could be improved. At current its mediocre. Evaluation stage seems to be hindering speed as its a recursive decent which traverses each AST node and interprets what its sees. I'm looking into a bytecode compilable solution which runs on a VM. This would improve the performance significantly.
+The performance could be improved. At current its mediocre. Evaluation stage seems to be hindering speed as its a recursive decent which traverses each AST node and interprets what its sees. Bytecode compilation solution which runs on a VM would improve the performance significantly.
+
+Current benchmark of `fib(20)` using [hyperfine](https://github.com/sharkdp/hyperfine) is as follows
+
+```bash
+hyperfine 'esolang.go ./benchmarkings/bench.eso' 'python3 ./benchmarkings/bench.py'
+```
 
 | Command                             |     Mean [ms] | Min [ms] | Max [ms] |      Relative |
 | :---------------------------------- | ------------: | -------: | -------: | ------------: |

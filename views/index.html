@@ -43,6 +43,10 @@
 
         }
 
+        .text-white {
+            color: #b5e853 !important;
+        }
+
         .CodeMirror {
             font-size: 18px;
             width: 100%;
@@ -81,10 +85,13 @@
 </head>
 
 <body class="dark bg-code-background flex flex-col h-full max-h-screen">
-    <h1 class="text-3xl text-white  p-4"> Esolang Playground</h1>
+    <header style="border-bottom: 1px dashed #b5e853;">
+        <h1 class="text-3xl text-white  p-4"> Esolang Playground</h1>
 
-    <p class="text-white p-4"> Welcome to the Esolang Playground! Here you can write and run code in Esolang, a simple,
-        fun, and easy-to-learn scripting language. </p>
+        <p class="text-white p-4"> Welcome to the Esolang Playground! Here you can write and run code in Esolang, a
+            simple,
+            fun, and easy-to-learn scripting language. </p>
+    </header>
     <div class="flex h-full overflow-hidden">
         <div id="panes" class="flex-1 flex flex-col md:flex-row max-h-fit">
             <div id="pane-0" class="flex flex-col h-4/6 md:h-full w-full md:w-[60%]">
