@@ -1,6 +1,6 @@
 # Esolang
 
-Esolang is a beginner friendly dynamically typed scripting language quick prototyping and learning functional programming.
+Esolang is a beginner friendly dynamically typed scripting language for quick prototyping and learning functional programming.
 
 ## Installation
 
@@ -27,7 +27,7 @@ by running the command `esolang -repl` or via a file on your preferred text edit
 | Page                          | Description                                |
 | ----------------------------- | ------------------------------------------ |
 | [Language Overview](./eso.md) | Overview of the esolang syntax & semantics |
-| Examples                      | Code samples in esolang                    |
+| [Examples](./code_samples.md) | Code samples in esolang                    |
 | Internals                     | Overview of the inner workings of esolang  |
 | Built-in Functions            | List of built-in functions in esolang      |
 
