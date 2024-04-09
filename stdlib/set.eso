@@ -1,0 +1,79 @@
+// SETS
+// A set is a collection of unique members of the any type.
+//
+// It is implemented using the array data structure.
+//
+
+// Creates an empty set.
+let new_set = fn() {array_new()}}
+
+
+// Gets the number of members in a set.
+//
+// Example:
+// let set = new_set();
+// set_size(set) => 0
+// set_insert(set, 1)
+// set_insert(set, 2)
+// set_size(set) => 2
+let set_size = fn(set) {
+    count(set)
+};
+
+
+// Inserts a memeber into the set.
+// If the member is already in the set, the set is returned unchanged.
+// Otherwise, the member is added to the set.
+//
+// Example:
+// let set = new_set();
+// set_insert(set, 1) => [1]
+// set_insert(set, 2) => [1,2]
+// set_insert(set, 3) => [1,2,3]
+// set_insert(set, 2) => [1,2,3]
+// set_insert(set, 1) => [1,2,3]
+//
+let set_insert = fn(set, value) {
+    guard(array_includes(set, value), set, fn(){ array_append(set, value) })
+};
+
+//Checks whether a set contains a given member.
+//
+// Example:
+// let set = new_set();
+// set_insert(set, 2)
+// set_contains(set, 2) => true
+//
+let set_contains = fn(set, value) {
+    array_includes(set, value)
+};
+
+// Removes a member from the set.
+// If the member is not in the set, the set is returned unchanged.
+// Otherwise, the member is removed from the set.
+//
+// Example:
+// let set = new_set();
+// set_insert(set, 1)
+// set_insert(set, 2)
+// set_remove(set, 1) => [2]
+//
+let set_remove = fn(set, value) {
+    let removerFn = fn(){ let set = array_remove(set, value); set }
+    let notExists = array_includes(set, value) == false
+    guard(notExists, set, removerFn)
+};
+
+
+// Creates a new set from an existining set, minus nay members that a given
+// function returns `False` for
+//
+// Example
+// let set = [1,2,3,4,5]
+// let isEven = fn(x) { x % 2 == 0 }
+// setFilter(set, isEven)
+// => [1,3,5]
+//
+let set_filter = fn(set, predicate) {
+    array_filter(set, predicate)
+}

@@ -1,6 +1,12 @@
 // array functions
 
 // array_reduce executes a user-supplied "reducer" callback function on each element of the array,
+//
+// Example:
+// let arr = [1, 2, 3, 4, 5];
+// let sum = array_reduce(arr, 0, fn(accum, el) { accum + el });
+// -> 15
+
 let array_reduce = fn(arr, initial, reducerFn) {
     let iter = fn(arr, result) {
         if (count(arr) == 0) {
@@ -39,4 +45,44 @@ let array_includes = fn(arr, searchElement) {
         let i = i + 1;
     }
     result
+}
+
+// array_delete delete the element with matching value from the array
+let array_remove = fn(arr, searchElement) {
+    let arrLen = count(arr);
+    let i = 0;
+    let result = [];
+    while (i < arrLen) {
+        if (arr[i] != searchElement) {
+            let result = array_append(result, arr[i]);
+        }
+        let i = i + 1;
+    }
+    result
+}
+
+
+
+// Filter elements of an array using a callback function
+// Does not modify the original array
+//
+// Example:
+//
+// let arr = [1, 2, 3, 4, 5];
+// let filtered = array_filter([1, 2, 3, 4, 5], fn(x) { x % 2 == 0 });
+let array_filter = fn(arr, filterFn) {
+    let iter = fn(arr, accum) {
+        if (count(arr) == 0) {
+            accum
+        } else {
+            let current = array_getFirst(arr);
+            let rest = array_rest(arr);
+            if (filterFn(current)) {
+                iter(rest, array_append(accum, current));
+            } else {
+                iter(rest, accum);
+            }
+        }
+    };
+    iter(arr, []);
 }

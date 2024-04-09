@@ -47,6 +47,7 @@ const (
 	MOD       = "%"
 	AND       = "&&"
 	OR        = "-|"
+	PERIOD    = "."
 )
 
 // Keywords are reserved words

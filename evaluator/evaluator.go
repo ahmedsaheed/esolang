@@ -60,6 +60,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalInfixExpression(node.Operator, left, right)
 	case *ast.WhileLoopExpression:
 		return evalWhileLoopExpression(node, env)
+	case *ast.ObjectCallExpression:
+		return evalObjectCallExpression(node, env)
 	case *ast.LetStatement:
 		val := Eval(node.Value, env)
 		if isError(val) {
@@ -433,10 +435,6 @@ func evalStatements(statements []ast.Statement, env *object.Environment) object.
 	return evaluatedResults
 }
 
-func newError(format string, a ...interface{}) *object.Error {
-	return &object.Error{Message: fmt.Sprintf(format, a...)}
-}
-
 func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) object.Object {
 	var result object.Object
 	for _, statement := range block.Statements {
@@ -451,6 +449,23 @@ func evalBlockStatement(block *ast.BlockStatement, env *object.Environment) obje
 	return result
 }
 
+func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Environment) object.Object {
+	objectValue := Eval(call.Object, env)
+
+	if objectValue == nil {
+		return newError("object is nil")
+	}
+	if method, ok := call.Call.(*ast.CallExpression); ok {
+		args := evalExpressions(call.Call.(*ast.CallExpression).Arguments, env)
+		ret := objectValue.InvokeMethod(method.Function.String(), *env, args...)
+		if ret != nil {
+			return ret
+		}
+	}
+	// TODO: check if the object has the method implemented in esolang
+	return newError("object has no method %s", call.Call.String())
+}
+
 func evalProgram(program *ast.Program, env *object.Environment) object.Object {
 	var evaluatedResult object.Object
 	for _, statement := range program.Statements {
@@ -463,6 +478,10 @@ func evalProgram(program *ast.Program, env *object.Environment) object.Object {
 		}
 	}
 	return evaluatedResult
+}
+
+func newError(format string, a ...interface{}) *object.Error {
+	return &object.Error{Message: fmt.Sprintf(format, a...)}
 }
 
 func isError(obj object.Object) bool {

@@ -179,3 +179,37 @@ while
 		}
 	}
 }
+func TestDotMethod(t *testing.T) {
+	input := `
+foo.bar();
+blah.blah.blah
+`
+
+	tests := []struct {
+		expectedType    token.TokenType
+		expectedLiteral string
+	}{
+		{token.IDENT, "foo"},
+		{token.PERIOD, "."},
+		{token.IDENT, "bar"},
+		{token.LPAREN, "("},
+		{token.RPAREN, ")"},
+		{token.SEMICOLON, ";"},
+		{token.IDENT, "blah"},
+		{token.PERIOD, "."},
+		{token.IDENT, "blah"},
+		{token.PERIOD, "."},
+		{token.IDENT, "blah"},
+		{token.EOF, ""},
+	}
+	l := New(input)
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - tokentype wrong, expected=%q, got=%q", i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong, expected=%q, got=%q", i, tt, tok)
+		}
+	}
+}

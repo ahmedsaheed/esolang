@@ -4,7 +4,11 @@ It goes through the input and outputs the next recognised token by calling `next
 */
 package lexer
 
-import "esolang/lang-esolang/token"
+import (
+	"esolang/lang-esolang/token"
+	"strings"
+	"unicode"
+)
 
 /*
 Lexer represents a lexical analyzer.
@@ -79,6 +83,8 @@ func (L *Lexer) NextToken() token.Token {
 		} else {
 			tok = newToken(token.ASSIGN, L.char)
 		}
+	case '.':
+		tok = newToken(token.PERIOD, L.char)
 	case '&':
 		if L.peekChar() == '&' {
 			char := L.char
@@ -176,11 +182,64 @@ func (L *Lexer) skipComment() {
 
 // readIdentifier reads the next identifier in the input and returns it.
 func (L *Lexer) readIdentifier() string {
+
+	valid := map[string]bool{
+		"directory.glob":     true,
+		"math.abs":           true,
+		"math.random":        true,
+		"math.sqrt":          true,
+		"os.environment":     true,
+		"os.getenv":          true,
+		"os.setenv":          true,
+		"string.interpolate": true,
+	}
+
+	types := []string{"string.",
+		"array.",
+		"integer.",
+		"float.",
+		"hash.",
+		"object."}
+
+	id := ""
+
 	position := L.position
+	rposition := L.readPosition
+
 	for isLetter(L.char) {
+		id += string(L.char)
 		L.readChar()
 	}
-	return L.input[position:L.position]
+
+	if strings.Contains(id, ".") {
+		ok := valid[id]
+
+		if !ok {
+			for _, t := range types {
+				if strings.HasPrefix(id, t) {
+					ok = true
+				}
+			}
+		}
+
+		if !ok {
+			offset := strings.Index(id, ".")
+			id = id[:offset]
+			L.position = position
+			L.readPosition = rposition
+			for offset > 0 {
+				L.readChar()
+				offset--
+			}
+		}
+	}
+
+	// for isLetter(L.char) {
+	// 	L.readChar()
+	// }
+	// return L.input[position:L.position]
+
+	return id
 
 }
 
@@ -196,6 +255,13 @@ func (L *Lexer) readNumber() string {
 // isLetter returns true if the given character is a letter.
 func isLetter(char byte) bool {
 	return 'a' <= char && char <= 'z' || 'A' <= char && char <= 'Z' || char == '_'
+}
+
+func isIdentifier(char byte) bool {
+	if unicode.IsLetter(rune(char)) || unicode.IsDigit(rune(char)) || rune(char) == '.' || rune(char) == '?' || rune(char) == '$' || rune(char) == '_' {
+		return true
+	}
+	return false
 }
 
 // isDigit returns true if the given character is a digit.

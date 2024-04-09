@@ -23,6 +23,7 @@ const (
 	PREFIX
 	CALL
 	INDEX
+	HIGHEST
 )
 
 // precedence map to determine the precedence of the operators
@@ -39,6 +40,7 @@ var precedence = map[token.TokenType]int{
 	token.SLASH:    PRODUCT,
 	token.ASTERISK: PRODUCT,
 	token.LPAREN:   CALL,
+	token.PERIOD:   CALL,
 	token.LBRACKET: INDEX,
 }
 
@@ -81,6 +83,15 @@ func New(L *lexer.Lexer) *Parser {
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
+	p.registerPrefix(token.TRUE, p.parseBoolean)
+	p.registerPrefix(token.FALSE, p.parseBoolean)
+	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
+	p.registerPrefix(token.IF, p.parseIfExpression)
+	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
+	p.registerPrefix(token.STRING, p.parseStringLiteral)
+	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
+	p.registerPrefix(token.WHILE, p.parseWhileLoopExpression)
+	p.registerPrefix(token.LBRACE, p.parseHashLiteral)
 
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
@@ -94,17 +105,9 @@ func New(L *lexer.Lexer) *Parser {
 	p.registerInfix(token.MOD, p.parseInfixExpression)
 	p.registerInfix(token.AND, p.parseInfixExpression)
 	p.registerInfix(token.OR, p.parseInfixExpression)
-	p.registerPrefix(token.TRUE, p.parseBoolean)
-	p.registerPrefix(token.FALSE, p.parseBoolean)
-	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
-	p.registerPrefix(token.IF, p.parseIfExpression)
-	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
-	p.registerPrefix(token.STRING, p.parseStringLiteral)
-	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
-	p.registerPrefix(token.WHILE, p.parseWhileLoopExpression)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
-	p.registerPrefix(token.LBRACE, p.parseHashLiteral)
+	p.registerInfix(token.PERIOD, p.parseMethodCallExpression)
 
 	return p
 }
@@ -303,7 +306,7 @@ func (P *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	stmt := &ast.ExpressionStatement{Token: P.currentToken}
 	stmt.Expression = P.parseExpression(LOWEST)
 
-	if P.peekTokenLS(token.SEMICOLON) {
+	for P.peekTokenLS(token.SEMICOLON) {
 		P.nextToken()
 	}
 	return stmt
@@ -597,4 +600,13 @@ func (P *Parser) parseHashLiteral() ast.Expression {
 		return nil
 	}
 	return hash
+}
+
+func (P *Parser) parseMethodCallExpression(obj ast.Expression) ast.Expression {
+	method := &ast.ObjectCallExpression{Token: P.currentToken, Object: obj}
+	P.nextToken()
+	name := P.parseIdentifier()
+	P.nextToken()
+	method.Call = P.parseCallExpression(name)
+	return method
 }

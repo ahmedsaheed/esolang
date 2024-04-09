@@ -44,6 +44,19 @@ func TestLetStatements(t *testing.T) {
 
 }
 
+func TestObjectMethodCall(t *testing.T) {
+	input := []string{
+		"\"string\".len()",
+	}
+
+	for _, txt := range input {
+		l := lexer.New(txt)
+		p := New(l)
+		_ = p.ParseProgram()
+		checkParserErrors(t, p)
+	}
+}
+
 func TestReturnStatement(t *testing.T) {
 	tests := []struct {
 		input         string
@@ -479,8 +492,8 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 		checkParserErrors(t, p)
 
 		actual := program.String()
-		print("initial ", tt.input, "\n")
-		print("resolved ", actual, "\nexpected ", tt.expected, "\n")
+		// print("initial ", tt.input, "\n")
+		// print("resolved ", actual, "\nexpected ", tt.expected, "\n")
 		if actual != tt.expected {
 			t.Errorf("expected=%q, got=%q", tt.expected, actual)
 		}

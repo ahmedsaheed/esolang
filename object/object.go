@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"hash/fnv"
 	"strings"
+	"unicode/utf8"
 )
 
 type ObjectType string
@@ -26,6 +27,7 @@ const (
 type Object interface {
 	Type() ObjectType
 	Inspect() string
+	InvokeMethod(method string, env Environment, args ...Object) Object
 }
 
 // String wraps a single value to a string.
@@ -35,6 +37,12 @@ type String struct {
 
 func (s *String) Type() ObjectType { return STRING_OBJ }
 func (s *String) Inspect() string  { return s.Value }
+func (s *String) InvokeMethod(method string, env Environment, args ...Object) Object {
+	if method == "len" {
+		return &Integer{Value: int64(utf8.RuneCountInString(s.Value))}
+	}
+	return nil
+}
 
 // Integer wraps a single value to an integer64.
 type Integer struct {
@@ -43,6 +51,10 @@ type Integer struct {
 
 func (i *Integer) Inspect() string  { return fmt.Sprintf("%d", i.Value) }
 func (i *Integer) Type() ObjectType { return INTEGER_OBJ }
+func (i *Integer) InvokeMethod(method string, env Environment, args ...Object) Object {
+	// TODO: Implement more methods
+	return nil
+}
 
 // Boolean wraps a single value to a boolean.
 type Boolean struct {
@@ -51,12 +63,18 @@ type Boolean struct {
 
 func (b *Boolean) Type() ObjectType { return BOOLEAN_OBJ }
 func (b *Boolean) Inspect() string  { return fmt.Sprintf("%t", b.Value) }
+func (b *Boolean) InvokeMethod(method string, env Environment, args ...Object) Object {
+	return nil
+}
 
 // Null represents the absence of a value.
 type Null struct{}
 
 func (n *Null) Type() ObjectType { return NULL_OBJ }
 func (n *Null) Inspect() string  { return "null" }
+func (n *Null) InvokeMethod(method string, env Environment, args ...Object) Object {
+	return nil
+}
 
 // ReturnValue wraps a single value to a return value.
 type ReturnValue struct {
@@ -65,6 +83,9 @@ type ReturnValue struct {
 
 func (rv *ReturnValue) Type() ObjectType { return RETURN_VALUE_OBJ }
 func (rv *ReturnValue) Inspect() string  { return rv.Value.Inspect() }
+func (rv *ReturnValue) InvokeMethod(method string, env Environment, args ...Object) Object {
+	return nil
+}
 
 // Function wraps a block statement to a function.
 type Function struct {
@@ -91,6 +112,9 @@ func (f *Function) Inspect() string {
 	return out.String()
 
 }
+func (f *Function) InvokeMethod(method string, env Environment, args ...Object) Object {
+	return nil
+}
 
 // Array wraps a list of objects to an array.
 type Array struct {
@@ -110,6 +134,7 @@ func (ao *Array) Inspect() string {
 
 	return out.String()
 }
+func (ao *Array) InvokeMethod(method string, env Environment, args ...Object) Object { return nil }
 
 // HashKey is a key for a hash.
 type HashKey struct {
@@ -179,6 +204,7 @@ func (h *Hash) Inspect() string {
 
 	return output.String()
 }
+func (h *Hash) InvokeMethod(method string, env Environment, args ...Object) Object { return nil }
 
 type Hashable interface {
 	HashKey() HashKey
@@ -191,6 +217,9 @@ type Error struct {
 
 func (e *Error) Type() ObjectType { return ERROR_OBJ }
 func (e *Error) Inspect() string  { return "ERROR: " + e.Message }
+func (e *Error) InvokeMethod(method string, env Environment, args ...Object) Object {
+	return nil
+}
 
 type BuiltinFunction func(args ...Object) Object
 
@@ -200,3 +229,6 @@ type Builtin struct {
 
 func (b *Builtin) Type() ObjectType { return BUILTIN_OBJ }
 func (b *Builtin) Inspect() string  { return "builtin function" }
+func (b *Builtin) InvokeMethod(method string, env Environment, args ...Object) Object {
+	return nil
+}

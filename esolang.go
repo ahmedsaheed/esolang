@@ -10,16 +10,6 @@ import (
 	"github.com/charmbracelet/log"
 )
 
-//go:embed stdlib/array.eso
-var ArrayUtils string
-
-//go:embed stdlib/bool.eso
-var BoolUtils string
-
-//go:embed stdlib/string.eso
-var StringUtils string
-var lib = ArrayUtils + "\n" + BoolUtils + "\n" + StringUtils
-
 // build using: go build -tags netgo -ldflags '-s -w' -o esolang
 func main() {
 	replMode := flag.Bool("repl", false, "Start the repl")
@@ -27,7 +17,7 @@ func main() {
 	flag.Parse()
 
 	if *replMode {
-		repl.Start(os.Stdin, os.Stdout, lib)
+		repl.Start(os.Stdin, os.Stdout, getStdLib())
 	}
 
 	if len(flag.Args()) > 0 {
@@ -44,12 +34,13 @@ func main() {
 			os.Exit(1)
 		}
 
-		repl.Execute(string(inputFile), lib)
+		repl.Execute(string(inputFile), getStdLib())
 	} else {
 		logger.Warn("No file provided. Please provide a file to run or use the -repl flag to start the repl.")
 		logger.Warn("Usage: esolang <path-to-filename>")
 		logger.Warn("Usage: esolang -repl")
-		os.Exit(1)
+		logger.Info("Starting repl...")
+		repl.Start(os.Stdin, os.Stdout, getStdLib())
 	}
 
 }
