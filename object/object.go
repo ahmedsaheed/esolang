@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"hash/fnv"
 	"strings"
-	"unicode/utf8"
 )
 
 type ObjectType string
@@ -38,10 +37,7 @@ type String struct {
 func (s *String) Type() ObjectType { return STRING_OBJ }
 func (s *String) Inspect() string  { return s.Value }
 func (s *String) InvokeMethod(method string, env Environment, args ...Object) Object {
-	if method == "len" {
-		return &Integer{Value: int64(utf8.RuneCountInString(s.Value))}
-	}
-	return nil
+	return stringInvokables(method, s)
 }
 
 // Integer wraps a single value to an integer64.
@@ -52,8 +48,7 @@ type Integer struct {
 func (i *Integer) Inspect() string  { return fmt.Sprintf("%d", i.Value) }
 func (i *Integer) Type() ObjectType { return INTEGER_OBJ }
 func (i *Integer) InvokeMethod(method string, env Environment, args ...Object) Object {
-	// TODO: Implement more methods
-	return nil
+	return intInvokables(method, i)
 }
 
 // Boolean wraps a single value to a boolean.
@@ -134,7 +129,9 @@ func (ao *Array) Inspect() string {
 
 	return out.String()
 }
-func (ao *Array) InvokeMethod(method string, env Environment, args ...Object) Object { return nil }
+func (ao *Array) InvokeMethod(method string, env Environment, args ...Object) Object {
+	return arrayInvokables(method, ao)
+}
 
 // HashKey is a key for a hash.
 type HashKey struct {
@@ -204,7 +201,9 @@ func (h *Hash) Inspect() string {
 
 	return output.String()
 }
-func (h *Hash) InvokeMethod(method string, env Environment, args ...Object) Object { return nil }
+func (h *Hash) InvokeMethod(method string, env Environment, args ...Object) Object {
+	return hashInvokables(method, h)
+}
 
 type Hashable interface {
 	HashKey() HashKey

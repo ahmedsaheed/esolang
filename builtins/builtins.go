@@ -58,7 +58,7 @@ var Builtins = map[string]*object.Builtin{
 	// "HttpServe": &object.Builtin{
 	// 	Fn: _httpServeAndListen,
 	// },
-	"typeOf": &object.Builtin{
+	"type_of": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
 				return newError("wrong number of arguments. got=%d, want=1", len(args))

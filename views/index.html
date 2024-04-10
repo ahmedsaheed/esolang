@@ -250,19 +250,21 @@ print("fibonnaci of", x , "is", fibonacci(x))
 
             httpPost: `
 
-let loginUrl = "https://json-placeholder.mock.beeceptor.com/login"
+let login_request = fn(url, username) {
 
-let resp = Http("POST", loginUrl, {
-    // Uncomment the following lines to test a success case
-    // "username": "foo",
-    // "password": "success-password"
+   let login_data = {
+       "username": username,
+       "password": "success-password" // try replace with failed-password
+   }
 
-    "username": "user123",
-    "password": "failed-password"
-})
+   let req = Http("POST", url, login_data)
+      println(req["Body"]["message"])
+}
 
-resp["StatusCode"]
-// Try resp["Body"] or resp["Body"]["message"] to see the response body
+let login_url = "https://json-placeholder.mock.beeceptor.com/login"
+let username = "user123"
+
+login_request(login_url, username)
 `,
         };
 

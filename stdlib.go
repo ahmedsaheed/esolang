@@ -14,8 +14,7 @@ var StringUtils string
 //go:embed stdlib/set.eso
 var SetUtils string
 
-var StdLib = ArrayUtils + "\n" + BoolUtils + "\n" + StringUtils + "\n" + SetUtils
-
 func getStdLib() string {
-	return StdLib
+	return ArrayUtils + "\n" + BoolUtils + "\n" + StringUtils + "\n" + SetUtils
+
 }
