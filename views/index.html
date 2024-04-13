@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="https://esironal.github.io/cmtouch/addon/hint/show-hint.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Reenie+Beanie&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://esironal.github.io/cmtouch/lib/codemirror.js"></script>
@@ -31,7 +34,11 @@
             font-family: "Roboto Mono", "Fira Mono", monospace;
             color: hsla(0, 0%, 93%, 1);
         }
-
+        .reenie-beanie-regular {
+          font-family: "Reenie Beanie", cursive !important;
+          font-weight: 400;
+          font-style: cursive;
+        }
         .bg-code-background {
             background-color: #151515;
         }
@@ -40,7 +47,6 @@
             border-left: 1px solid;
             border-color: rgb(34, 34, 34);
             background-color: rgba(21, 21, 21, 1) !important;
-
         }
 
         .text-white {
@@ -80,25 +86,57 @@
             border-radius: 0.815rem;
             background-color: #484845;
         }
+        .foxes {
+            padding: 32px 17px 96px 138px;
+            height: calc(100px * 2);
+            width: calc(150px * 2);
+            box-sizing: border-box;
+            background-image: url("https://try.ruby-lang.org/images/foxes.svg");
+            background-position: left top;
+            background-repeat: no-repeat;
+            background-size: contain;
+            color: #444;
+            text-align: center;
+            font: italic 1.5rem "Reenie Beanie", cursive;
+            line-height: .75;
+        }
     </style>
     <title>Esolang Playground - The esolang scripting language</title>
 </head>
 
 <body class="dark bg-code-background flex flex-col h-full max-h-screen">
     <header style="border-bottom: 1px dashed #b5e853;">
-        <h1 class="text-3xl text-white  p-4"> Esolang Playground</h1>
 
-        <p class="text-white p-4"> Welcome to the Esolang Playground! Here you can write and run code in Esolang, a
-            simple,
-            fun, and easy-to-learn scripting language. </p>
+        <div class="w-full flex items-center justify-between text-4xl text-white p-4" style="border-bottom: 1px dashed #b5e853;">
+            <h1 class="reenie-beanie-regular"> try Esolang</h1>
+            <a href="https://ahmedsaheed.github.io/esolang/" target="_blank" class="reenie-beanie-regular"> Documentation</a>
+        </div>
+
+
+        <div class="info-div text-white p-4">
+            <div id="tryeso-content">
+                <h1 id="tryeso-title">Got 30 minutes? </h1>
+               <p class="pb-2">Give Esolang a shot right now!</p>
+            </div>
+            <div class="foxes">Let's begin by saying <strong class="font-bold">Hello, World</strong>.</div>
+        </div>
     </header>
     <div class="flex h-full overflow-hidden">
         <div id="panes" class="flex-1 flex flex-col md:flex-row max-h-fit">
             <div id="pane-0" class="flex flex-col h-4/6 md:h-full w-full md:w-[60%]">
                 <div id="code" class="flex-1 flex flex-col overflow-auto"></div>
                 <div class="bg-code-background w-full bottom-0">
-                    <div class="flex gap-7 w-full justify-between md:justify-end items-center px-2">
+                    <div class="flex gap-2 w-full justify-between md:justify-end items-center px-1">
                         {{ template "form" .}}
+                        <button id="copy"
+                            class="flex btn btn-sm space-x-2 mr-4 items-center justify-center px-2 h-8 m-4 space-x-2 border border-white rounded text-sm text-white hover:text-[#000] hover:bg-white hover:border-none">
+                            <span>Copy</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="32" viewBox="0 0 24 24">
+                                <path fill="currentColor" fill-rule="evenodd"
+                                    d="M13.803 5.333c0-1.84 1.5-3.333 3.348-3.333A3.341 3.341 0 0 1 20.5 5.333c0 1.841-1.5 3.334-3.349 3.334a3.346 3.346 0 0 1-2.384-.994l-4.635 3.156a3.336 3.336 0 0 1-.182 1.917l5.082 3.34a3.346 3.346 0 0 1 2.12-.753a3.341 3.341 0 0 1 3.348 3.334C20.5 20.507 19 22 17.151 22a3.341 3.341 0 0 1-3.348-3.333a3.3 3.3 0 0 1 .289-1.356L9.05 14a3.346 3.346 0 0 1-2.202.821A3.34 3.34 0 0 1 3.5 11.487a3.34 3.34 0 0 1 3.348-3.333c1.064 0 2.01.493 2.623 1.261l4.493-3.059a3.317 3.317 0 0 1-.161-1.023"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
                         <form>
                             <select id="codesamples" class="bg-code-background text-white border-none">
                                 <option value="1">Hello, World</option>
@@ -108,15 +146,7 @@
                                 <option value="5">HTTP Post req</option>
                             </select>
                         </form>
-                        <button id="share"
-                            class="flex btn btn-sm space-x-2 mr-4 items-center justify-center px-2 h-8 m-4 space-x-2 border border-white rounded text-sm text-white hover:text-[#000] hover:bg-white hover:border-none">
-                            <span>Share</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="32" viewBox="0 0 24 24">
-                                <path fill="currentColor" fill-rule="evenodd"
-                                    d="M13.803 5.333c0-1.84 1.5-3.333 3.348-3.333A3.341 3.341 0 0 1 20.5 5.333c0 1.841-1.5 3.334-3.349 3.334a3.346 3.346 0 0 1-2.384-.994l-4.635 3.156a3.336 3.336 0 0 1-.182 1.917l5.082 3.34a3.346 3.346 0 0 1 2.12-.753a3.341 3.341 0 0 1 3.348 3.334C20.5 20.507 19 22 17.151 22a3.341 3.341 0 0 1-3.348-3.333a3.3 3.3 0 0 1 .289-1.356L9.05 14a3.346 3.346 0 0 1-2.202.821A3.34 3.34 0 0 1 3.5 11.487a3.34 3.34 0 0 1 3.348-3.333c1.064 0 2.01.493 2.623 1.261l4.493-3.059a3.317 3.317 0 0 1-.161-1.023"
-                                    clip-rule="evenodd" />
-                            </svg>
-                        </button>
+
                         <button id="run"
                             class="flex btn btn-sm space-x-2 mr-4 items-center justify-center px-2 h-8 m-4 space-x-2 border border-white rounded text-sm text-white hover:text-[#000] hover:bg-white hover:border-none">
                             <span class="text-lighter">RUN
@@ -268,17 +298,56 @@ login_request(login_url, username)
 `,
         };
 
+
+        var samples = {
+            helloWorld: {
+              info_div:  document.querySelector(".info-div").innerHTML,
+              code: sampleCodes.helloWorld,
+            },
+            fizzBuzz: {
+              info_div:  `
+              <div>
+              <h1 class="text-2xl font-bold text-white">FizzBuzz</h1>
+              </div>
+              `,
+              code: sampleCodes.fizzBuzz,
+            },
+
+        }
+
+
         function clearEvaluated() {
             document.querySelector("#evaluated").innerHTML = "";
         }
 
+        function replaceInfoDiv(htmlContent) {
+          console.log(htmlContent)
+            console.log(document.querySelector(".info-div").innerHTML)
+            document.querySelector(".info-div").innerHTML = htmlContent;
+        }
+
+        const copyToClipboard = () => {
+            var code = editor.getValue();
+            navigator.clipboard.writeText(code).then(function () {
+                console.log("Copied to clipboard successfully!");
+            }, function (err) {
+                console.error("Unable to write to clipboard. Error:");
+                console.error(err);
+            });
+        }
+
+        // on copy button click
+        document.querySelector("#copy").addEventListener("click", copyToClipboard);
+
         const sb = document.querySelector("#codesamples");
         sb.addEventListener("change", function () {
             if (sb.selectedIndex == 0) {
-                editor.setValue(sampleCodes.helloWorld);
+                editor.setValue(samples.helloWorld.code);
+                replaceInfoDiv(samples.helloWorld.info_div)
                 clearEvaluated();
             } else if (sb.selectedIndex == 3) {
-                editor.setValue(sampleCodes.fizzBuzz);
+                editor.setValue(samples.fizzBuzz.code);
+                replaceInfoDiv(samples.fizzBuzz.info_div)
                 clearEvaluated();
             } else if (sb.selectedIndex == 2) {
                 editor.setValue(sampleCodes.arraySum);
