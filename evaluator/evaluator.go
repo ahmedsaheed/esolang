@@ -5,6 +5,7 @@ import (
 	"esolang/lang-esolang/builtins"
 	"esolang/lang-esolang/object"
 	"fmt"
+	"strings"
 )
 
 var (
@@ -286,8 +287,10 @@ func evalInfixExpression(operator string, leftOperand, rightOperand object.Objec
 	switch {
 	case leftOperand.Type() == object.INTEGER_OBJ && rightOperand.Type() == object.INTEGER_OBJ:
 		return evalIntegerInfixExpression(operator, leftOperand, rightOperand)
-	case leftOperand.Type() == object.STRING_OBJ && rightOperand.Type() == object.STRING_OBJ:
+	case leftOperand.Type() == object.STRING_OBJ && (rightOperand.Type() == object.STRING_OBJ || rightOperand.Type() == object.INTEGER_OBJ):
 		return evalStringInfixExpression(operator, leftOperand, rightOperand)
+	case leftOperand.Type() == object.ARRAY_OBJ && rightOperand.Type() == object.ARRAY_OBJ && operator == "+":
+		return &object.Array{Elements: append(leftOperand.(*object.Array).Elements, rightOperand.(*object.Array).Elements...)}
 	case operator == "==":
 		return nativeBoolToBooleanObject(leftOperand == rightOperand)
 	case operator == "!=":
@@ -305,18 +308,30 @@ func evalInfixExpression(operator string, leftOperand, rightOperand object.Objec
 
 // evalStringInfixExpression evaluates the string concatenation
 func evalStringInfixExpression(operator string, leftOperand, rightOperand object.Object) object.Object {
-	leftValue := leftOperand.(*object.String).Value
-	rightValue := rightOperand.(*object.String).Value
-	switch operator {
-	case "+":
-		return &object.String{Value: leftValue + rightValue}
-	case "==":
-		return nativeBoolToBooleanObject(leftValue == rightValue)
-	case "!=":
-		return nativeBoolToBooleanObject(leftValue != rightValue)
+	switch rightOperand.Type() {
+	case object.INTEGER_OBJ:
+		leftValue := leftOperand.(*object.String).Value
+		rightIntValue := rightOperand.(*object.Integer).Value
+		if operator == "*" {
+			return &object.String{Value: strings.Repeat(leftValue, int(rightIntValue))}
+		}
+	case object.STRING_OBJ:
+		leftValue := leftOperand.(*object.String).Value
+		rightValue := rightOperand.(*object.String).Value
+		switch operator {
+		case "+":
+			return &object.String{Value: leftValue + rightValue}
+		case "==":
+			return nativeBoolToBooleanObject(leftValue == rightValue)
+		case "!=":
+			return nativeBoolToBooleanObject(leftValue != rightValue)
+		default:
+			return newError("unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
+		}
 	default:
 		return newError("unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
 	}
+	return newError("unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
 }
 
 // evalIntegerInfixExpression evaluates is where the actual arithmetic operations for + , - , / and * performed
