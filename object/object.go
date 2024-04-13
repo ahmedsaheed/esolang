@@ -130,7 +130,7 @@ func (ao *Array) Inspect() string {
 	return out.String()
 }
 func (ao *Array) InvokeMethod(method string, env Environment, args ...Object) Object {
-	return arrayInvokables(method, ao)
+	return arrayInvokables(method, ao, args...)
 }
 
 // HashKey is a key for a hash.
