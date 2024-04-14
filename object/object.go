@@ -37,7 +37,7 @@ type String struct {
 func (s *String) Type() ObjectType { return STRING_OBJ }
 func (s *String) Inspect() string  { return s.Value }
 func (s *String) InvokeMethod(method string, env Environment, args ...Object) Object {
-	return stringInvokables(method, s)
+	return stringInvokables(method, s, args...)
 }
 
 // Integer wraps a single value to an integer64.
