@@ -93,9 +93,9 @@ var Builtins = map[string]*object.Builtin{
 		},
 	},
 
-	"math.rand": &object.Builtin{
-		Fn: random,
-	},
+	// "math.rand": &object.Builtin{
+	// 	Fn: random,
+	// },
 
 	"_contains": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
