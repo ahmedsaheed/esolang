@@ -16,6 +16,10 @@ func newErrorFromTypings(err string) Object {
 	return &Error{Message: err}
 }
 
+func NewErrorFromTypings(err string) Object {
+	return newErrorFromTypings(err)
+}
+
 func arrayInvokables(method string, arr *Array, args ...Object) Object {
 	name := "Array." + method
 	if method == "count" || method == "length" {
@@ -89,20 +93,23 @@ func arrayInvokables(method string, arr *Array, args ...Object) Object {
 		if err := CheckTypings(
 			name, args,
 			ExactArgsLength(1),
-			WithTypes(
-				INTEGER_OBJ,
-				STRING_OBJ,
-				BOOLEAN_OBJ,
-				NULL_OBJ,
-				ARRAY_OBJ,
-				HASH_OBJ,
-				FUNCTION_OBJ,
-			),
+			// WithTypes(
+			// 	INTEGER_OBJ,
+			// 	STRING_OBJ,
+			// 	BOOLEAN_OBJ,
+			// 	NULL_OBJ,
+			// 	ARRAY_OBJ,
+			// 	HASH_OBJ,
+			// 	FUNCTION_OBJ,
+			// ),
 		); err != nil {
 			return newErrorFromTypings(err.Error())
 		}
-		newArr := append(arr.Elements, args[0])
-		return &Array{Elements: newArr}
+
+		// don't construct a new array, just append the element
+		arr.Elements = append(arr.Elements, args[0])
+		return arr
+
 	}
 	if method == "fill" {
 		/*
