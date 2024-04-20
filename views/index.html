@@ -237,28 +237,20 @@
 print("Hello, World!");
 `,
             fizzBuzz: `
-let fizzBuzz = fn(n, arr) {
-  let i = 1;
-  while (i < n + 1) {
-    if (i % 15 == 0) {
-      array_append(arr, "FizzBuzz");
-    } else {
-      if (i % 3 == 0) {
-        array_append(arr, "Fizz");
-      } else {
-        if (i % 5 == 0) {
-          array_append(arr, "Buzz");
-    } else {
-       array_append(arr, i);
-      }
-      }
+let fizzbuzz = fn(n, arr) {
+    let i = 0
+    when(i < n) {
+        if (i % 15 == 0) { arr.append("FizzBuzz");}
+        else {if (i % 3 == 0) {arr.append("Fizz");}
+        else {if (i % 5 == 0) {arr.append("Buzz");}
+        else {arr.append(i);}
+      }}
+        let i = i + 1
     }
-    let i = i+ 1;
-  }
-  arr;
+    return arr
 }
 
-fizzBuzz(20, []);
+fizzbuzz(20, [])
 `,
             arraySum: `
 // You can edit this code!
@@ -268,7 +260,7 @@ let sumArray = fn(arr) {
   let currIdx = 0;
   let sum = 0;
 
-  while(currIdx < count(arr)) {
+  when(currIdx < count(arr)) {
         let sum = sum + arr[currIdx];
         let currIdx = currIdx + 1;
   }
