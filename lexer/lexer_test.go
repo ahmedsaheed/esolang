@@ -62,7 +62,7 @@ if (5 < 10) {
 "string test"
 [5, 10];
 {"key": "value"}
-while
+when
 %
 &&
 -|
@@ -157,7 +157,7 @@ while
 		{token.COLON, ":"},
 		{token.STRING, "value"},
 		{token.RBRACE, "}"},
-		{token.WHILE, "while"},
+		{token.WHEN, "when"},
 		{token.MOD, "%"},
 		{token.AND, "&&"},
 		{token.OR, "-|"},

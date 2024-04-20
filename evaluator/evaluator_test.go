@@ -186,7 +186,7 @@ func TestWhileLoopExpression(t *testing.T) {
 	let sum = 0;
 	let start = 1;
 	let upto = 100;
-	while (start < upto){
+	when (start < upto){
 		let sum = sum + start;
 		let start = start + 1;
 	}

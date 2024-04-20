@@ -685,7 +685,7 @@ func TestIfElseExpression(t *testing.T) {
 }
 
 func TestWhileLoopExpression(t *testing.T) {
-	input := `while(a<b){ let a=a+1; }`
+	input := `when(a<b){ let a=a+1; }`
 	l := lexer.New(input)
 	p := New(l)
 	program := p.ParseProgram()

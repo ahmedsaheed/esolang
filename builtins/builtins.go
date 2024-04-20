@@ -31,6 +31,7 @@ var Builtins = map[string]*object.Builtin{
 	"array_new": &object.Builtin{
 		Fn: arrayNew,
 	},
+
 	"array_indexOf": &object.Builtin{
 		Fn: arrayIndexOf,
 	},
@@ -91,6 +92,11 @@ var Builtins = map[string]*object.Builtin{
 			return &object.String{Value: lowerCased}
 		},
 	},
+
+	"math.rand": &object.Builtin{
+		Fn: random,
+	},
+
 	"_contains": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 2 {
@@ -103,6 +109,10 @@ var Builtins = map[string]*object.Builtin{
 			return &object.Boolean{Value: contains}
 		},
 	},
+}
+
+func RegisterBuiltin(name string, fun object.BuiltinFunction) {
+	Builtins[name] = &object.Builtin{Fn: fun}
 }
 
 func newError(format string, a ...interface{}) *object.Error {
