@@ -33,6 +33,7 @@
         body {
             font-family: "Roboto Mono", "Fira Mono", monospace;
             color: hsla(0, 0%, 93%, 1);
+            user-select: none;
         }
         .reenie-beanie-regular {
           font-family: "Reenie Beanie", cursive !important;
@@ -128,17 +129,29 @@
         </div>
 
 
-        <div class="info-div text-white p-4">
-            <div id="tryeso-content">
-                <h1 id="tryeso-title">Got 30 minutes? </h1>
-               <p class="pb-2">Give Esolang a shot right now!</p>
-            </div>
-            <div class="foxes">Let's begin by saying <strong class="font-bold">Hello, World</strong>.</div>
-        </div>
+
     </header>
     <div class="flex h-full overflow-hidden">
         <div id="panes" class="flex-1 flex flex-col md:flex-row max-h-fit">
-            <div id="pane-0" class="flex flex-col h-4/6 md:h-full w-full md:w-[60%]">
+            <div id="pane-0" class="flex flex-col h-4/6 md:h-full w-full md:w-[50%]">
+                  <div class="info-div text-slate-200 p-4">
+            <div id="tryeso-content">
+                <h1 id="tryeso-title">Got 30 minutes? </h1>
+               <p>Give Esolang a shot right now!</p>
+                <p>The code shown is editable and will be compiled and evaluated as you type.<br/>
+                Anything you print using println or print will be shown in the bottom section,<br/>
+                along with any compile errors and warnings.</p>
+                <p>OK, let's go.
+                Click "Next" to get started, click "Contents" to jump to a specific topic,<br/> or go here to read everything in one page.</p>
+               </p>
+               <br/>
+            </div>
+            <div class="foxes">Let's begin by saying <strong class="font-bold">Hello, World</strong>.</div>
+        </div>
+            </div>
+
+            <div id="pane-1" class="flex flex-col h-2/6 md:h-full w-full md:w-[50%] bg-stone-800">
+                <div class="flex flex-col justify-between text-white" style="height: 50%">
                 <div id="code" class="flex-1 flex flex-col overflow-auto"></div>
                 <div class="bg-code-background w-full bottom-0">
                     <div class="flex gap-2 w-full justify-between md:justify-end items-center px-1">
@@ -174,28 +187,6 @@
                         </button>
                     </div>
                 </div>
-            </div>
-
-            <div id="pane-1" class="flex flex-col h-2/6 md:h-full w-full md:w-[40%] bg-stone-800">
-
-                <div class="flex justify-between text-white">
-
-                    <button class="hidden md:flex border-b-2 border-transparent p-4">
-                        Output
-                    </button>
-
-                    <button
-                        class="clear-output-btn hidden md:flex items-center justify-center px-2 h-8 m-4 space-x-2 border border-white rounded text-sm text-white hover:text-[#000] hover:bg-white hover:border-none">
-                        <span> Clear </span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="32" viewBox="0 0 24 24">
-                            <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5">
-                                <path
-                                    d="M20.5 6h-17m15.333 2.5l-.46 6.9c-.177 2.654-.265 3.981-1.13 4.79c-.865.81-2.195.81-4.856.81h-.774c-2.66 0-3.99 0-4.856-.81c-.865-.809-.953-2.136-1.13-4.79l-.46-6.9" />
-                                <path d="M9.17 4a3.001 3.001 0 0 1 5.66 0" opacity=".5" />
-                            </g>
-                        </svg>
-
-                    </button>
 
                 </div>
                 <div
