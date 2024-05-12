@@ -1,3 +1,5 @@
+let sec = import("second-test")
+
 let fizzbuzz = fn(n, arr) {
   let i = 0
   when(i < n) {
@@ -15,11 +17,10 @@ fizzbuzz(20, [])
 
 let Person = fn(name, age, occupation) {
 
-    5.to_float()
   let person = {
-    name: name,
-    age: age,
-    occupation: occupation,
+    "name": name,
+    "age": age,
+    "occupation": occupation,
     "toString": fn() {
        return "Name: " + name + ", Age: " + age.to_string() + ", Occupation: " + occupation
      }
@@ -28,10 +29,7 @@ let Person = fn(name, age, occupation) {
 }
 
 let p = Person("John", 30, "Software Developer")
-let idx = 0
-
-when(idx < 10) {
-  println("Hello World")
-  let idx = idx + 1
-}
+println(p["name"])
 println(p["toString"]())
+
+println(sec["Sum"](10, 20))

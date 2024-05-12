@@ -1018,6 +1018,37 @@ func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
 	return true
 }
 
+func TestParsingImportStatement(t *testing.T) {
+	test := []struct {
+		input  string
+		output string
+	}{
+		{`import("hi")`, `import("hi")`},
+	}
+
+	for _, tt := range test {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.ParseProgram()
+		checkParserErrors(t, p)
+
+		if tt.output != program.String() {
+			t.Fatalf("wrong import output. want=%s, got=%s",
+				tt.output, program.String())
+		}
+
+		if len(program.Statements) != 1 {
+			t.Fatalf("program.Statements does not contain 1 statements. got=%d",
+				len(program.Statements))
+		}
+		stmt := program.Statements[0].(*ast.ExpressionStatement)
+		if stmt.TokenLiteral() != "import" {
+			t.Fatalf("stmt.TokenLiteral not 'import'. got=%q",
+				stmt.TokenLiteral())
+		}
+	}
+}
+
 func checkParserErrors(t *testing.T, p *Parser) {
 	errors := p.Errors()
 	if len(errors) == 0 {

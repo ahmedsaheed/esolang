@@ -7,6 +7,7 @@ package ast
 import (
 	"bytes"
 	"esolang/lang-esolang/token"
+	"fmt"
 	"strings"
 )
 
@@ -417,6 +418,31 @@ func (oce *ObjectCallExpression) String() string {
 	out.WriteString(oce.Object.String())
 	out.WriteString(".")
 	out.WriteString(oce.Call.String())
+
+	return out.String()
+}
+
+
+// ImportExpression represents an `import` expression and holds the name
+// of the module being imported.
+type ImportExpression struct {
+	Token token.Token // The 'import' token
+	Name  Expression
+}
+
+func (ie *ImportExpression) expressionNode() {}
+
+// TokenLiteral prints the literal value of the token associated with this node
+func (ie *ImportExpression) TokenLiteral() string { return ie.Token.Literal }
+
+// String returns a stringified version of the AST for debugging
+func (ie *ImportExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(ie.TokenLiteral())
+	out.WriteString("(")
+	out.WriteString(fmt.Sprintf("\"%s\"", ie.Name))
+	out.WriteString(")")
 
 	return out.String()
 }

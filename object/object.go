@@ -21,6 +21,7 @@ const (
 	BUILTIN_OBJ      = "BUILTIN"
 	ARRAY_OBJ        = "ARRAY"
 	HASH_OBJ         = "HASH"
+	MODULE_TYPE      = "MODULE"
 )
 
 type Object interface {
@@ -36,6 +37,12 @@ type String struct {
 
 func (s *String) Type() ObjectType { return STRING_OBJ }
 func (s *String) Inspect() string  { return s.Value }
+func (s *String) HashKey() HashKey {
+	h := fnv.New64a()
+	h.Write([]byte(s.Value))
+	return HashKey{Type: s.Type(), Value: h.Sum64()}
+}
+
 func (s *String) InvokeMethod(method string, env Environment, args ...Object) Object {
 	return stringInvokables(method, s, args...)
 }
@@ -155,13 +162,6 @@ func (i *Integer) HashKey() HashKey {
 	return HashKey{Type: i.Type(), Value: uint64(i.Value)}
 }
 
-// HashKey returns a hash key for a string.
-func (s *String) HashKey() HashKey {
-	h := fnv.New64a()
-	h.Write([]byte(s.Value))
-	return HashKey{Type: s.Type(), Value: h.Sum64()}
-}
-
 type HashPair struct {
 	Key   Object
 	Value Object
@@ -230,4 +230,50 @@ func (b *Builtin) Type() ObjectType { return BUILTIN_OBJ }
 func (b *Builtin) Inspect() string  { return "builtin function" }
 func (b *Builtin) InvokeMethod(method string, env Environment, args ...Object) Object {
 	return nil
+}
+
+type Hasher interface {
+	Hash() HashKey
+}
+
+type Module struct {
+	Name  string
+	Attrs Object
+}
+
+func (m Module) Bool() bool {
+	return true
+}
+
+func (m Module) Get(index Object) (Object, error) {
+	key, ok := index.(Hasher)
+	if !ok {
+		return nil, fmt.Errorf("invalid module attribute %s", index.Type())
+	}
+
+	attr, found := m.Attrs.(*Hash).Pairs[key.Hash()]
+	if !found {
+		return &Null{}, nil
+	}
+
+	return attr.Value, nil
+}
+
+func (m Module) Compare(other Object) int {
+	return 1
+}
+
+func (m Module) String() string {
+	return m.Inspect()
+}
+
+// Type returns the type of the object
+func (m Module) Type() ObjectType { return MODULE_TYPE }
+
+// Inspect returns a stringified version of the object for debugging
+func (m Module) Inspect() string { return fmt.Sprintf("<module '%s'>", m.Name) }
+
+// InvokeMethod implements Object.
+func (m *Module) InvokeMethod(method string, env Environment, args ...Object) Object {
+	panic("unimplemented")
 }

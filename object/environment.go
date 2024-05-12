@@ -1,5 +1,7 @@
 package object
 
+import "unicode"
+
 type Environment struct {
 	store map[string]Object
 	outer *Environment
@@ -23,6 +25,16 @@ func (e *Environment) Set(name string, val Object) Object {
 	return val
 }
 
+func (e *Environment) ExportedHash() *Hash {
+	pairs := make(map[HashKey]HashPair)
+	for k, v := range e.store {
+		if unicode.IsUpper(rune(k[0])) {
+			s := String{Value: k}
+			pairs[s.HashKey()] = HashPair{Key: &s, Value: v}
+		}
+	}
+	return &Hash{Pairs: pairs}
+}
 
 func NewEnclosedEnvironment(outer *Environment) *Environment {
 	env := NewEnvironment()

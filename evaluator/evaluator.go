@@ -3,8 +3,12 @@ package evaluator
 import (
 	"esolang/lang-esolang/ast"
 	"esolang/lang-esolang/builtins"
+	"esolang/lang-esolang/lexer"
 	"esolang/lang-esolang/object"
+	"esolang/lang-esolang/parser"
+	"esolang/lang-esolang/utils"
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -14,6 +18,31 @@ var (
 	FALSE = &object.Boolean{Value: false}
 	NULL  = &object.Null{}
 )
+
+func Module(node *ast.ImportExpression, name string) object.Object {
+	filename := utils.FindModule(name)
+	if filename == "" {
+		return newError(node.Token.Line, node.Token.Column, "ImportError: no module named '%s'", name)
+	}
+
+	b, err := os.ReadFile(filename)
+	if err != nil {
+		return newError(node.Token.Line, node.Token.Column, "IOError: error reading module '%s': %s", name, err)
+	}
+
+	l := lexer.New(string(b))
+	p := parser.New(l)
+
+	module := p.ParseProgram()
+	if len(p.Errors()) != 0 {
+		return newError(node.Token.Line, node.Token.Column, "ParseError: %s", p.Errors())
+	}
+
+	env := object.NewEnvironment()
+	Eval(module, env)
+
+	return env.ExportedHash()
+}
 
 /*
 	Eval evaluates an AST node and returns a type of `object.Object` from the object system.
@@ -61,6 +90,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalInfixExpression(node, left, right)
 	case *ast.WhileLoopExpression:
 		return evalWhileLoopExpression(node, env)
+	case *ast.ImportExpression:
+		return evalImportExpression(node, env)
 	case *ast.ObjectCallExpression:
 		return evalObjectCallExpression(node, env)
 	case *ast.LetStatement:
@@ -135,6 +166,8 @@ func evalIndexExpression(node *ast.IndexExpression, left object.Object, index ob
 		return evalArrayIndexExpression(left, index)
 	case left.Type() == object.HASH_OBJ:
 		return evalHashIndexExpression(node, left, index)
+	case left.Type() == object.MODULE_TYPE:
+		return evalModuleIndexExpression(node, left, index)
 	case left.Type() == object.STRING_OBJ:
 		return evalStringIndexExpression(left, index)
 	default:
@@ -163,6 +196,22 @@ func evalStringIndexExpression(str object.Object, index object.Object) object.Ob
 		return NULL
 	}
 	return &object.String{Value: string(strObj.Value[idx])}
+}
+
+func evalImportExpression(ie *ast.ImportExpression, env *object.Environment) object.Object {
+	name := Eval(ie.Name, env)
+	if isError(name) {
+		return name
+	}
+
+	if s, ok := name.(*object.String); ok {
+		attrs := Module(ie, s.Value)
+		if isError(attrs) {
+			return attrs
+		}
+		return &object.Module{Name: s.Value, Attrs: attrs}
+	}
+	return newError(ie.Token.Line, ie.Token.Column, "ImportError: invalid import path '%s'", name)
 }
 
 func evalWhileLoopExpression(flExpression *ast.WhileLoopExpression, env *object.Environment) object.Object {
@@ -200,6 +249,11 @@ func evalHashIndexExpression(node *ast.IndexExpression, hash object.Object, inde
 	}
 
 	return pair.Value
+}
+
+func evalModuleIndexExpression(node *ast.IndexExpression, module, index object.Object) object.Object {
+	moduleObject := module.(*object.Module)
+	return evalHashIndexExpression(node, moduleObject.Attrs, index)
 }
 
 func applyFunction(node *ast.CallExpression, fn object.Object, args []object.Object) object.Object {

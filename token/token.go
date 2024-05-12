@@ -50,6 +50,7 @@ const (
 	AND       = "&&"
 	OR        = "-|"
 	PERIOD    = "."
+	IMPORT    = "IMPORT"
 )
 
 // Keywords are reserved words
@@ -62,6 +63,7 @@ var keywords = map[string]TokenType{
 	"else":   ELSE,
 	"return": RETURN,
 	"when":   WHEN,
+	"import": IMPORT,
 }
 
 // LookupIdent checks if the identifier is a keyword
