@@ -12,7 +12,7 @@ func Print(args ...object.Object) object.Object {
 		fmt.Print(arg.Inspect())
 		toBePrinted = append(toBePrinted, arg.Inspect())
 	}
-	return &object.String{Value: strings.Join(toBePrinted, " ")}
+	return &object.String{Value: strings.Join(toBePrinted, " ") + "flag=noshow"}
 }
 
 func Println(args ...object.Object) object.Object {
@@ -21,7 +21,7 @@ func Println(args ...object.Object) object.Object {
 		toBePrinted = append(toBePrinted, arg.Inspect())
 		fmt.Println(arg.Inspect())
 	}
-	return &object.String{Value: strings.Join(toBePrinted, "\n")}
+	return &object.String{Value: strings.Join(toBePrinted, "\n") + "flag=noshow"}
 }
 
 // TODO: Rethink how read should work

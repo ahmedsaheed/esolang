@@ -9,6 +9,8 @@ type TokenType string
 type Token struct {
 	Type    TokenType // Type of token
 	Literal string    // Literal value of token
+	Line    int       // Line number of token
+	Column  int       // Column number of token
 }
 
 const (

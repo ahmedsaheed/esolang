@@ -14,6 +14,7 @@ import (
 	"io"
 	"os"
 	"os/user"
+	"strings"
 
 	"github.com/charmbracelet/log"
 )
@@ -76,10 +77,14 @@ func evaluteInput(input string, log *log.Logger, environmnet *object.Environment
 	evaluated := evaluator.Eval(program, environmnet)
 	if evaluated != nil {
 		output := evaluated.Inspect()
+
 		if len(output) > 5 && output[:5] == "ERROR" {
 			log.Error(output[6:])
 		} else {
-			log.Info(output)
+			var DONT_PRINT = "flag=noshow"
+			if !strings.HasSuffix(output, DONT_PRINT) {
+				log.Info(output)
+			}
 		}
 	}
 }
@@ -90,18 +95,21 @@ func EvlauateFromPlayground(input string) string {
 	program := initialParser.ParseProgram()
 
 	if len(initialParser.Errors()) != 0 {
-	    return initialParser.Errors()[0]
-    }
+		return initialParser.Errors()[0]
+	}
 
 	evaluated := evaluator.Eval(program, environmnet)
 	if evaluated != nil {
 		output := evaluated.Inspect()
-        return output
+		var DONT_PRINT = "flag=noshow"
+		if strings.HasSuffix(output, DONT_PRINT) {
+			output = output[:len(output)-len(DONT_PRINT)]
+		}
+		return output
 	} else {
-        return "ERROR: No output found"
-    }
+		return "ERROR: No output found"
+	}
 }
-
 
 func generateLogger() *log.Logger {
 	logger := log.New(os.Stderr)

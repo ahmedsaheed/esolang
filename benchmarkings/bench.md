@@ -1,4 +1,4 @@
 | Command | Mean [ms] | Min [ms] | Max [ms] | Relative |
 |:---|---:|---:|---:|---:|
-| `go run esolang.go ./benchmarkings/bench.eso` | 607.4 ± 326.3 | 487.3 | 1532.3 | 24.58 ± 17.50 |
-| `python3 ./benchmarkings/bench.py` | 24.7 ± 11.5 | 21.0 | 107.2 | 1.00 |
+| `./dist/esolang_darwin_arm64/esolang ./benchmarkings/bench.eso` | 14.6 ± 1.5 | 14.0 | 28.4 | 1.00 |
+| `python3 ./benchmarkings/bench.py` | 22.3 ± 3.8 | 21.1 | 50.1 | 1.52 ± 0.30 |

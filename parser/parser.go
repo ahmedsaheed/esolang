@@ -190,7 +190,7 @@ func (P *Parser) parseIdentifier() ast.Expression {
 peekError returns an error message when the next token is not as expected
 */
 func (P *Parser) peekError(t token.TokenType) {
-	msg := fmt.Sprintf("expected next token to be %s, got %s instead", t, P.peekToken.Type)
+	msg := fmt.Sprintf("Line %v Column %v - expected next token to be %s got %s", P.currentToken.Line, P.currentToken.Column, t, P.peekToken.Type)
 	P.errors = append(P.errors, msg)
 }
 
@@ -329,7 +329,7 @@ func (P *Parser) parseIntegerLiteral() ast.Expression {
 
 // noPrefixParseFnError returns an error message when no prefix parse function is found
 func (P *Parser) noPrefixParseFnError(t token.TokenType) {
-	msg := fmt.Sprintf("no prefix parse function for %s found", t)
+	msg := fmt.Sprintf("Line %v Column %v - no prefix parse function for %s found", P.currentToken.Line, P.currentToken.Column, t)
 	P.errors = append(P.errors, msg)
 }
 
