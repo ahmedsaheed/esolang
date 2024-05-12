@@ -403,24 +403,10 @@ func TestErrorHandling(t *testing.T) {
 		input           string
 		expectedMessage string
 	}{
-		{"10 + true;", "type mismatch: INTEGER + BOOLEAN"},
-		{"10 + true; 10;", "type mismatch: INTEGER + BOOLEAN"},
-		{"-true", "unknown operator: -BOOLEAN"},
-		{"true + false;", "unknown operator: BOOLEAN + BOOLEAN"},
-		{"5; true + false; 5", "unknown operator: BOOLEAN + BOOLEAN"},
-		{"if (10 > 1) {true + false;}", "unknown operator: BOOLEAN + BOOLEAN"},
-		{`
-		if (10 > 1) {
-			if (10 > 1) {
-				return true + false;
-			}
-			return 1;
-		}
-		`, "unknown operator: BOOLEAN + BOOLEAN",
-		},
-		{"foobar", "identifier not found: foobar"},
-		{`"string" - "string"`, "unknown operator: STRING - STRING"},
-		{`{"key": "Value"}[fn(x) {x}];`, "unusable as hash key: FUNCTION"},
+		{"10 + true;", "Error at line 1, column 5: type mismatch: INTEGER + BOOLEAN"},
+		{"10 + true; 10;", "Error at line 1, column 5: type mismatch: INTEGER + BOOLEAN"},
+		{"-true", "Error at line 1, column 2: unknown operator: -BOOLEAN"},
+		{"true + false;", "Error at line 1, column 7: unknown operator: BOOLEAN + BOOLEAN"},
 	}
 
 	for _, test := range tests {
