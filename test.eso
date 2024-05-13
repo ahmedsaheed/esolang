@@ -20,7 +20,10 @@ let Person = fn(name, age, occupation) {
   let person = {
     "name": name,
     "age": age,
-    "occupation": occupation,
+    "occupation": {
+        "title": occupation,
+        "years": 5
+    },
     "toString": fn() {
        return "Name: " + name + ", Age: " + age.to_string() + ", Occupation: " + occupation
      }
@@ -29,7 +32,7 @@ let Person = fn(name, age, occupation) {
 }
 
 let p = Person("John", 30, "Software Developer")
-println(p["name"])
-println(p["toString"]())
-
-println(sec["Sum"](10, 20))
+println(p::name)
+println(p::age)
+println(p::occupation)
+println(sec::Sum(10, 10))

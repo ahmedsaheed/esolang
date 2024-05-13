@@ -45,6 +45,7 @@ const (
 	LBRACKET  = "["
 	RBRACKET  = "]"
 	COLON     = ":"
+	DOUBLECOL = "::"
 	WHEN      = "WHEN"
 	MOD       = "%"
 	AND       = "&&"

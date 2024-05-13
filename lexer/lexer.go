@@ -103,12 +103,19 @@ func (L *Lexer) NextToken() token.Token {
 			char := L.char
 			L.readChar()
 			literal := string(char) + string(L.char)
-			tok = token.Token{Type: token.AND, Literal: literal}
+			tok = token.Token{Type: token.AND, Literal: literal, Line: L.line, Column: L.column}
 		} else {
 			tok = newToken(token.ILLEGAL, L.char, L.line, L.column)
 		}
 	case ':':
-		tok = newToken(token.COLON, L.char, L.line, L.column)
+		if L.peekChar() == ':' {
+			char := L.char
+			L.readChar()
+			literal := string(char) + string(L.char)
+			tok = token.Token{Type: token.DOUBLECOL, Literal: literal, Line: L.line, Column: L.column}
+		} else {
+			tok = newToken(token.COLON, L.char, L.line, L.column)
+		}
 	case '%':
 		tok = newToken(token.MOD, L.char, L.line, L.column)
 	case '"':

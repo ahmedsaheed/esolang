@@ -28,20 +28,21 @@ const (
 
 // precedence map to determine the precedence of the operators
 var precedence = map[token.TokenType]int{
-	token.EQ:       EQUALS,
-	token.NOT_EQ:   EQUALS,
-	token.LT:       LESSGREATER,
-	token.GT:       LESSGREATER,
-	token.AND:      ANDOR,
-	token.OR:       ANDOR,
-	token.PLUS:     SUM,
-	token.MINUS:    SUM,
-	token.MOD:      MODULUS,
-	token.SLASH:    PRODUCT,
-	token.ASTERISK: PRODUCT,
-	token.LPAREN:   CALL,
-	token.PERIOD:   CALL,
-	token.LBRACKET: INDEX,
+	token.EQ:        EQUALS,
+	token.NOT_EQ:    EQUALS,
+	token.LT:        LESSGREATER,
+	token.GT:        LESSGREATER,
+	token.AND:       ANDOR,
+	token.OR:        ANDOR,
+	token.PLUS:      SUM,
+	token.MINUS:     SUM,
+	token.MOD:       MODULUS,
+	token.SLASH:     PRODUCT,
+	token.ASTERISK:  PRODUCT,
+	token.LPAREN:    CALL,
+	token.PERIOD:    CALL,
+	token.LBRACKET:  INDEX,
+	token.DOUBLECOL: INDEX,
 }
 
 // Parser is the core struct for the parser
@@ -109,7 +110,7 @@ func New(L *lexer.Lexer) *Parser {
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
 	p.registerInfix(token.PERIOD, p.parseMethodCallExpression)
-
+	p.registerInfix(token.DOUBLECOL, p.parseSelectorExpression)
 	return p
 }
 
@@ -624,4 +625,10 @@ func (P *Parser) parseImportExpression() ast.Expression {
 		return nil
 	}
 	return exp
+}
+
+func (P *Parser) parseSelectorExpression(exp ast.Expression) ast.Expression {
+	P.expectPeek(token.IDENT)
+	index := &ast.StringLiteral{Token: P.currentToken, Value: P.currentToken.Literal}
+	return &ast.IndexExpression{Left: exp, Index: index, Token: P.currentToken}
 }

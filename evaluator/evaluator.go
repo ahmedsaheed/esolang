@@ -171,6 +171,11 @@ func evalIndexExpression(node *ast.IndexExpression, left object.Object, index ob
 	case left.Type() == object.STRING_OBJ:
 		return evalStringIndexExpression(left, index)
 	default:
+
+		if left.Type() == object.ARRAY_OBJ {
+			return newError(currLine, currCol, `index operation on %s only uses ["index"] accessor`, left.Type())
+		}
+
 		return newError(currLine, currCol, "index operator not supported: %s", left.Type())
 	}
 
