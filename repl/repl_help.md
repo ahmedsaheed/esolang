@@ -5,9 +5,9 @@
 - `.help` - Show this message
 - `.exit` - Exit the repl
 - `.clear` - Clear the screen
-- `.about` - Show information about the repl
 - `.version` - Show the version of the repl
-- `.license` - Show the license of the repl
+- `.enable-multiline` - Enable multi-line input
+- `.disable-multiline` - Disable multi-line input (default)
 
 ## Features
 
