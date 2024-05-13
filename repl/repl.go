@@ -16,6 +16,7 @@ import (
 	"os/user"
 	"strings"
 
+	"github.com/charmbracelet/glamour"
 	"github.com/charmbracelet/log"
 )
 
@@ -46,15 +47,27 @@ func Start(in io.Reader, out io.Writer, stdLib string) {
 			return
 		}
 		line := scanner.Text()
-		if line == ".help" {
-			replHelp()
-		} else if line == ".exit" {
-			fmt.Println("Goodbye!")
-			return
+		if line[0] == '.' {
+			evaluateReplCommand(line[1:])
 		} else {
 			evaluteInput(line, logger, environmnet, stdLib)
 		}
+	}
+}
 
+func evaluateReplCommand(input string) {
+	switch input {
+	case "help":
+		replHelp()
+	case "exit":
+		fmt.Println("Goodbye!")
+		os.Exit(0)
+	case "clear":
+		fmt.Print("\033[H\033[2J")
+	case "version":
+		fmt.Println("esolang version 0.1.0")
+	default:
+		fmt.Println("Unknown command")
 	}
 }
 
@@ -120,10 +133,16 @@ func generateLogger() *log.Logger {
 	return logger
 }
 
+//go:embed repl_help.md
+var help string
+
 func replHelp() {
-	fmt.Println("Here are a few commands you can use:")
-	fmt.Println(".help - Show this message")
-	fmt.Println(".exit - Exit the repl")
+	out, err := glamour.Render(help, "dark")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Print(out)
 	fmt.Println("Feel free to type in commands")
 }
 
