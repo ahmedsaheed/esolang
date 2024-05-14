@@ -85,6 +85,7 @@ func New(L *lexer.Lexer) *Parser {
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
+	p.registerPrefix(token.DEF_FN, p.parseFunctionDefinition)
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
 	p.registerPrefix(token.TRUE, p.parseBoolean)
 	p.registerPrefix(token.FALSE, p.parseBoolean)
@@ -659,4 +660,65 @@ func (P *Parser) parseBindExpression(exp ast.Expression) ast.Expression {
 	// }
 
 	return be
+}
+
+func (p *Parser) parseFunctionDefinition() ast.Expression {
+	p.nextToken()
+	lit := &ast.FunctionDefineLiteral{Token: p.currentToken}
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
+	lit.Defaults, lit.Parameters = p.parseFunctionDefParameter()
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+	lit.Body = p.parseBlockStatement()
+	return lit
+}
+
+// parseFunctionParameters parses the parameters used for a function.
+func (p *Parser) parseFunctionDefParameter() (map[string]ast.Expression, []*ast.Identifier) {
+
+	// Any default parameters.
+	m := make(map[string]ast.Expression)
+
+	// The argument-definitions.
+	identifiers := make([]*ast.Identifier, 0)
+
+	// Is the next parameter ")" ?  If so we're done. No args.
+	if p.peekTokenLS(token.RPAREN) {
+		p.nextToken()
+		return m, identifiers
+	}
+	p.nextToken()
+
+	// Keep going until we find a ")"
+	for !p.currentTokenLS(token.RPAREN) {
+
+		if p.currentTokenLS(token.EOF) {
+			p.errors = append(p.errors, "unterminated function parameters")
+			return nil, nil
+		}
+
+		// Get the identifier.
+		ident := &ast.Identifier{Token: p.currentToken, Value: p.currentToken.Literal}
+		identifiers = append(identifiers, ident)
+		p.nextToken()
+
+		// If there is "=xx" after the name then that's
+		// the default parameter.
+		if p.currentTokenLS(token.ASSIGN) {
+			p.nextToken()
+			// Save the default value.
+			m[ident.Value] = p.parseExpressionStatement().Expression
+			p.nextToken()
+		}
+
+		// Skip any comma.
+		if p.currentTokenLS(token.COMMA) {
+			p.nextToken()
+		}
+	}
+
+	return m, identifiers
 }

@@ -28,6 +28,7 @@ const (
 	LBRACE    = "{"
 	RBRACE    = "}"
 	FUNCTION  = "FUNCTION"
+	DEF_FN    = "DEF_FUNTION"
 	LET       = "LET"
 	BANG      = "!"
 	SLASH     = "/"
@@ -67,6 +68,7 @@ var keywords = map[string]TokenType{
 	"return": RETURN,
 	"when":   WHEN,
 	"import": IMPORT,
+	"func":   DEF_FN,
 }
 
 // LookupIdent checks if the identifier is a keyword

@@ -98,7 +98,12 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		params := node.Parameters
 		body := node.Body
 		return &object.Function{Parameters: params, Body: body, Env: env}
-
+	case *ast.FunctionDefineLiteral:
+		params := node.Parameters
+		body := node.Body
+		// defaults := node.Defaults
+		env.Set(node.TokenLiteral(), &object.Function{Parameters: params, Env: env, Body: body})
+		return NULL
 	case *ast.BlockStatement:
 		return evalBlockStatement(node, env)
 

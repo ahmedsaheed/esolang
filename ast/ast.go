@@ -468,3 +468,40 @@ func (be *BindExpression) String() string {
 
 	return out.String()
 }
+
+type FunctionDefineLiteral struct {
+	// Token holds the token
+	Token token.Token
+
+	// Paremeters holds the function parameters.
+	Parameters []*Identifier
+
+	// Defaults holds any default-arguments.
+	Defaults map[string]Expression
+
+	// Body holds the set of statements in the functions' body.
+	Body *BlockStatement
+}
+
+func (fl *FunctionDefineLiteral) expressionNode() {}
+
+// TokenLiteral returns the literal token.
+func (fl *FunctionDefineLiteral) TokenLiteral() string {
+	return fl.Token.Literal
+}
+
+// String returns this object as a string.
+func (fl *FunctionDefineLiteral) String() string {
+	var out bytes.Buffer
+	params := make([]string, 0)
+	for _, p := range fl.Parameters {
+		params = append(params, p.String())
+	}
+	out.WriteString(fl.TokenLiteral())
+	out.WriteString("(")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(") ")
+	out.WriteString(fl.Body.String())
+	return out.String()
+
+}

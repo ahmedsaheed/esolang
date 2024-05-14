@@ -14,6 +14,15 @@ let fizzbuzz = fn(n, arr) {
 
 fizzbuzz(20, [])
 
+func hello() {
+    printHi := fn() {
+        println("Hi")
+    }
+    printHi()
+};
+
+
+
 let Person = fn(name, age, occupation) {
 
   let person = {
@@ -36,3 +45,5 @@ name := p::name
 println(name)
 println(p::occupation)
 println(sec::Sum(50, 10))
+
+hello()
