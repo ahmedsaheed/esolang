@@ -20,29 +20,32 @@ import (
 	"github.com/charmbracelet/log"
 )
 
-var PROMPT = ">>"
-var SHOULD_MULTILINE = false
+var (
+	PROMPT           = ">>"
+	SHOULD_MULTILINE = false
+	REPL_MODE        = false
+)
 
-func Execute(input string, stdLib string) {
+func Execute(sourceName, input string, stdLib string) {
 	environmnet := object.NewEnvironment()
 	logger := generateLogger()
-	evaluteInput(input, logger, environmnet, stdLib)
+	evaluteInput(sourceName, input, logger, environmnet, stdLib)
 }
 
 func Start(in io.Reader, out io.Writer, stdLib string) {
+	REPL_MODE = true
 	user, err := user.Current()
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("Hello %s! Welcome to esolang's repl \n", user.Username)
-	fmt.Printf("Feel free to type in commands \n")
 	fmt.Printf("Type '.help' for assistance \n")
 	scanner := bufio.NewScanner(in)
 	environmnet := object.NewEnvironment()
 	logger := generateLogger()
 	var inputBuffer strings.Builder
 	for {
-		PROMPT = map[bool]string{true: ">>>", false: ">>"}[SHOULD_MULTILINE]
+		PROMPT = map[bool]string{true: ">>>", false: ">>"}[SHOULD_MULTILINE && REPL_MODE]
 		fmt.Fprintf(out, PROMPT)
 		scanned := scanner.Scan()
 		if !scanned {
@@ -63,7 +66,7 @@ func Start(in io.Reader, out io.Writer, stdLib string) {
 			// If the line ends with a semicolon or is empty, evaluate the input
 			if strings.HasSuffix(line, ";") {
 
-				evaluteInput(inputBuffer.String(), logger, environmnet, stdLib)
+				evaluteInput("REPL", inputBuffer.String(), logger, environmnet, stdLib)
 				// Clear the input buffer
 				inputBuffer.Reset()
 				inputBuffer.WriteString("\n")
@@ -72,14 +75,14 @@ func Start(in io.Reader, out io.Writer, stdLib string) {
 			if line[0] == '.' {
 				evaluateReplCommand(line[1:])
 			} else {
-				evaluteInput(line, logger, environmnet, stdLib)
+				evaluteInput("REPL", line, logger, environmnet, stdLib)
 			}
 		}
 	}
 }
 
-func evaluteInput(input string, log *log.Logger, environmnet *object.Environment, stdLib string) {
-	initialLexer := lexer.New(input)
+func evaluteInput(sourceName, input string, log *log.Logger, environmnet *object.Environment, stdLib string) {
+	initialLexer := lexer.New(sourceName, input)
 	initialParser := parser.New(initialLexer)
 
 	program := initialParser.ParseProgram()
@@ -89,9 +92,10 @@ func evaluteInput(input string, log *log.Logger, environmnet *object.Environment
 		return
 	}
 
-	fmt.Println(syntaxHiglight(input))
-
-	libLexer := lexer.New(stdLib)
+	if REPL_MODE {
+		fmt.Println(syntaxHiglight(input))
+	}
+	libLexer := lexer.New("STDLIB", stdLib)
 	libParser := parser.New(libLexer)
 	libProgram := libParser.ParseProgram()
 	evaluator.Eval(libProgram, environmnet)
@@ -111,7 +115,7 @@ func evaluteInput(input string, log *log.Logger, environmnet *object.Environment
 	}
 }
 func EvlauateFromPlayground(input string) string {
-	initialLexer := lexer.New(input)
+	initialLexer := lexer.New("plaground.eso", input)
 	initialParser := parser.New(initialLexer)
 	environmnet := object.NewEnvironment()
 	program := initialParser.ParseProgram()
