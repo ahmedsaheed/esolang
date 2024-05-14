@@ -7,6 +7,8 @@ import (
 	"testing"
 )
 
+const FILE = "<test>"
+
 func TestEvaluateIntegerExpression(t *testing.T) {
 	tests := []struct {
 		input    string
@@ -403,10 +405,10 @@ func TestErrorHandling(t *testing.T) {
 		input           string
 		expectedMessage string
 	}{
-		{"10 + true;", "Error at line 1, column 5: type mismatch: INTEGER + BOOLEAN"},
-		{"10 + true; 10;", "Error at line 1, column 5: type mismatch: INTEGER + BOOLEAN"},
-		{"-true", "Error at line 1, column 2: unknown operator: -BOOLEAN"},
-		{"true + false;", "Error at line 1, column 7: unknown operator: BOOLEAN + BOOLEAN"},
+		{"10 + true;", FILE + ": " + "Error at line 1, column 5: type mismatch: INTEGER + BOOLEAN"},
+		{"10 + true; 10;", FILE + ": " + "Error at line 1, column 5: type mismatch: INTEGER + BOOLEAN"},
+		{"-true", FILE + ": " + "Error at line 1, column 2: unknown operator: -BOOLEAN"},
+		{"true + false;", FILE + ": " + "Error at line 1, column 7: unknown operator: BOOLEAN + BOOLEAN"},
 	}
 
 	for _, test := range tests {
@@ -460,7 +462,6 @@ func testNullObject(t *testing.T, evaluated object.Object) bool {
 }
 
 func testEval(input string) object.Object {
-	const FILE = "<test>"
 	lexer := lexer.New(FILE, input)
 	parser := parser.New(lexer)
 	environment := object.NewEnvironment()
