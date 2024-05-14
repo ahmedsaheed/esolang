@@ -277,3 +277,7 @@ func (m Module) Inspect() string { return fmt.Sprintf("<module '%s'>", m.Name) }
 func (m *Module) InvokeMethod(method string, env Environment, args ...Object) Object {
 	panic("unimplemented")
 }
+
+type Copyable interface {
+	Copy() Object
+}

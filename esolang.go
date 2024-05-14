@@ -10,7 +10,7 @@ import (
 	"github.com/charmbracelet/log"
 )
 
-// build using: go build -tags netgo -ldflags '-s -w' -o esolang
+// build using: goreleaser release --snapshot --clean
 func main() {
 	replMode := flag.Bool("repl", false, "Start the repl")
 	logger := log.New(os.Stderr)
@@ -34,7 +34,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		repl.Execute(string(inputFile), getStdLib())
+		repl.Execute(file, string(inputFile), getStdLib())
 	} else {
 		logger.Warn("No file provided. Please provide a file to run or use the -repl flag to start the repl.")
 		logger.Warn("Usage: esolang <path-to-filename>")

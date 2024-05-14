@@ -19,31 +19,6 @@ var (
 	NULL  = &object.Null{}
 )
 
-func Module(node *ast.ImportExpression, name string) object.Object {
-	filename := utils.FindModule(name)
-	if filename == "" {
-		return newError(node.Token.Line, node.Token.Column, "ImportError: no module named '%s'", name)
-	}
-
-	b, err := os.ReadFile(filename)
-	if err != nil {
-		return newError(node.Token.Line, node.Token.Column, "IOError: error reading module '%s': %s", name, err)
-	}
-
-	l := lexer.New(string(b))
-	p := parser.New(l)
-
-	module := p.ParseProgram()
-	if len(p.Errors()) != 0 {
-		return newError(node.Token.Line, node.Token.Column, "ParseError: %s", p.Errors())
-	}
-
-	env := object.NewEnvironment()
-	Eval(module, env)
-
-	return env.ExportedHash()
-}
-
 /*
 	Eval evaluates an AST node and returns a type of `object.Object` from the object system.
 
@@ -100,7 +75,22 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return val
 		}
 		env.Set(node.Name.Value, val)
+	case *ast.BindExpression:
+		value := Eval(node.Value, env)
+		if isError(value) {
+			return value
+		}
 
+		if ident, ok := node.Left.(*ast.Identifier); ok {
+			if obj, ok := value.(object.Copyable); ok {
+				env.Set(ident.Value, obj.Copy())
+			} else {
+				env.Set(ident.Value, value)
+			}
+
+			return &object.Null{}
+		}
+		return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "expected identifier on left got=%T", node.Left)
 	case *ast.Identifier:
 		return evalIdentifier(node, env)
 
@@ -173,10 +163,10 @@ func evalIndexExpression(node *ast.IndexExpression, left object.Object, index ob
 	default:
 
 		if left.Type() == object.ARRAY_OBJ {
-			return newError(currLine, currCol, `index operation on %s only uses ["index"] accessor`, left.Type())
+			return newError(node.Token.FileName, currLine, currCol, `index operation on %s only uses ["index"] accessor`, left.Type())
 		}
 
-		return newError(currLine, currCol, "index operator not supported: %s", left.Type())
+		return newError(node.Token.FileName, currLine, currCol, "index operator not supported: %s", left.Type())
 	}
 
 }
@@ -216,7 +206,7 @@ func evalImportExpression(ie *ast.ImportExpression, env *object.Environment) obj
 		}
 		return &object.Module{Name: s.Value, Attrs: attrs}
 	}
-	return newError(ie.Token.Line, ie.Token.Column, "ImportError: invalid import path '%s'", name)
+	return newError(ie.Token.FileName, ie.Token.Line, ie.Token.Column, "ImportError: invalid import path '%s'", name)
 }
 
 func evalWhileLoopExpression(flExpression *ast.WhileLoopExpression, env *object.Environment) object.Object {
@@ -245,7 +235,7 @@ func evalHashIndexExpression(node *ast.IndexExpression, hash object.Object, inde
 	hashObj := hash.(*object.Hash)
 	key, ok := index.(object.Hashable)
 	if !ok {
-		return newError(node.Token.Line, node.Token.Column, "unusable as hash key: %s", index.Type())
+		return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "unusable as hash key: %s", index.Type())
 	}
 
 	pair, ok := hashObj.Pairs[key.HashKey()]
@@ -259,36 +249,6 @@ func evalHashIndexExpression(node *ast.IndexExpression, hash object.Object, inde
 func evalModuleIndexExpression(node *ast.IndexExpression, module, index object.Object) object.Object {
 	moduleObject := module.(*object.Module)
 	return evalHashIndexExpression(node, moduleObject.Attrs, index)
-}
-
-func applyFunction(node *ast.CallExpression, fn object.Object, args []object.Object) object.Object {
-	switch fn := fn.(type) {
-
-	case *object.Function:
-		extendedEnv := extendFunctionEnv(fn, args)
-		evaluated := Eval(fn.Body, extendedEnv)
-		return unwrapReturnValue(evaluated)
-
-	case *object.Builtin:
-		return fn.Fn(args...)
-	default:
-		return newError(node.Token.Line, node.Token.Column, "not a function: %s", fn.Type())
-	}
-}
-
-func unwrapReturnValue(evaluated object.Object) object.Object {
-	if returnValue, ok := evaluated.(*object.ReturnValue); ok {
-		return returnValue.Value
-	}
-	return evaluated
-}
-
-func extendFunctionEnv(function *object.Function, args []object.Object) *object.Environment {
-	env := object.NewEnclosedEnvironment(function.Env)
-	for paramIdx, param := range function.Parameters {
-		env.Set(param.Value, args[paramIdx])
-	}
-	return env
 }
 
 func evalExpressions(expression []ast.Expression, env *object.Environment) []object.Object {
@@ -313,7 +273,7 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 		// }
 		return builtin
 	}
-	return newError(node.Token.Line, node.Token.Column, "identifier not found: %s", node.Value)
+	return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "identifier not found: %s", node.Value)
 }
 
 func evalIfExpression(ifExpressionNode *ast.IfExpression, env *object.Environment) object.Object {
@@ -327,19 +287,6 @@ func evalIfExpression(ifExpressionNode *ast.IfExpression, env *object.Environmen
 		return Eval(ifExpressionNode.Alternative, env)
 	} else {
 		return NULL
-	}
-}
-
-func isTruthy(condition object.Object) bool {
-	switch condition {
-	case NULL:
-		return false
-	case TRUE:
-		return true
-	case FALSE:
-		return false
-	default:
-		return true
 	}
 }
 
@@ -361,9 +308,9 @@ func evalInfixExpression(node *ast.InfixExpression, leftOperand, rightOperand ob
 	case operator == "-|":
 		return nativeBoolToBooleanObject(objectToNativeBoolean(leftOperand) || objectToNativeBoolean(rightOperand))
 	case leftOperand.Type() != rightOperand.Type():
-		return newError(node.Token.Line, node.Token.Column, "type mismatch: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
+		return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "type mismatch: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
 	default:
-		return newError(node.Token.Line, node.Token.Column, "unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
+		return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
 	}
 }
 
@@ -390,13 +337,13 @@ func evalStringInfixExpression(node *ast.InfixExpression, leftOperand, rightOper
 		case "!=":
 			return nativeBoolToBooleanObject(leftValue != rightValue)
 		default:
-			return newError(currLine, currColumn, "unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
+			return newError(node.Token.FileName, currLine, currColumn, "unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
 		}
 	default:
-		return newError(currLine, currColumn, "unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
+		return newError(node.Token.FileName, currLine, currColumn, "unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
 	}
 
-	return newError(currLine, currColumn, "unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
+	return newError(node.Token.FileName, currLine, currColumn, "unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
 }
 
 // evalIntegerInfixExpression evaluates is where the actual arithmetic operations for + , - , / and * performed
@@ -424,7 +371,7 @@ func evalIntegerInfixExpression(node *ast.InfixExpression, operator string, left
 	case "!=":
 		return nativeBoolToBooleanObject(leftValue != rightValue)
 	default:
-		return newError(node.Token.Line, node.Token.Column, "unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
+		return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
 	}
 }
 
@@ -435,7 +382,7 @@ func evalPrefixExpression(node *ast.PrefixExpression, operator string, right obj
 	case "-":
 		return evalMinusPrefixOperatorExpression(node, right)
 	default:
-		return newError(node.Token.Line, node.Token.Column, "unknown operator: %s%s", operator, right.Type())
+		return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "unknown operator: %s%s", operator, right.Type())
 	}
 }
 
@@ -443,7 +390,7 @@ func evalPrefixExpression(node *ast.PrefixExpression, operator string, right obj
 func evalMinusPrefixOperatorExpression(node *ast.PrefixExpression, right object.Object) object.Object {
 
 	if right.Type() != object.INTEGER_OBJ {
-		return newError(node.Token.Line, node.Token.Column, "unknown operator: -%s", right.Type())
+		return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "unknown operator: -%s", right.Type())
 	}
 	// if operand ins't integer - we escape
 	if right.Type() != object.INTEGER_OBJ {
@@ -454,6 +401,7 @@ func evalMinusPrefixOperatorExpression(node *ast.PrefixExpression, right object.
 	return &object.Integer{Value: -value}
 }
 
+// evalBangOperatorExpression evaluates the right object and returns a new object with the value negated
 func evalBangOperatorExpression(right object.Object) object.Object {
 	switch right {
 	case TRUE:
@@ -480,7 +428,7 @@ func evalHashLiteral(
 		}
 		hashKey, ok := key.(object.Hashable)
 		if !ok {
-			return newError(node.Token.Line, node.Token.Column, "unusable as hash key: %s", key.Type())
+			return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "unusable as hash key: %s", key.Type())
 		}
 
 		value := Eval(valueNode, env)
@@ -492,14 +440,6 @@ func evalHashLiteral(
 		pairs[hashed] = object.HashPair{Key: key, Value: value}
 	}
 	return &object.Hash{Pairs: pairs}
-}
-
-// nativeBoolToBooleanObject converts a native bool to a boolean object
-func nativeBoolToBooleanObject(input bool) *object.Boolean {
-	if input {
-		return TRUE
-	}
-	return FALSE
 }
 
 func evalStatements(statements []ast.Statement, env *object.Environment) object.Object {
@@ -533,7 +473,7 @@ func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Enviro
 	objectValue := Eval(call.Object, env)
 
 	if objectValue == nil {
-		return newError(call.Token.Line, call.Token.Column, "object is nil")
+		return newError(call.Token.FileName, call.Token.Line, call.Token.Column, "object is nil")
 	}
 	if method, ok := call.Call.(*ast.CallExpression); ok {
 		args := evalExpressions(call.Call.(*ast.CallExpression).Arguments, env)
@@ -543,7 +483,7 @@ func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Enviro
 		}
 	}
 	// TODO: check if the object has the method implemented in esolang
-	return newError(call.Token.Line, call.Token.Column, "object has no method %s", call.Call.String())
+	return newError(call.Token.FileName, call.Token.Line, call.Token.Column, "object has no method %s", call.Call.String())
 }
 
 func evalProgram(program *ast.Program, env *object.Environment) object.Object {
@@ -560,8 +500,75 @@ func evalProgram(program *ast.Program, env *object.Environment) object.Object {
 	return evaluatedResult
 }
 
-func newError(line, column int, format string, a ...interface{}) *object.Error {
-	linesAndCol := fmt.Sprintf("Error at line %d, column %d:", line, column)
+func Module(node *ast.ImportExpression, name string) object.Object {
+	error := func(message string) object.Object {
+		return &object.Error{
+			Message: message,
+		}
+	}
+
+	filename := utils.FindModule(name)
+	if filename == "" {
+		return error(fmt.Sprintf("ImportError: no module named '%s'", name))
+	}
+
+	b, err := os.ReadFile(filename)
+	if err != nil {
+		return error(fmt.Sprintf("IOError: error reading module '%s': %s", name, err))
+	}
+
+	sourceName := strings.Split(filename, "/")
+	source := sourceName[len(sourceName)-2] + "/" + sourceName[len(sourceName)-1]
+	l := lexer.New(source, string(b))
+	p := parser.New(l)
+
+	module := p.ParseProgram()
+	if len(p.Errors()) != 0 {
+		return error(strings.Join(p.Errors(), "\n"))
+	}
+
+	env := object.NewEnvironment()
+	objeEval := Eval(module, env)
+	switch encounterError := objeEval.(type) {
+	case *object.Error:
+		return encounterError
+	}
+
+	return env.ExportedHash()
+}
+
+func applyFunction(node *ast.CallExpression, fn object.Object, args []object.Object) object.Object {
+	switch fn := fn.(type) {
+
+	case *object.Function:
+		extendedEnv := extendFunctionEnv(fn, args)
+		evaluated := Eval(fn.Body, extendedEnv)
+		return unwrapReturnValue(evaluated)
+
+	case *object.Builtin:
+		return fn.Fn(args...)
+	default:
+		return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "not a function: %s", fn.Type())
+	}
+}
+
+func unwrapReturnValue(evaluated object.Object) object.Object {
+	if returnValue, ok := evaluated.(*object.ReturnValue); ok {
+		return returnValue.Value
+	}
+	return evaluated
+}
+
+func extendFunctionEnv(function *object.Function, args []object.Object) *object.Environment {
+	env := object.NewEnclosedEnvironment(function.Env)
+	for paramIdx, param := range function.Parameters {
+		env.Set(param.Value, args[paramIdx])
+	}
+	return env
+}
+
+func newError(fileName string, line, column int, format string, a ...interface{}) *object.Error {
+	linesAndCol := fmt.Sprintf("%s: Error at line %d, column %d:", fileName, line, column)
 	format = fmt.Sprintf("%s %s", linesAndCol, format)
 	return &object.Error{Message: fmt.Sprintf(format, a...)}
 }
@@ -571,6 +578,14 @@ func isError(obj object.Object) bool {
 		return obj.Type() == object.ERROR_OBJ
 	}
 	return false
+}
+
+// nativeBoolToBooleanObject converts a native bool to a boolean object
+func nativeBoolToBooleanObject(input bool) *object.Boolean {
+	if input {
+		return TRUE
+	}
+	return FALSE
 }
 
 func objectToNativeBoolean(o object.Object) bool {
@@ -604,6 +619,15 @@ func objectToNativeBoolean(o object.Object) bool {
 	}
 }
 
-func prefixErrWithLineAndColumn(line, column int, err string) string {
-	return fmt.Sprintf("Error at line %d, column %d: %s\n", line, column, err)
+func isTruthy(condition object.Object) bool {
+	switch condition {
+	case NULL:
+		return false
+	case TRUE:
+		return true
+	case FALSE:
+		return false
+	default:
+		return true
+	}
 }

@@ -21,11 +21,12 @@ type Lexer struct {
 	char         byte   // The current character under examination.
 	line         int    // The current line number.
 	column       int    // The current column number.
+	fileName     string // The name of the file being lexed.
 }
 
 // New creates a new Lexer and returns a pointer to it.
-func New(input string) *Lexer {
-	L := &Lexer{input: input}
+func New(fileName, input string) *Lexer {
+	L := &Lexer{input: input, fileName: fileName}
 	L.line = 1
 	L.column = 1
 	L.readChar()
@@ -77,6 +78,7 @@ func (L *Lexer) NextToken() token.Token {
 			tok.Type = token.LookupIdent(tok.Literal)
 			tok.Line = L.line
 			tok.Column = L.column
+			tok.FileName = L.fileName
 			return tok
 		} else if isDigit(L.char) {
 			tok.Type = token.INT
@@ -85,89 +87,97 @@ func (L *Lexer) NextToken() token.Token {
 			tok.Column = L.column
 			return tok
 		} else {
-			tok = token.Token{Type: token.ILLEGAL, Literal: string(L.char), Line: L.line, Column: L.column}
+			tok = token.Token{Type: token.ILLEGAL, Literal: string(L.char), Line: L.line, Column: L.column, FileName: L.fileName}
 		}
 	case '=':
 		if L.peekChar() == '=' {
 			char := L.char
 			L.readChar()
 			literal := string(char) + string(L.char)
-			tok = token.Token{Type: token.EQ, Literal: literal}
+			tok = token.Token{Type: token.EQ, Literal: literal, Line: L.line, Column: L.column, FileName: L.fileName}
 		} else {
-			tok = newToken(token.ASSIGN, L.char, L.line, L.column)
+			tok = newToken(token.ASSIGN, L.char, L.line, L.column, L.fileName)
 		}
 	case '.':
-		tok = newToken(token.PERIOD, L.char, L.line, L.column)
+		tok = newToken(token.PERIOD, L.char, L.line, L.column, L.fileName)
 	case '&':
 		if L.peekChar() == '&' {
 			char := L.char
 			L.readChar()
 			literal := string(char) + string(L.char)
-			tok = token.Token{Type: token.AND, Literal: literal, Line: L.line, Column: L.column}
+			tok = token.Token{Type: token.AND, Literal: literal, Line: L.line, Column: L.column, FileName: L.fileName}
 		} else {
-			tok = newToken(token.ILLEGAL, L.char, L.line, L.column)
+			tok = newToken(token.ILLEGAL, L.char, L.line, L.column, L.fileName)
 		}
 	case ':':
 		if L.peekChar() == ':' {
 			char := L.char
 			L.readChar()
 			literal := string(char) + string(L.char)
-			tok = token.Token{Type: token.DOUBLECOL, Literal: literal, Line: L.line, Column: L.column}
+			tok = token.Token{Type: token.DOUBLECOL, Literal: literal, Line: L.line, Column: L.column, FileName: L.fileName}
+		} else if L.peekChar() == '=' {
+			char := L.char
+			L.readChar()
+			literal := string(char) + string(L.char)
+			tok = token.Token{Type: token.BIND, Literal: literal, Line: L.line, Column: L.column, FileName: L.fileName}
 		} else {
-			tok = newToken(token.COLON, L.char, L.line, L.column)
+			tok = newToken(token.COLON, L.char, L.line, L.column, L.fileName)
 		}
 	case '%':
-		tok = newToken(token.MOD, L.char, L.line, L.column)
+		tok = newToken(token.MOD, L.char, L.line, L.column, L.fileName)
 	case '"':
 		tok.Type = token.STRING
 		tok.Literal = L.readString()
 	case ';':
-		tok = newToken(token.SEMICOLON, L.char, L.line, L.column)
+		tok = newToken(token.SEMICOLON, L.char, L.line, L.column, L.fileName)
 	case '(':
-		tok = newToken(token.LPAREN, L.char, L.line, L.column)
+		tok = newToken(token.LPAREN, L.char, L.line, L.column, L.fileName)
 	case ')':
-		tok = newToken(token.RPAREN, L.char, L.line, L.column)
+		tok = newToken(token.RPAREN, L.char, L.line, L.column, L.fileName)
 	case ',':
-		tok = newToken(token.COMMA, L.char, L.line, L.column)
+		tok = newToken(token.COMMA, L.char, L.line, L.column, L.fileName)
 	case '+':
-		tok = newToken(token.PLUS, L.char, L.line, L.column)
+		tok = newToken(token.PLUS, L.char, L.line, L.column, L.fileName)
 	case '[':
-		tok = newToken(token.LBRACKET, L.char, L.line, L.column)
+		tok = newToken(token.LBRACKET, L.char, L.line, L.column, L.fileName)
 	case ']':
-		tok = newToken(token.RBRACKET, L.char, L.line, L.column)
+		tok = newToken(token.RBRACKET, L.char, L.line, L.column, L.fileName)
 	case '{':
-		tok = newToken(token.LBRACE, L.char, L.line, L.column)
+		tok = newToken(token.LBRACE, L.char, L.line, L.column, L.fileName)
 	case '}':
-		tok = newToken(token.RBRACE, L.char, L.line, L.column)
+		tok = newToken(token.RBRACE, L.char, L.line, L.column, L.fileName)
 	case '!':
 		if L.peekChar() == '=' {
 			char := L.char
 			L.readChar()
 			literal := string(char) + string(L.char)
 			tok = token.Token{
-				Type:    token.NOT_EQ,
-				Literal: literal,
+				Type:     token.NOT_EQ,
+				Literal:  literal,
+				Line:     L.line,
+				Column:   L.column,
+				FileName: L.fileName,
 			}
 		} else {
-			tok = newToken(token.BANG, L.char, L.line, L.column)
+			tok = newToken(token.BANG, L.char, L.line, L.column, L.fileName)
 		}
 	case '/':
-		tok = newToken(token.SLASH, L.char, L.line, L.column)
+		tok = newToken(token.SLASH, L.char, L.line, L.column, L.fileName)
 	case '*':
-		tok = newToken(token.ASTERISK, L.char, L.line, L.column)
+		tok = newToken(token.ASTERISK, L.char, L.line, L.column, L.fileName)
 	case '-':
 		if L.peekChar() == '|' {
 			char := L.char
 			L.readChar()
 			literal := string(char) + string(L.char)
-			tok = token.Token{Type: token.OR, Literal: literal}
+			tok = token.Token{Type: token.OR, Literal: literal, Line: L.line, Column: L.column, FileName: L.fileName}
 		} else {
-			tok = newToken(token.MINUS, L.char, L.line, L.column)
+			tok = newToken(token.MINUS, L.char, L.line, L.column, L.fileName)
 		}
 	case '<':
-		tok = newToken(token.LT, L.char, L.line, L.column)
+		tok = newToken(token.LT, L.char, L.line, L.column, L.fileName)
 	case '>':
-		tok = newToken(token.GT, L.char, L.line, L.column)
+		tok = newToken(token.GT, L.char, L.line, L.column, L.fileName)
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
@@ -177,8 +187,8 @@ func (L *Lexer) NextToken() token.Token {
 }
 
 // newToken creates a new token with the given type and character.
-func newToken(tokenType token.TokenType, ch byte, line, col int) token.Token {
-	return token.Token{Type: tokenType, Literal: string(ch), Line: line, Column: col}
+func newToken(tokenType token.TokenType, ch byte, line, col int, fileName string) token.Token {
+	return token.Token{Type: tokenType, Literal: string(ch), Line: line, Column: col, FileName: fileName}
 }
 
 func (L *Lexer) readString() string {

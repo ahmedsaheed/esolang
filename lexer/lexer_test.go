@@ -5,6 +5,8 @@ import (
 	"testing"
 )
 
+const FILE = "<test>"
+
 func TestNextToken(t *testing.T) {
 	input := `=+(){},;`
 	tests := []struct {
@@ -22,7 +24,7 @@ func TestNextToken(t *testing.T) {
 		{token.EOF, ""},
 	}
 
-	l := New(input)
+	l := New(FILE, input)
 
 	for i, tokens := range tests {
 		tok := l.NextToken()
@@ -163,7 +165,7 @@ when
 		{token.OR, "-|"},
 		{token.EOF, ""},
 	}
-	l := New(input)
+	l := New(FILE, input)
 
 	for i, tokens := range tests {
 		tok := l.NextToken()
@@ -202,7 +204,7 @@ blah.blah.blah
 		{token.IDENT, "blah"},
 		{token.EOF, ""},
 	}
-	l := New(input)
+	l := New(FILE, input)
 	for i, tt := range tests {
 		tok := l.NextToken()
 		if tok.Type != tt.expectedType {

@@ -460,7 +460,8 @@ func testNullObject(t *testing.T, evaluated object.Object) bool {
 }
 
 func testEval(input string) object.Object {
-	lexer := lexer.New(input)
+	const FILE = "<test>"
+	lexer := lexer.New(FILE, input)
 	parser := parser.New(lexer)
 	environment := object.NewEnvironment()
 	program := parser.ParseProgram()
