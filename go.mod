@@ -3,6 +3,7 @@ module esolang/lang-esolang
 go 1.21.1
 
 require (
+	github.com/charmbracelet/glamour v0.7.0
 	github.com/charmbracelet/log v0.4.0
 	github.com/labstack/echo/v4 v4.11.4
 )
@@ -11,7 +12,6 @@ require (
 	github.com/alecthomas/chroma/v2 v2.8.0 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
-	github.com/charmbracelet/glamour v0.7.0 // indirect
 	github.com/charmbracelet/lipgloss v0.10.0 // indirect
 	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect

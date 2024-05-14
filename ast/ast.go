@@ -53,6 +53,7 @@ func (p *Program) TokenLiteral() string {
 		return ""
 	}
 }
+
 func (p *Program) String() string {
 	var out bytes.Buffer
 	for _, s := range p.Statements {
@@ -422,7 +423,6 @@ func (oce *ObjectCallExpression) String() string {
 	return out.String()
 }
 
-
 // ImportExpression represents an `import` expression and holds the name
 // of the module being imported.
 type ImportExpression struct {
@@ -443,6 +443,28 @@ func (ie *ImportExpression) String() string {
 	out.WriteString("(")
 	out.WriteString(fmt.Sprintf("\"%s\"", ie.Name))
 	out.WriteString(")")
+
+	return out.String()
+}
+
+type BindExpression struct {
+	Token token.Token // The := token
+	Left  Expression
+	Value Expression
+}
+
+func (be *BindExpression) expressionNode() {}
+
+// TokenLiteral prints the literal value of the token associated with this node
+func (be *BindExpression) TokenLiteral() string { return be.Token.Literal }
+
+// String returns a stringified version of the AST for debugging
+func (be *BindExpression) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(be.Left.String())
+	out.WriteString(be.TokenLiteral())
+	out.WriteString(be.Value.String())
 
 	return out.String()
 }

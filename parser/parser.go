@@ -14,6 +14,7 @@ import (
 const (
 	_int = iota
 	LOWEST
+	ASSIGN
 	EQUALS
 	ANDOR
 	LESSGREATER
@@ -28,6 +29,7 @@ const (
 
 // precedence map to determine the precedence of the operators
 var precedence = map[token.TokenType]int{
+	token.BIND:      ASSIGN,
 	token.EQ:        EQUALS,
 	token.NOT_EQ:    EQUALS,
 	token.LT:        LESSGREATER,
@@ -111,6 +113,7 @@ func New(L *lexer.Lexer) *Parser {
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
 	p.registerInfix(token.PERIOD, p.parseMethodCallExpression)
 	p.registerInfix(token.DOUBLECOL, p.parseSelectorExpression)
+	p.registerInfix(token.BIND, p.parseBindExpression)
 	return p
 }
 
@@ -192,7 +195,7 @@ func (P *Parser) parseIdentifier() ast.Expression {
 peekError returns an error message when the next token is not as expected
 */
 func (P *Parser) peekError(t token.TokenType) {
-	msg := fmt.Sprintf("Line %v Column %v - expected next token to be %s got %s", P.currentToken.Line, P.currentToken.Column, t, P.peekToken.Type)
+	msg := fmt.Sprintf("%s: Line %v Column %v - expected next token to be %s got %s", P.currentToken.FileName, P.peekToken.Line, P.peekToken.Column, t, P.peekToken.Type)
 	P.errors = append(P.errors, msg)
 }
 
@@ -320,7 +323,7 @@ func (P *Parser) parseIntegerLiteral() ast.Expression {
 	lit := &ast.IntegerLiteral{Token: P.currentToken}
 	value, err := strconv.ParseInt(P.currentToken.Literal, 0, 64)
 	if err != nil {
-		msg := fmt.Sprintf("could not parse %q as integer", P.currentToken)
+		msg := fmt.Sprintf("%s Line %v Column %v - could not parse %q as integer", P.currentToken.FileName, P.currentToken.Line, P.currentToken.Column, P.currentToken)
 		P.errors = append(P.errors, msg)
 		return nil
 	}
@@ -331,7 +334,7 @@ func (P *Parser) parseIntegerLiteral() ast.Expression {
 
 // noPrefixParseFnError returns an error message when no prefix parse function is found
 func (P *Parser) noPrefixParseFnError(t token.TokenType) {
-	msg := fmt.Sprintf("Line %v Column %v - no prefix parse function for %s found", P.currentToken.Line, P.currentToken.Column, t)
+	msg := fmt.Sprintf("%s Line %v Column %v - no prefix parse function for %s found", P.currentToken.FileName, P.currentToken.Line, P.currentToken.Column, t)
 	P.errors = append(P.errors, msg)
 }
 
@@ -631,4 +634,29 @@ func (P *Parser) parseSelectorExpression(exp ast.Expression) ast.Expression {
 	P.expectPeek(token.IDENT)
 	index := &ast.StringLiteral{Token: P.currentToken, Value: P.currentToken.Literal}
 	return &ast.IndexExpression{Left: exp, Index: index, Token: P.currentToken}
+}
+
+func (P *Parser) parseBindExpression(exp ast.Expression) ast.Expression {
+	switch node := exp.(type) {
+	case *ast.Identifier:
+	default:
+		msg := fmt.Sprintf("expected identifier expression on left but got %T %#v", node, exp)
+		P.errors = append(P.errors, msg)
+		return nil
+	}
+	be := &ast.BindExpression{Token: P.currentToken, Left: exp}
+
+	P.nextToken()
+
+	be.Value = P.parseExpression(LOWEST)
+
+	// Correctly bind the function literal to its name so that self-recursive
+	// // functions work. This is used by the compiler to emit LoadSelf so a ref
+	// // to the current function is available.
+	// if fl, ok := be.Value.(*ast.FunctionLiteral); ok {
+	// 	ident := be.Left.(*ast.Identifier)
+	// 	fl.Name = ident.Value
+	// }
+
+	return be
 }

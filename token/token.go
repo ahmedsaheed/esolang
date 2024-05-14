@@ -7,10 +7,11 @@ type TokenType string
 
 // Token represents a token
 type Token struct {
-	Type    TokenType // Type of token
-	Literal string    // Literal value of token
-	Line    int       // Line number of token
-	Column  int       // Column number of token
+	Type     TokenType // Type of token
+	Literal  string    // Literal value of token
+	Line     int       // Line number of token
+	Column   int       // Column number of token
+	FileName string    // File name where token is found - used for debugging
 }
 
 const (
@@ -46,6 +47,7 @@ const (
 	RBRACKET  = "]"
 	COLON     = ":"
 	DOUBLECOL = "::"
+	BIND      = ":="
 	WHEN      = "WHEN"
 	MOD       = "%"
 	AND       = "&&"
