@@ -21,9 +21,11 @@ import (
 )
 
 var (
-	PROMPT           = ">>"
-	SHOULD_MULTILINE = false
-	REPL_MODE        = false
+	PROMPT                = ">>"
+	SHOULD_MULTILINE      = false
+	MULTILINE_CURR_NUMBER = 1
+	REPL_MODE             = false
+	REPL_VERSION          = "0.0.1" // todo: get esolang version on the machine
 )
 
 func Execute(sourceName, input string, stdLib string) {
@@ -38,14 +40,14 @@ func Start(in io.Reader, out io.Writer, stdLib string) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Hello %s! Welcome to esolang's repl \n", user.Username)
-	fmt.Printf("Type '.help' for assistance \n")
+	fmt.Printf("Welcome to Esolang version (%s) ~ %s.\n", REPL_VERSION, user.Username)
+	fmt.Printf("Type ':help' for assistance. \n")
 	scanner := bufio.NewScanner(in)
 	environmnet := object.NewEnvironment()
 	logger := generateLogger()
 	var inputBuffer strings.Builder
 	for {
-		PROMPT = map[bool]string{true: ">>>", false: ">>"}[SHOULD_MULTILINE && REPL_MODE]
+		PROMPT = map[bool]string{true: fmt.Sprint(MULTILINE_CURR_NUMBER) + ">", false: ">>"}[SHOULD_MULTILINE && REPL_MODE]
 		fmt.Fprintf(out, PROMPT)
 		scanned := scanner.Scan()
 		if !scanned {
@@ -55,13 +57,14 @@ func Start(in io.Reader, out io.Writer, stdLib string) {
 		if SHOULD_MULTILINE {
 
 			//check the line for the multiline command
-			if strings.HasPrefix(line, ".disable-multiline") {
+			if strings.HasPrefix(line, ":disable-multiline") {
 				disableMultiline()
 				continue
 			}
 			// Append the line to the input buffer
 			inputBuffer.WriteString(line)
 			inputBuffer.WriteString("\n")
+			MULTILINE_CURR_NUMBER += 1
 
 			// If the line ends with a semicolon or is empty, evaluate the input
 			if strings.HasSuffix(line, ";") {
@@ -73,7 +76,7 @@ func Start(in io.Reader, out io.Writer, stdLib string) {
 			}
 		} else {
 			line = strings.Trim(line, " ")
-			if line[0] == '.' {
+			if line[0] == ':' {
 				evaluateReplCommand(line[1:])
 			} else {
 				evaluteInput("repl.eso", line, logger, environmnet, stdLib)
@@ -193,6 +196,7 @@ func disableMultiline() {
 	output := map[bool]string{true: "Multiline disabled", false: "Multiline not enabled, skipping."}[SHOULD_MULTILINE]
 	if SHOULD_MULTILINE {
 		SHOULD_MULTILINE = false
+		MULTILINE_CURR_NUMBER = 1
 	}
 	fmt.Println(output)
 }
