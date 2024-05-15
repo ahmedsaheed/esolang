@@ -72,6 +72,7 @@ func Start(in io.Reader, out io.Writer, stdLib string) {
 				inputBuffer.WriteString("\n")
 			}
 		} else {
+			line = strings.Trim(line, " ")
 			if line[0] == '.' {
 				evaluateReplCommand(line[1:])
 			} else {
