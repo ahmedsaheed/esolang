@@ -81,10 +81,11 @@ func (L *Lexer) NextToken() token.Token {
 			tok.FileName = L.fileName
 			return tok
 		} else if isDigit(L.char) {
-			tok.Type = token.INT
-			tok.Literal = L.readNumber()
-			tok.Line = L.line
-			tok.Column = L.column
+			// tok.Type = token.INT
+			// tok.Literal = L.readNumber()
+			// tok.Line = L.line
+			// tok.Column = L.column
+			tok = L.readDecimal()
 			return tok
 		} else {
 			tok = token.Token{Type: token.ILLEGAL, Literal: string(L.char), Line: L.line, Column: L.column, FileName: L.fileName}
@@ -280,6 +281,17 @@ func (L *Lexer) readNumber() string {
 		L.readChar()
 	}
 	return L.input[position:L.position]
+}
+
+// readDecimal reads the float number in the input and returns it.
+func (L *Lexer) readDecimal() token.Token {
+	integer := L.readNumber()
+	if rune(L.char) == rune('.') && isDigit(L.peekChar()) {
+		L.readChar()
+		fraction := L.readNumber()
+		return token.Token{Type: token.FLOAT, Literal: integer + "." + fraction, Line: L.line, Column: L.column, FileName: L.fileName}
+	}
+	return token.Token{Type: token.INT, Literal: integer, Line: L.line, Column: L.column, FileName: L.fileName}
 }
 
 // isLetter returns true if the given character is a letter.

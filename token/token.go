@@ -19,6 +19,7 @@ const (
 	EOF       = "EOF"
 	IDENT     = "IDENT"
 	INT       = "INT"
+	FLOAT     = "FLOAT"
 	ASSIGN    = "="
 	PLUS      = "+"
 	COMMA     = ","

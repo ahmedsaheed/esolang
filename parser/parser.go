@@ -84,6 +84,7 @@ func New(L *lexer.Lexer) *Parser {
 	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
+	p.registerPrefix(token.FLOAT, p.parseFloatLiteral)
 	p.registerPrefix(token.BANG, p.parsePrefixExpression)
 	p.registerPrefix(token.DEF_FN, p.parseFunctionDefinition)
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
@@ -721,4 +722,16 @@ func (p *Parser) parseFunctionDefParameter() (map[string]ast.Expression, []*ast.
 	}
 
 	return m, identifiers
+}
+
+func (p *Parser) parseFloatLiteral() ast.Expression {
+	flo := &ast.FloatLiteral{Token: p.currentToken}
+	value, err := strconv.ParseFloat(p.currentToken.Literal, 64)
+	if err != nil {
+		msg := fmt.Sprintf("could not parse %q as float around line", p.currentToken.Literal)
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+	flo.Value = value
+	return flo
 }

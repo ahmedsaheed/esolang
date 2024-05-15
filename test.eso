@@ -1,4 +1,4 @@
-let sec = import("second-test")
+let sec = import("second")
 let fizzbuzz = fn(n, arr) {
   let i = 0
   when(i < n) {
@@ -45,5 +45,6 @@ name := p::name
 println(name)
 println(p::occupation)
 println(sec::Sum(50, 10))
+println(2.5 + 2.5)
 
 hello()

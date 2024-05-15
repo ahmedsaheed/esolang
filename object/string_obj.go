@@ -27,12 +27,21 @@ func stringInvokables(method string, s *String, args ...Object) Object {
 		if err := _noArgsExpected(name, args...); err != nil {
 			return newErrorFromTypings(err.Error())
 		}
-
 		runes := []rune(s.Value)
 		for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
 			runes[i], runes[j] = runes[j], runes[i]
 		}
 		return &String{Value: string(runes)}
+
+	case "equals":
+		if err := CheckTypings(
+			name, args,
+			ExactArgsLength(1),
+			WithTypes(STRING_OBJ),
+		); err != nil {
+			return newErrorFromTypings(err.Error())
+		}
+		return &Boolean{Value: s.Value == args[0].(*String).Value}
 
 	case "empty":
 		if err := _noArgsExpected(name, args...); err != nil {

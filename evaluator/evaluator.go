@@ -40,6 +40,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
 
+	case *ast.FloatLiteral:
+		return &object.Float{Value: node.Value}
+
 	case *ast.Boolean:
 		return nativeBoolToBooleanObject(node.Value)
 
@@ -300,6 +303,12 @@ func evalInfixExpression(node *ast.InfixExpression, leftOperand, rightOperand ob
 	switch {
 	case leftOperand.Type() == object.INTEGER_OBJ && rightOperand.Type() == object.INTEGER_OBJ:
 		return evalIntegerInfixExpression(node, operator, leftOperand, rightOperand)
+	case leftOperand.Type() == object.FLOAT_OBJ && rightOperand.Type() == object.FLOAT_OBJ:
+		return evalFloatInfixExpression(node, operator, leftOperand, rightOperand)
+	case leftOperand.Type() == object.FLOAT_OBJ && rightOperand.Type() == object.INTEGER_OBJ:
+		return evalFloatIntegerInfixExpression(node, operator, leftOperand, rightOperand)
+	case leftOperand.Type() == object.INTEGER_OBJ && rightOperand.Type() == object.FLOAT_OBJ:
+		return evalIntegerFloatInfixExpression(node, operator, leftOperand, rightOperand)
 	case leftOperand.Type() == object.STRING_OBJ && (rightOperand.Type() == object.STRING_OBJ || rightOperand.Type() == object.INTEGER_OBJ):
 		return evalStringInfixExpression(node, leftOperand, rightOperand)
 	case leftOperand.Type() == object.ARRAY_OBJ && rightOperand.Type() == object.ARRAY_OBJ && operator == "+":
@@ -355,7 +364,6 @@ func evalStringInfixExpression(node *ast.InfixExpression, leftOperand, rightOper
 func evalIntegerInfixExpression(node *ast.InfixExpression, operator string, leftOperand, rightOperand object.Object) object.Object {
 	leftValue := leftOperand.(*object.Integer).Value
 	rightValue := rightOperand.(*object.Integer).Value
-
 	switch operator {
 	case "+":
 		return &object.Integer{Value: leftValue + rightValue}
@@ -364,8 +372,14 @@ func evalIntegerInfixExpression(node *ast.InfixExpression, operator string, left
 	case "*":
 		return &object.Integer{Value: leftValue * rightValue}
 	case "/":
+		if rightValue == 0 {
+			return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "Can't divide by zero")
+		}
 		return &object.Integer{Value: leftValue / rightValue}
 	case "%":
+		if rightValue == 0 {
+			return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "Can't divide by zero")
+		}
 		return &object.Integer{Value: leftValue % rightValue}
 	case "<":
 		return nativeBoolToBooleanObject(leftValue < rightValue)
@@ -377,6 +391,123 @@ func evalIntegerInfixExpression(node *ast.InfixExpression, operator string, left
 		return nativeBoolToBooleanObject(leftValue != rightValue)
 	default:
 		return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
+	}
+}
+
+func evalFloatInfixExpression(node *ast.InfixExpression, operator string, leftOperand, rightOperand object.Object) object.Object {
+	leftValue := leftOperand.(*object.Float).Value
+	rightValue := rightOperand.(*object.Float).Value
+	switch operator {
+	case "+":
+		return &object.Float{Value: leftValue + rightValue}
+	case "-":
+		return &object.Float{Value: leftValue - rightValue}
+	case "*":
+		return &object.Float{Value: leftValue * rightValue}
+	case "/":
+		if rightValue == 0 {
+			return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "Can't divide by zero")
+		}
+		return &object.Float{Value: leftValue / rightValue}
+	case "<":
+		return nativeBoolToBooleanObject(leftValue < rightValue)
+	case ">":
+		return nativeBoolToBooleanObject(leftValue > rightValue)
+	case "==":
+		return nativeBoolToBooleanObject(leftValue == rightValue)
+	case "!=":
+		return nativeBoolToBooleanObject(leftValue != rightValue)
+	default:
+		return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "unknown operator: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
+	}
+}
+
+func evalFloatIntegerInfixExpression(node *ast.InfixExpression, operator string, left, right object.Object) object.Object {
+	leftVal := left.(*object.Float).Value
+	rightVal := float64(right.(*object.Integer).Value)
+	switch operator {
+	case "+":
+		return &object.Float{Value: leftVal + rightVal}
+	// case "+=":
+	// 	return &object.Float{Value: leftVal + rightVal}
+	case "-":
+		return &object.Float{Value: leftVal - rightVal}
+	// case "-=":
+	// 	return &object.Float{Value: leftVal - rightVal}
+	case "*":
+		return &object.Float{Value: leftVal * rightVal}
+	// case "*=":
+	// 	return &object.Float{Value: leftVal * rightVal}
+	// case "**":
+	// 	return &object.Float{Value: math.Pow(leftVal, rightVal)}
+	case "/":
+		if rightVal == 0 {
+			return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "Can't divide by zero")
+		}
+		return &object.Float{Value: leftVal / rightVal}
+	// case "/=":
+	// 	return &object.Float{Value: leftVal / rightVal}
+	case "<":
+		return nativeBoolToBooleanObject(leftVal < rightVal)
+	// case "<=":
+	// 	return nativeBoolToBooleanObject(leftVal <= rightVal)
+	case ">":
+		return nativeBoolToBooleanObject(leftVal > rightVal)
+	// case ">=":
+	// 	return nativeBoolToBooleanObject(leftVal >= rightVal)
+	case "==":
+		return nativeBoolToBooleanObject(leftVal == rightVal)
+	case "!=":
+		return nativeBoolToBooleanObject(leftVal != rightVal)
+	default:
+		return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "unknown operator: %s %s %s",
+			left.Type(), operator, right.Type())
+	}
+}
+
+func evalIntegerFloatInfixExpression(node *ast.InfixExpression, operator string, left, right object.Object) object.Object {
+	leftVal := float64(left.(*object.Integer).Value)
+	rightVal := right.(*object.Float).Value
+	switch operator {
+	case "+":
+		return &object.Float{Value: leftVal + rightVal}
+	case "-":
+		return &object.Float{Value: leftVal - rightVal}
+	case "*":
+		return &object.Float{Value: leftVal * rightVal}
+
+	case "/":
+		if rightVal == 0 {
+			return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "divide by zero")
+		}
+		return &object.Float{Value: leftVal / rightVal}
+	case "<":
+		return nativeBoolToBooleanObject(leftVal < rightVal)
+	case ">":
+		return nativeBoolToBooleanObject(leftVal > rightVal)
+
+	case "==":
+		return nativeBoolToBooleanObject(leftVal == rightVal)
+	case "!=":
+		return nativeBoolToBooleanObject(leftVal != rightVal)
+	// TODO: Implement the following operators
+	// case "-=":
+	// 	return &object.Float{Value: leftVal - rightVal}
+	// case "*=":
+	// 	return &object.Float{Value: leftVal * rightVal}
+	// case "**":
+	// 	return &object.Float{Value: math.Pow(leftVal, rightVal)}
+	// case "+=":
+	// 	return &object.Float{Value: leftVal + rightVal}
+	// case "/=":
+	// 	return &object.Float{Value: leftVal / rightVal
+	// case "<=":
+	// 	return nativeBoolToBooleanObject(leftVal <= rightVal)
+	// case ">=":
+	// 	return nativeBoolToBooleanObject(leftVal >= rightVal)
+	default:
+		return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "unknown operator: %s %s %s",
+			left.Type(), operator, right.Type())
 	}
 }
 
@@ -488,7 +619,8 @@ func evalObjectCallExpression(call *ast.ObjectCallExpression, env *object.Enviro
 		}
 	}
 	// TODO: check if the object has the method implemented in esolang
-	return newError(call.Token.FileName, call.Token.Line, call.Token.Column, "object has no method %s", call.Call.String())
+
+	return newError(call.Token.FileName, call.Token.Line, call.Token.Column, "value of type `%s` has no member `%s`", objectValue.Type(), call.Call.String())
 }
 
 func evalProgram(program *ast.Program, env *object.Environment) object.Object {
@@ -573,7 +705,7 @@ func extendFunctionEnv(function *object.Function, args []object.Object) *object.
 }
 
 func newError(fileName string, line, column int, format string, a ...interface{}) *object.Error {
-	linesAndCol := fmt.Sprintf("%s: Error at line %d, column %d:", fileName, line, column)
+	linesAndCol := fmt.Sprintf("%s:%d:%d:", fileName, line, column)
 	format = fmt.Sprintf("%s %s", linesAndCol, format)
 	return &object.Error{Message: fmt.Sprintf(format, a...)}
 }

@@ -66,7 +66,7 @@ func Start(in io.Reader, out io.Writer, stdLib string) {
 			// If the line ends with a semicolon or is empty, evaluate the input
 			if strings.HasSuffix(line, ";") {
 
-				evaluteInput("REPL", inputBuffer.String(), logger, environmnet, stdLib)
+				evaluteInput("repl.eso", inputBuffer.String(), logger, environmnet, stdLib)
 				// Clear the input buffer
 				inputBuffer.Reset()
 				inputBuffer.WriteString("\n")
@@ -75,7 +75,7 @@ func Start(in io.Reader, out io.Writer, stdLib string) {
 			if line[0] == '.' {
 				evaluateReplCommand(line[1:])
 			} else {
-				evaluteInput("REPL", line, logger, environmnet, stdLib)
+				evaluteInput("repl.eso", line, logger, environmnet, stdLib)
 			}
 		}
 	}
@@ -92,9 +92,9 @@ func evaluteInput(sourceName, input string, log *log.Logger, environmnet *object
 		return
 	}
 
-	if REPL_MODE {
-		fmt.Println(syntaxHiglight(input))
-	}
+	// if REPL_MODE {
+	// 	fmt.Println(syntaxHiglight(input))
+	// }
 	libLexer := lexer.New("STDLIB", stdLib)
 	libParser := parser.New(libLexer)
 	libProgram := libParser.ParseProgram()
@@ -109,7 +109,15 @@ func evaluteInput(sourceName, input string, log *log.Logger, environmnet *object
 		} else {
 			var DONT_PRINT = "flag=noshow"
 			if !strings.HasSuffix(output, DONT_PRINT) {
-				log.Info(output)
+				if REPL_MODE {
+					cyan := "\033[36m" //Cyan color
+					reset := "\033[0m" // Reset color
+					// Print cyan-colored text
+					fmt.Println(cyan + output + reset)
+				} else {
+					fmt.Println(output)
+				}
+
 			}
 		}
 	}

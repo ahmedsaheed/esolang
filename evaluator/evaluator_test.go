@@ -405,10 +405,10 @@ func TestErrorHandling(t *testing.T) {
 		input           string
 		expectedMessage string
 	}{
-		{"10 + true;", FILE + ": " + "Error at line 1, column 5: type mismatch: INTEGER + BOOLEAN"},
-		{"10 + true; 10;", FILE + ": " + "Error at line 1, column 5: type mismatch: INTEGER + BOOLEAN"},
-		{"-true", FILE + ": " + "Error at line 1, column 2: unknown operator: -BOOLEAN"},
-		{"true + false;", FILE + ": " + "Error at line 1, column 7: unknown operator: BOOLEAN + BOOLEAN"},
+		{"10 + true;", FILE + ":1:5:" + " type mismatch: INTEGER + BOOLEAN"},
+		{"10 + true; 10;", FILE + ":1:5:" + " type mismatch: INTEGER + BOOLEAN"},
+		{"-true", FILE + ":1:2:" + " unknown operator: -BOOLEAN"},
+		{"true + false;", FILE + ":1:7:" + " unknown operator: BOOLEAN + BOOLEAN"},
 	}
 
 	for _, test := range tests {
