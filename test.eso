@@ -1,4 +1,7 @@
-let sec = import("second")
+sec := import("second")
+math := import("eso/math")
+strings :=import("eso/string")
+bools := import("eso/bool")
 let fizzbuzz = fn(n, arr) {
   let i = 0
   when(i < n) {
@@ -40,11 +43,8 @@ let Person = fn(name, age, occupation) {
 }
 
 let p = Person("John", 30, "Software Developer")
-println(p::age)
-name := p::name
-println(name)
-println(p::occupation)
-println(sec::Sum(50, 10))
+println("sum is " + math::Add(50, 10).to_string())
 println(2.5 + 2.5)
-
+println(strings::IsEmpty(""))
+println(bools::Negate(true))
 hello()

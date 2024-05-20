@@ -138,7 +138,19 @@ func (L *Lexer) NextToken() token.Token {
 	case ',':
 		tok = newToken(token.COMMA, L.char, L.line, L.column, L.fileName)
 	case '+':
-		tok = newToken(token.PLUS, L.char, L.line, L.column, L.fileName)
+		if L.peekChar() == '=' {
+			char := L.char
+			L.readChar()
+			literal := string(char) + string(L.char)
+			tok = token.Token{Type: token.PLUS_EQ, Literal: literal, Line: L.line, Column: L.column, FileName: L.fileName}
+		} else if L.peekChar() == '+' {
+			char := L.char
+			L.readChar()
+			literal := string(char) + string(L.char)
+			tok = token.Token{Type: token.PLUS_PLUS, Literal: literal, Line: L.line, Column: L.column, FileName: L.fileName}
+		} else {
+			tok = newToken(token.PLUS, L.char, L.line, L.column, L.fileName)
+		}
 	case '[':
 		tok = newToken(token.LBRACKET, L.char, L.line, L.column, L.fileName)
 	case ']':
@@ -165,20 +177,51 @@ func (L *Lexer) NextToken() token.Token {
 	case '/':
 		tok = newToken(token.SLASH, L.char, L.line, L.column, L.fileName)
 	case '*':
-		tok = newToken(token.ASTERISK, L.char, L.line, L.column, L.fileName)
+		if L.peekChar() == '=' {
+			char := L.char
+			L.readChar()
+			literal := string(char) + string(L.char)
+			tok = token.Token{Type: token.ASTERISK_EQ, Literal: literal, Line: L.line, Column: L.column, FileName: L.fileName}
+		} else {
+			tok = newToken(token.ASTERISK, L.char, L.line, L.column, L.fileName)
+		}
 	case '-':
 		if L.peekChar() == '|' {
 			char := L.char
 			L.readChar()
 			literal := string(char) + string(L.char)
 			tok = token.Token{Type: token.OR, Literal: literal, Line: L.line, Column: L.column, FileName: L.fileName}
+		} else if L.peekChar() == '=' {
+			char := L.char
+			L.readChar()
+			literal := string(char) + string(L.char)
+			tok = token.Token{Type: token.MINUS_EQ, Literal: literal, Line: L.line, Column: L.column, FileName: L.fileName}
+		} else if L.peekChar() == '-' {
+			char := L.char
+			L.readChar()
+			literal := string(char) + string(L.char)
+			tok = token.Token{Type: token.MINUS_MINUS, Literal: literal, Line: L.line, Column: L.column, FileName: L.fileName}
 		} else {
 			tok = newToken(token.MINUS, L.char, L.line, L.column, L.fileName)
 		}
 	case '<':
-		tok = newToken(token.LT, L.char, L.line, L.column, L.fileName)
+		if L.peekChar() == '=' {
+			char := L.char
+			L.readChar()
+			literal := string(char) + string(L.char)
+			tok = token.Token{Type: token.LT_EQ, Literal: literal, Line: L.line, Column: L.column, FileName: L.fileName}
+		} else {
+			tok = newToken(token.LT, L.char, L.line, L.column, L.fileName)
+		}
 	case '>':
-		tok = newToken(token.GT, L.char, L.line, L.column, L.fileName)
+		if L.peekChar() == '=' {
+			char := L.char
+			L.readChar()
+			literal := string(char) + string(L.char)
+			tok = token.Token{Type: token.GT_EQ, Literal: literal, Line: L.line, Column: L.column, FileName: L.fileName}
+		} else {
+			tok = newToken(token.GT, L.char, L.line, L.column, L.fileName)
+		}
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF

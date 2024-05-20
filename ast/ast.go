@@ -519,3 +519,46 @@ func (fl *FunctionDefineLiteral) String() string {
 	return out.String()
 
 }
+
+type PostfixExpression struct {
+	// Token holds the token we're operating upon
+	Token token.Token
+	// Operator holds the postfix token, e.g. ++
+	Operator string
+}
+
+func (pe *PostfixExpression) expressionNode() {}
+
+// TokenLiteral returns the literal token.
+func (pe *PostfixExpression) TokenLiteral() string { return pe.Token.Literal }
+
+// String returns this object as a string.
+func (pe *PostfixExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("(")
+	out.WriteString(pe.Token.Literal)
+	out.WriteString(pe.Operator)
+	out.WriteString(")")
+	return out.String()
+}
+
+type AssignStatement struct {
+	Token    token.Token
+	Name     *Identifier
+	Operator string
+	Value    Expression
+}
+
+func (as *AssignStatement) expressionNode() {}
+
+// TokenLiteral returns the literal token.
+func (as *AssignStatement) TokenLiteral() string { return as.Token.Literal }
+
+// String returns this object as a string.
+func (as *AssignStatement) String() string {
+	var out bytes.Buffer
+	out.WriteString(as.Name.String())
+	out.WriteString(as.Operator)
+	out.WriteString(as.Value.String())
+	return out.String()
+}

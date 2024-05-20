@@ -105,11 +105,6 @@ func outputResp(res *http.Response) object.Object {
 		Status:     res.Status,
 		Header:     res.Header,
 	}
-	// str := fmt.Sprintf("{Body: %s, StatusCode: %d, Status: %s, Header: %v}",
-	// 	resp.Body, resp.StatusCode, resp.Status, resp.Header)
-	fmt.Println("value of hash ", generateHashFromResponse(resp).Inspect())
-	// return &object.String{Value: str}
-	generateResponseBodyHash(resp.Body)
 	return generateHashFromResponse(resp)
 }
 
@@ -163,7 +158,7 @@ func generateResponseBodyHash(body string) *object.Hash {
 			hashKey := object.HashKey{Type: object.INTEGER_OBJ, Value: hashValueKey.Value}
 			hash.Pairs[hashKey] = object.HashPair{Key: &object.Integer{Value: int64(i)}, Value: &object.String{Value: fmt.Sprintf("%v", v)}}
 		}
-		fmt.Println("value of hash arrayy ", hash.Inspect())
+		// fmt.Println("value of hash arrayy ", hash.Inspect())
 		return hash
 	}
 
@@ -177,7 +172,7 @@ func generateResponseBodyHash(body string) *object.Hash {
 	for k, v := range obj {
 		hashValueKey := (&object.String{Value: k}).HashKey()
 		hashKey := object.HashKey{Type: object.STRING_OBJ, Value: hashValueKey.Value}
-		fmt.Println("value of k1 ", k)
+		// fmt.Println("value of k1 ", k)
 		// nested hash are currently converted to string - let fix this
 
 		if reflect.TypeOf(v).Kind() == reflect.Map {
@@ -193,6 +188,6 @@ func generateResponseBodyHash(body string) *object.Hash {
 			hash.Pairs[hashKey] = object.HashPair{Key: &object.String{Value: k}, Value: &object.String{Value: fmt.Sprintf("%v", v)}}
 		}
 	}
-	fmt.Println("value of hash hashable ", hash.Inspect())
+	// fmt.Println("value of hash hashable ", hash.Inspect())
 	return hash
 }

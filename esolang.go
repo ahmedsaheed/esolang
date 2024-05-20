@@ -17,7 +17,7 @@ func main() {
 	flag.Parse()
 
 	if *replMode {
-		repl.Start(os.Stdin, os.Stdout, getStdLib())
+		repl.Start(os.Stdin, os.Stdout)
 	}
 
 	if len(flag.Args()) > 0 {
@@ -34,13 +34,13 @@ func main() {
 			os.Exit(1)
 		}
 
-		repl.Execute(file, string(inputFile), getStdLib())
+		repl.Execute(file, string(inputFile))
 	} else {
 		logger.Warn("No file provided. Please provide a file to run or use the -repl flag to start the repl.")
 		logger.Warn("Usage: esolang <path-to-filename>")
 		logger.Warn("Usage: esolang -repl")
 		logger.Info("Starting repl...")
-		repl.Start(os.Stdin, os.Stdout, getStdLib())
+		repl.Start(os.Stdin, os.Stdout)
 	}
 
 }

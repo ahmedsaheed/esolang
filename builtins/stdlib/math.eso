@@ -1,0 +1,40 @@
+let PI = 3.141592653589793
+
+func Add(a, b) {
+    return a + b
+}
+
+func Subtract(a, b) {
+    return a - b
+}
+
+func Multiply(a, b) {
+    return a * b
+}
+
+func Divide(a, b) {
+    return a / b
+}
+
+func Max(a, b) {
+    if(a > b) { return a }
+    else { return b }
+}
+
+func Min(a, b) {
+    if(a < b) { return a }
+    else { return b }
+}
+
+func Abs(a) {
+    if(a < 0) { return -a }
+    else { return a }
+}
+
+func RandFloat() {
+    return math_randomFloat()
+}
+
+func RandInt() {
+    return math_randomInt()
+}

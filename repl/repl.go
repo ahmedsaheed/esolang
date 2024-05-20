@@ -28,13 +28,13 @@ var (
 	REPL_VERSION          = "0.0.1" // todo: get esolang version on the machine
 )
 
-func Execute(sourceName, input string, stdLib string) {
+func Execute(sourceName, input string) {
 	environmnet := object.NewEnvironment()
 	logger := generateLogger()
-	evaluteInput(sourceName, input, logger, environmnet, stdLib)
+	evaluteInput(sourceName, input, logger, environmnet)
 }
 
-func Start(in io.Reader, out io.Writer, stdLib string) {
+func Start(in io.Reader, out io.Writer) {
 	REPL_MODE = true
 	user, err := user.Current()
 	if err != nil {
@@ -69,7 +69,7 @@ func Start(in io.Reader, out io.Writer, stdLib string) {
 			// If the line ends with a semicolon or is empty, evaluate the input
 			if strings.HasSuffix(line, ";") {
 
-				evaluteInput("repl.eso", inputBuffer.String(), logger, environmnet, stdLib)
+				evaluteInput("repl.eso", inputBuffer.String(), logger, environmnet)
 				// Clear the input buffer
 				inputBuffer.Reset()
 				inputBuffer.WriteString("\n")
@@ -79,31 +79,21 @@ func Start(in io.Reader, out io.Writer, stdLib string) {
 			if line[0] == ':' {
 				evaluateReplCommand(line[1:])
 			} else {
-				evaluteInput("repl.eso", line, logger, environmnet, stdLib)
+				evaluteInput("repl.eso", line, logger, environmnet)
 			}
 		}
 	}
 }
 
-func evaluteInput(sourceName, input string, log *log.Logger, environmnet *object.Environment, stdLib string) {
+func evaluteInput(sourceName, input string, log *log.Logger, environmnet *object.Environment) {
 	initialLexer := lexer.New(sourceName, input)
 	initialParser := parser.New(initialLexer)
-
 	program := initialParser.ParseProgram()
 
 	if len(initialParser.Errors()) != 0 {
 		printParserErrors(initialParser.Errors(), log)
 		return
 	}
-
-	// if REPL_MODE {
-	// 	fmt.Println(syntaxHiglight(input))
-	// }
-	libLexer := lexer.New("STDLIB", stdLib)
-	libParser := parser.New(libLexer)
-	libProgram := libParser.ParseProgram()
-	evaluator.Eval(libProgram, environmnet)
-
 	evaluated := evaluator.Eval(program, environmnet)
 	if evaluated != nil {
 		output := evaluated.Inspect()
@@ -181,7 +171,7 @@ func evaluateReplCommand(input string) {
 	case "clear":
 		fmt.Print("\033[H\033[2J")
 	case "version":
-		fmt.Println("esolang version 0.1.0")
+		fmt.Println("Esolang Version(" + REPL_VERSION + ")")
 	case "enable-multiline":
 		SHOULD_MULTILINE = true
 		fmt.Println("Multiline mode enabled")

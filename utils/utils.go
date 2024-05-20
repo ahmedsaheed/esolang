@@ -41,6 +41,10 @@ func Exists(path string) bool {
 	return err == nil
 }
 
+func IsBuiltinModule(name string) bool {
+	return map[bool]bool{true: true, false: false}[strings.HasPrefix(name, "eso/") && strings.Count(name, "/") == 1]
+}
+
 func FindModule(name string) string {
 	basename := fmt.Sprintf("%s.eso", name)
 	for _, p := range SearchPaths {

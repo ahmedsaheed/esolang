@@ -6,7 +6,7 @@
 // ## Example
 // let testAnd = and(false, true) -> false
 //
-let and = fn(a, b) { a && b }
+let AND = fn(a, b) { a && b }
 
 
 // Returns the or of two boolean values, it evaluates both args
@@ -16,7 +16,7 @@ let and = fn(a, b) { a && b }
 // let testOr = or(false, true) -> true
 //
 
-let or = fn(a, b) { a -| b }
+let OR = fn(a, b) { a -| b }
 
 // Returns the opposite bool value.
 // It's the function equivalent of the ! operator
@@ -26,9 +26,9 @@ let or = fn(a, b) { a -| b }
 // let testNot = not(false) -> true
 //
 
-let negate = fn(a) {
-    if (typeOf(a) != "BOOLEAN") {
-        let type = typeof(a)
+func Negate(a) {
+    if (type_of(a) != "BOOLEAN") {
+        let type = type_of(a)
         return "ERROR: Expected a boolean value but got a " + type
     }
     let isTrue = a == true
@@ -51,7 +51,7 @@ let negate = fn(a) {
 //testGuard -> "Hello John"
 //
 
-let guard = fn(requirement, consequence, otherwise) {
+func Guard(requirement, consequence, otherwise) {
     let isTruthy = requirement == true
     print(isTruthy)
     if (isTruthy) { consequence }
@@ -60,7 +60,7 @@ let guard = fn(requirement, consequence, otherwise) {
 
 
 // Runs a callback fn if the given bool is `True`, otherwise returns a callback alternative fn
-let lazy_guard = fn(requirement, consequence, otherwise) {
+func LazyGuard(requirement, consequence, otherwise) {
      let isTruthy = requirement == true
     if (requirement) { consequence() }
     else { otherwise() }

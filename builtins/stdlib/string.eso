@@ -10,7 +10,7 @@
 // => false
 //
 
-let is_empty = fn(s) { s == "" };
+let IsEmpty = fn(s) { s == "" };
 
 // Returns the number of grapheme clusters in a string.
 //
@@ -20,7 +20,7 @@ let is_empty = fn(s) { s == "" };
 // string_len("ß↑e̊")
 // => 3
 
-let string_len = fn(s) { count(s) };
+func Len (s) { count(s) }
 
 
 // Reverse a string.
@@ -32,10 +32,10 @@ let string_len = fn(s) { count(s) };
 // string_reverse("stressed")
 // -> "desserts"
 //
-let string_reverse = fn(s){
-    let reversed = "";
+func Reversed(s) {
+   let reversed = "";
     let idx = count(s);
-    while (idx > 0) {
+    when (idx > 0) {
         let idx = idx - 1;
         let reversed = reversed + s[idx];
     }
@@ -50,9 +50,9 @@ let string_reverse = fn(s){
 // -> "ESOLANG"
 //
 
-let string_ToUpper = fn(s) {
+func ToUpper(s) {
     _string_map(s, fn(c) { _upperCase(c) })
- };
+};
 
 // Create a new String with all graphemmes in the input sting converted to lowercase.
 //
@@ -60,7 +60,7 @@ let string_ToUpper = fn(s) {
 // string_ToLower("ESOLANG")
 // -> "esolang"
 //
-let string_ToLower = fn(s) {
+func ToLower(s) {
     _string_map(s, fn(c) { _lowerCase(c) })
 };
 
@@ -74,7 +74,7 @@ let string_ToLower = fn(s) {
 // -> "lang"
 //
 
-let string_substring = fn(s, start, end) {
+func Substring(s, start, end) {
     let result = "";
     let idx = start;
     if (end > count(s)) {
@@ -84,7 +84,7 @@ let string_substring = fn(s, start, end) {
         let idx = 0;
     }
 
-    while (idx < end) {
+    when (idx < end) {
         let result = result + s[idx];
         let idx = idx + 1;
     }
@@ -100,9 +100,7 @@ let string_substring = fn(s, start, end) {
 // string_contains("esolang", "this")
 // -> false
 
-let string_contains = fn(s, substr) { _constains(s, substr) };
-
-
+let Contains = fn(s, substr) { _constains(s, substr) };
 
 
 // string_starts_with reports whether s starts with prefix.
@@ -111,11 +109,11 @@ let string_contains = fn(s, substr) { _constains(s, substr) };
 // string_starts_with("esolang", "eso")
 // -> true
 //
-let string_starts_with = fn(s, prefix) {
+func StartWith(s, prefix) {
     let idx = 0;
     let checkerString = "";
     let prefix_len = count(prefix);
-    while (idx < prefix_len) {
+     when (idx < prefix_len) {
         let checkerString = checkerString + s[idx];
         let idx = idx + 1;
     }
@@ -125,17 +123,17 @@ let string_starts_with = fn(s, prefix) {
 // string_ends_with reports whether s ends with suffix.
 //
 // Example:
-// string_ends_with("esolang", "lang")
+// EndsWith("esolang", "lang")
 // -> true
 //
 // string_ends_with("esolang", "eso")
 // -> false
 //
-let string_ends_with = fn(s, suffix) {
+func EndsWith(s, suffix) {
     let idx = count(s) - count(suffix);
     let checkerString = "";
     let suffix_len = count(suffix);
-    while (idx < count(s)) {
+    when (idx < count(s)) {
         let checkerString = checkerString + s[idx];
         let idx = idx + 1;
     }
@@ -147,7 +145,7 @@ let string_ends_with = fn(s, suffix) {
 let string_map = fn(s, f) {
     let result = "";
     let idx = 0;
-    while (idx < count(s)) {
+    when (idx < count(s)) {
         let result = result + f(s[idx]);
         let idx = idx + 1;
     }

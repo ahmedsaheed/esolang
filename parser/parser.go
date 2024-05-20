@@ -20,6 +20,7 @@ const (
 	LESSGREATER
 	SUM
 	PRODUCT
+	POWER
 	MODULUS
 	PREFIX
 	CALL
@@ -29,37 +30,45 @@ const (
 
 // precedence map to determine the precedence of the operators
 var precedence = map[token.TokenType]int{
-	token.BIND:      ASSIGN,
-	token.EQ:        EQUALS,
-	token.NOT_EQ:    EQUALS,
-	token.LT:        LESSGREATER,
-	token.GT:        LESSGREATER,
-	token.AND:       ANDOR,
-	token.OR:        ANDOR,
-	token.PLUS:      SUM,
-	token.MINUS:     SUM,
-	token.MOD:       MODULUS,
-	token.SLASH:     PRODUCT,
-	token.ASTERISK:  PRODUCT,
-	token.LPAREN:    CALL,
-	token.PERIOD:    CALL,
-	token.LBRACKET:  INDEX,
-	token.DOUBLECOL: INDEX,
+	token.BIND:        ASSIGN,
+	token.EQ:          EQUALS,
+	token.NOT_EQ:      EQUALS,
+	token.LT:          LESSGREATER,
+	token.GT:          LESSGREATER,
+	token.LT_EQ:       LESSGREATER,
+	token.GT_EQ:       LESSGREATER,
+	token.AND:         ANDOR,
+	token.OR:          ANDOR,
+	token.PLUS:        SUM,
+	token.PLUS_EQ:     SUM,
+	token.MINUS:       SUM,
+	token.MINUS_EQ:    SUM,
+	token.MOD:         MODULUS,
+	token.SLASH:       PRODUCT,
+	token.ASTERISK:    PRODUCT,
+	token.ASTERISK_EQ: PRODUCT,
+	token.LPAREN:      CALL,
+	token.PERIOD:      CALL,
+	token.LBRACKET:    INDEX,
+	token.DOUBLECOL:   INDEX,
 }
 
 // Parser is the core struct for the parser
 type Parser struct {
-	L              *lexer.Lexer                      // lexer
-	currentToken   token.Token                       // current token
-	peekToken      token.Token                       // next token
-	errors         []string                          // errors
-	prefixParseFns map[token.TokenType]prefixParseFn // prefix parse functions
-	infixParseFns  map[token.TokenType]infixParseFn  // infix parse functions
+	L               *lexer.Lexer                      // lexer
+	currentToken    token.Token                       // current token
+	peekToken       token.Token                       // next token
+	previousToken   token.Token                       // previous token used for `--` and `++` operators
+	errors          []string                          // errors
+	prefixParseFns  map[token.TokenType]prefixParseFn // prefix parse functions
+	infixParseFns   map[token.TokenType]infixParseFn  // infix parse functions
+	postfixParseFns map[token.TokenType]postfixParseFn
 }
 
 type (
-	prefixParseFn func() ast.Expression               // prefix parse function
-	infixParseFn  func(ast.Expression) ast.Expression // infix parse function
+	prefixParseFn  func() ast.Expression               // prefix parse function
+	infixParseFn   func(ast.Expression) ast.Expression // infix parse function
+	postfixParseFn func() ast.Expression
 )
 
 // Errors returns the errors encountered during parsing
@@ -101,6 +110,11 @@ func New(L *lexer.Lexer) *Parser {
 
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
+	p.registerInfix(token.PLUS_EQ, p.parseAssignExpression)
+	p.registerInfix(token.MINUS_EQ, p.parseAssignExpression)
+	p.registerInfix(token.ASSIGN, p.parseAssignExpression)
+	p.registerInfix(token.ASTERISK_EQ, p.parseAssignExpression)
+	p.registerInfix(token.ASSIGN, p.parseAssignExpression)
 	p.registerInfix(token.MINUS, p.parseInfixExpression)
 	p.registerInfix(token.SLASH, p.parseInfixExpression)
 	p.registerInfix(token.ASTERISK, p.parseInfixExpression)
@@ -108,6 +122,8 @@ func New(L *lexer.Lexer) *Parser {
 	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
 	p.registerInfix(token.LT, p.parseInfixExpression)
 	p.registerInfix(token.GT, p.parseInfixExpression)
+	p.registerInfix(token.LT_EQ, p.parseInfixExpression)
+	p.registerInfix(token.GT_EQ, p.parseInfixExpression)
 	p.registerInfix(token.MOD, p.parseInfixExpression)
 	p.registerInfix(token.AND, p.parseInfixExpression)
 	p.registerInfix(token.OR, p.parseInfixExpression)
@@ -116,6 +132,10 @@ func New(L *lexer.Lexer) *Parser {
 	p.registerInfix(token.PERIOD, p.parseMethodCallExpression)
 	p.registerInfix(token.DOUBLECOL, p.parseSelectorExpression)
 	p.registerInfix(token.BIND, p.parseBindExpression)
+
+	p.postfixParseFns = make(map[token.TokenType]postfixParseFn)
+	p.registerPostfix(token.PLUS_PLUS, p.parsePostfixExpression)
+	p.registerPostfix(token.MINUS_MINUS, p.parsePostfixExpression)
 	return p
 }
 
@@ -205,6 +225,7 @@ func (P *Parser) peekError(t token.TokenType) {
 nextToken moves to the next token
 */
 func (P *Parser) nextToken() {
+	P.previousToken = P.currentToken
 	P.currentToken = P.peekToken
 	P.peekToken = P.L.NextToken()
 }
@@ -252,6 +273,10 @@ func (P *Parser) registerPrefix(tokenType token.TokenType, fn prefixParseFn) {
 // registerInfix registers an infix parse function
 func (P *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
 	P.infixParseFns[tokenType] = fn
+}
+
+func (p *Parser) registerPostfix(tokenType token.TokenType, fn postfixParseFn) {
+	p.postfixParseFns[tokenType] = fn
 }
 
 // parseReturnStatement parses a return statement
@@ -369,25 +394,26 @@ func (P *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 }
 
 // parseExpression parses an expression such as 5 + 5 or x * y
-func (P *Parser) parseExpression(precedence int) ast.Expression {
+func (p *Parser) parseExpression(precedence int) ast.Expression {
 	// defer untrace(trace("parseExpression"))
-	prefix := P.prefixParseFns[P.currentToken.Type]
+	postfix := p.postfixParseFns[p.currentToken.Type]
+	if postfix != nil {
+		return (postfix())
+	}
+	prefix := p.prefixParseFns[p.currentToken.Type]
 	if prefix == nil {
-		P.noPrefixParseFnError(P.currentToken.Type)
+		p.noPrefixParseFnError(p.currentToken.Type)
 		return nil
 	}
 	leftExp := prefix()
-
-	for !P.peekTokenLS(token.SEMICOLON) && precedence < P.peekPrecedence() {
-		infix := P.infixParseFns[P.peekToken.Type]
+	for !p.peekTokenLS(token.SEMICOLON) && precedence < p.peekPrecedence() {
+		infix := p.infixParseFns[p.peekToken.Type]
 		if infix == nil {
 			return leftExp
 		}
-		P.nextToken()
-
+		p.nextToken()
 		leftExp = infix(leftExp)
 	}
-
 	return leftExp
 }
 
@@ -663,22 +689,22 @@ func (P *Parser) parseBindExpression(exp ast.Expression) ast.Expression {
 	return be
 }
 
-func (p *Parser) parseFunctionDefinition() ast.Expression {
-	p.nextToken()
-	lit := &ast.FunctionDefineLiteral{Token: p.currentToken}
-	if !p.expectPeek(token.LPAREN) {
+func (P *Parser) parseFunctionDefinition() ast.Expression {
+	P.nextToken()
+	lit := &ast.FunctionDefineLiteral{Token: P.currentToken}
+	if !P.expectPeek(token.LPAREN) {
 		return nil
 	}
-	lit.Defaults, lit.Parameters = p.parseFunctionDefParameter()
-	if !p.expectPeek(token.LBRACE) {
+	lit.Defaults, lit.Parameters = P.parseFunctionDefParameter()
+	if !P.expectPeek(token.LBRACE) {
 		return nil
 	}
-	lit.Body = p.parseBlockStatement()
+	lit.Body = P.parseBlockStatement()
 	return lit
 }
 
 // parseFunctionParameters parses the parameters used for a function.
-func (p *Parser) parseFunctionDefParameter() (map[string]ast.Expression, []*ast.Identifier) {
+func (P *Parser) parseFunctionDefParameter() (map[string]ast.Expression, []*ast.Identifier) {
 
 	// Any default parameters.
 	m := make(map[string]ast.Expression)
@@ -687,51 +713,88 @@ func (p *Parser) parseFunctionDefParameter() (map[string]ast.Expression, []*ast.
 	identifiers := make([]*ast.Identifier, 0)
 
 	// Is the next parameter ")" ?  If so we're done. No args.
-	if p.peekTokenLS(token.RPAREN) {
-		p.nextToken()
+	if P.peekTokenLS(token.RPAREN) {
+		P.nextToken()
 		return m, identifiers
 	}
-	p.nextToken()
+	P.nextToken()
 
 	// Keep going until we find a ")"
-	for !p.currentTokenLS(token.RPAREN) {
+	for !P.currentTokenLS(token.RPAREN) {
 
-		if p.currentTokenLS(token.EOF) {
-			p.errors = append(p.errors, "unterminated function parameters")
+		if P.currentTokenLS(token.EOF) {
+			P.errors = append(P.errors, "unterminated function parameters")
 			return nil, nil
 		}
 
 		// Get the identifier.
-		ident := &ast.Identifier{Token: p.currentToken, Value: p.currentToken.Literal}
+		ident := &ast.Identifier{Token: P.currentToken, Value: P.currentToken.Literal}
 		identifiers = append(identifiers, ident)
-		p.nextToken()
+		P.nextToken()
 
 		// If there is "=xx" after the name then that's
 		// the default parameter.
-		if p.currentTokenLS(token.ASSIGN) {
-			p.nextToken()
+		if P.currentTokenLS(token.ASSIGN) {
+			P.nextToken()
 			// Save the default value.
-			m[ident.Value] = p.parseExpressionStatement().Expression
-			p.nextToken()
+			m[ident.Value] = P.parseExpressionStatement().Expression
+			P.nextToken()
 		}
 
 		// Skip any comma.
-		if p.currentTokenLS(token.COMMA) {
-			p.nextToken()
+		if P.currentTokenLS(token.COMMA) {
+			P.nextToken()
 		}
 	}
 
 	return m, identifiers
 }
 
-func (p *Parser) parseFloatLiteral() ast.Expression {
-	flo := &ast.FloatLiteral{Token: p.currentToken}
-	value, err := strconv.ParseFloat(p.currentToken.Literal, 64)
+func (P *Parser) parseFloatLiteral() ast.Expression {
+	flo := &ast.FloatLiteral{Token: P.currentToken}
+	value, err := strconv.ParseFloat(P.currentToken.Literal, 64)
 	if err != nil {
-		msg := fmt.Sprintf("could not parse %q as float around line", p.currentToken.Literal)
-		p.errors = append(p.errors, msg)
+		msg := fmt.Sprintf("could not parse %q as float around line", P.currentToken.Literal)
+		P.errors = append(P.errors, msg)
 		return nil
 	}
 	flo.Value = value
 	return flo
+}
+
+func (P *Parser) parseAssignExpression(name ast.Expression) ast.Expression {
+	stmt := &ast.AssignStatement{Token: P.currentToken}
+	if n, ok := name.(*ast.Identifier); ok {
+		stmt.Name = n
+	} else {
+		msg := "expected assign token to be IDENT, got null instead"
+
+		if name != nil {
+			msg = fmt.Sprintf("%s Line %v Column %v - expected assign token to be IDENT, got %s", P.currentToken.FileName, P.currentToken.Line, P.currentToken.Column, name.TokenLiteral())
+		}
+		P.errors = append(P.errors, msg)
+	}
+
+	oper := P.currentToken
+	P.nextToken()
+	switch oper.Type {
+	case token.PLUS_EQ:
+		stmt.Operator = "+="
+	case token.MINUS_EQ:
+		stmt.Operator = "-="
+	case token.ASTERISK_EQ:
+		stmt.Operator = "*="
+	default:
+		stmt.Operator = "="
+	}
+	stmt.Value = P.parseExpression(LOWEST)
+	return stmt
+}
+
+func (p *Parser) parsePostfixExpression() ast.Expression {
+	expression := &ast.PostfixExpression{
+		Token:    p.previousToken,
+		Operator: p.currentToken.Literal,
+	}
+	return expression
 }
