@@ -2,9 +2,10 @@ package builtins
 
 import (
 	"esolang/lang-esolang/object"
-	"strings"
-
 	"fmt"
+	"math/rand"
+	"strings"
+	"time"
 )
 
 var NULL = &object.Null{}
@@ -56,9 +57,6 @@ var Builtins = map[string]*object.Builtin{
 	"Http": &object.Builtin{
 		Fn: _http,
 	},
-	// "HttpServe": &object.Builtin{
-	// 	Fn: _httpServeAndListen,
-	// },
 	"type_of": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
@@ -93,10 +91,19 @@ var Builtins = map[string]*object.Builtin{
 		},
 	},
 
-	// "math.rand": &object.Builtin{
-	// 	Fn: random,
-	// },
+	"math_randomInt": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			rand.Seed(time.Now().UnixNano())
+			return &object.Integer{Value: rand.Int63()}
+		},
+	},
 
+	"math_randomFloat": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			rand.Seed(time.Now().UnixNano())
+			return &object.Float{Value: rand.Float64()}
+		},
+	},
 	"_contains": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 2 {
