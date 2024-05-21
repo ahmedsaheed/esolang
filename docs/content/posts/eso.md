@@ -1,4 +1,12 @@
-# Esolang
++++
+title = "Esolang"
+date = "2024-05-22T00:01:24+01:00"
+author = "Ahmed Saheed"
+cover = "img/hello.jpg"
+showFullContent = false
+readingTime = false
+hideComments = false
++++
 
 Esolang is a beginner friendly dynamically typed scripting language for quick prototyping and learning functional programming.
 
