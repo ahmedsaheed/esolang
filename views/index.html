@@ -1,516 +1,460 @@
 {{ block "index" . }}
-
 <!doctype html>
-<!-- BE SUPER CAREFUL EDITTING THIS FILE - IT BREAKS EASILY -->
 <html lang="en" class="h-full !max-h-screen">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
-    <link rel="stylesheet" href="https://esironal.github.io/cmtouch/lib/codemirror.css" />
-    <link rel="stylesheet" href="https://esironal.github.io/cmtouch/addon/hint/show-hint.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Reenie+Beanie&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
-    <script src="https://esironal.github.io/cmtouch/lib/codemirror.js"></script>
-    <script src="https://esironal.github.io/cmtouch/addon/hint/show-hint.js"></script>
-    <script src="https://esironal.github.io/cmtouch/addon/hint/xml-hint.js"></script>
-    <script src="https://esironal.github.io/cmtouch/addon/hint/html-hint.js"></script>
-    <script src="https://esironal.github.io/cmtouch/mode/xml/xml.js"></script>
-    <script src="https://esironal.github.io/cmtouch/mode/javascript/javascript.js"></script>
-    <script src="https://esironal.github.io/cmtouch/mode/css/css.js"></script>
-    <script src="https://esironal.github.io/cmtouch/mode/htmlmixed/htmlmixed.js"></script>
-    <script src="https://esironal.github.io/cmtouch/addon/selection/active-line.js"></script>
-    <script src="https://esironal.github.io/cmtouch/addon/edit/matchbrackets.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
-    <link rel="stylesheet" href="https://esironal.github.io/cmtouch/theme/base16-dark.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
-    <style type="text/css">
-        body {
-            font-family: "Roboto Mono", "Fira Mono", monospace;
-            color: hsla(0, 0%, 93%, 1);
-            user-select: none;
-        }
-        .reenie-beanie-regular {
-          font-family: "Reenie Beanie", cursive !important;
-          font-weight: 400;
-          font-style: cursive;
-        }
-
-        .bg-code-background {
-            background-color: #1f222a;
-        }
-
-        #pane-1 {
-            border-left: 3px dotted #78E2A0;
-        }
-
-        #underheader:after {
-            content: '';
-            position: absolute;
-            bottom: 2px;
-            display: block;
-            width: 100%;
-            border-bottom:
-        }
-        .info-div {
-            @apply text-white !important;
-        }
-        .text-white {
-            color: #78E2A0 !important;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            color: white !important;
-            font-size: 1.5rem !important;
-        }
-
-        p {
-            font-size: 1.1rem !important;
-        }
-
-        @keyframes fadeInAnimation {
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
-        }
-
-        .evaluated {
-            animation: fadeInAnimation 0.5s ease-in-out;
-            animation-iteration-count: 1;
-            animation-fill-mode: forwards;
-        }
-
-        .CodeMirror {
-            font-size: 18px;
-            width: 100%;
-            font-family: "Roboto Mono", "Fira Mono", monospace;
-            font-weight: 400;
-            height: -webkit-fill-available;
-            background-color: #1f222a !important;
-        }
-        .CodeMirror-gutter {
-            background-color: #1f222a !important;
-
-        }
-
-        .CodeMirror-vscrollbar::-webkit-scrollbar {
-            width: 0.5rem;
-        }
-
-        #evaluated::-webkit-scrollbar {
-            width: 0.5rem;
-        }
-
-        #evaluated::-webkit-scrollbar-thumb {
-            border-radius: 0.815rem;
-            background-color: #484845;
-        }
-
-        #evaluated::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .CodeMirror-vscrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .CodeMirror-vscrollbar::-webkit-scrollbar-thumb {
-            border-radius: 0.815rem;
-            background-color: #484845;
-        }
-        .foxes {
-            padding: 32px 17px 96px 138px;
-            height: calc(100px * 2);
-            width: calc(150px * 2);
-            box-sizing: border-box;
-            background-image: url("https://try.ruby-lang.org/images/foxes.svg");
-            background-position: left top;
-            background-repeat: no-repeat;
-            background-size: contain;
-            color: #444;
-            text-align: center;
-            font: italic 1.5rem "Reenie Beanie", cursive;
-            line-height: .75;
-        }
-    </style>
-    <title>Esolang Playground - The esolang scripting language</title>
-</head>
-
-<body class="dark bg-code-background flex flex-col h-full max-h-screen">
-    <header style="border-bottom: 3px dotted #78E2A0;">
-        <div  class="w-full flex items-center justify-between text-4xl text-white p-4">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
+      <link rel="stylesheet" href="https://esironal.github.io/cmtouch/lib/codemirror.css" />
+      <link rel="stylesheet" href="https://esironal.github.io/cmtouch/addon/hint/show-hint.css" />
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Reenie+Beanie&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+      <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+      <script src="https://esironal.github.io/cmtouch/lib/codemirror.js"></script>
+      <script src="https://esironal.github.io/cmtouch/addon/hint/show-hint.js"></script>
+      <script src="https://esironal.github.io/cmtouch/addon/hint/xml-hint.js"></script>
+      <script src="https://esironal.github.io/cmtouch/addon/hint/html-hint.js"></script>
+      <script src="https://esironal.github.io/cmtouch/mode/xml/xml.js"></script>
+      <script src="https://esironal.github.io/cmtouch/mode/javascript/javascript.js"></script>
+      <script src="https://esironal.github.io/cmtouch/mode/css/css.js"></script>
+      <script src="https://esironal.github.io/cmtouch/mode/htmlmixed/htmlmixed.js"></script>
+      <script src="https://esironal.github.io/cmtouch/addon/selection/active-line.js"></script>
+      <script src="https://esironal.github.io/cmtouch/addon/edit/matchbrackets.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/3.18.0/mode/go/go.js" integrity="sha512-42Om+Wb4tXwYV5q6UTkjTO2igtqqmMU+/aA60M42LM8xCU71cjJ+JJe8BZqR7SyJerbp6Oc9TZDJitOfJo7XaA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>    
+      <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="https://esironal.github.io/cmtouch/theme/base16-dark.css" />
+      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+      <style type="text/css">
+         body {
+         font-family: "Roboto Mono", "Fira Mono", monospace;
+         color: hsla(0, 0%, 93%, 1);
+         user-select: none;
+         }
+         header {
+         background-color: darkslategray
+         }
+         .reenie-beanie-regular {
+         font-family: "Reenie Beanie", cursive !important;
+         font-weight: 400;
+         font-style: cursive;
+         }
+         .bg-code-background {
+         background-color: #1f222a;
+         }
+         .prose code {
+         color: #ae2e93
+         }
+         #pane-1 {
+         border-left: 3px dotted #78E2A0;
+         /* add a shadow */
+         box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+         }
+         #underheader:after {
+         content: '';
+         position: absolute;
+         bottom: 2px;
+         display: block;
+         width: 100%;
+         border-bottom: 3px dotted #78E2A0;
+         }
+         .text-white {
+         color: #78E2A0 !important;
+         }
+         h1, h2, h3, h4, h5, h6 {
+         color: white !important;
+         font-size: 1.5rem !important;
+         font-family: "Outfit", sans-serif;
+         }
+         p {
+         font-size: 16px !important;
+         font-family: "Outfit", sans-serif;
+         }
+         @keyframes fadeInAnimation {
+         0% {
+         opacity: 0;
+         }
+         100% {
+         opacity: 1;
+         }
+         }
+         .evaluated {
+         animation: fadeInAnimation 0.5s ease-in-out;
+         animation-iteration-count: 1;
+         animation-fill-mode: forwards;
+         }
+         .CodeMirror {
+         font-size: 16px;
+         width: 100%;
+         font-family: "Roboto Mono", "Fira Mono", monospace;
+         font-weight: 400;
+         height: -webkit-fill-available;
+         background-color: #1f222a !important;
+         }
+         .CodeMirror-gutter {
+         background-color: #1f222a !important;
+         }
+         .CodeMirror-vscrollbar::-webkit-scrollbar {
+         width: 0.5rem;
+         }
+         #evaluated::-webkit-scrollbar {
+         width: 0.5rem;
+         }
+         #evaluated::-webkit-scrollbar-thumb {
+         border-radius: 0.815rem;
+         background-color: #484845;
+         }
+         #evaluated::-webkit-scrollbar-track {
+         background: transparent;
+         }
+         .CodeMirror-vscrollbar::-webkit-scrollbar-track {
+         background: transparent;
+         }
+         .CodeMirror-vscrollbar::-webkit-scrollbar-thumb {
+         border-radius: 0.815rem;
+         background-color: #484845;
+         }
+      </style>
+      <title>Esolang Playground - The esolang scripting language</title>
+   </head>
+   <body class="dark bg-code-background flex flex-col h-full max-h-screen">
+      <header style="border-bottom: 3px dotted #78E2A0;">
+         <div  class="w-full flex items-center justify-between text-4xl text-white p-4">
             <h1 class="reenie-beanie-regular text-white !text-4xl"> try Esolang</h1>
             <a href="https://ahmedsaheed.github.io/esolang/posts/eso/" target="_blank" class="reenie-beanie-regular"> Documentation</a>
-        </div>
-        <div id="underheader"></div>
-    </header>
-    <div class="flex h-full overflow-hidden">
-        <div id="panes" class="flex-1 flex flex-col md:flex-row max-h-fit">
+         </div>
+      </header>
+      <div class="flex h-full overflow-hidden">
+         <div id="panes" class="flex-1 flex flex-col md:flex-row max-h-fit">
             <div id="pane-0" class="flex flex-col h-4/6 md:h-full w-full md:w-[50%]">
-                  <div class="prose lg:prose-xl info-div !text-slate-200 p-4">
-            <div id="tryeso-content">
-                <h1 id="tryeso-title">Got 30 minutes? </h1>
-               <p>Give Esolang a shot right now!</p>
-                <p>The code shown is editable and will be compiled and evaluated as you type.<br/>
-                Anything you print using println or print will be shown in the bottom section,<br/>
-                along with any compile errors and warnings.</p>
-                <p>OK, let's go.
-                Click "Next" to get started, click "Contents" to jump to a specific topic,<br/> or go here to read everything in one page.</p>
-               <br/>
+               <div class="prose lg:prose-xl info-div !text-slate-200 p-4">
+                  <div id="tryeso-content">
+                     <h2>Hello, World!</h2>
+                     <p>Here is a tiny program that prints out the text &quot;Hello, World!&quot;. We'll explain how it works shortly.</p>
+                     <p>In a normal Esolang project this program would be run using the <code>esolang</code> command  on the command line,
+                        but here in this tour the program is compiled and run inside your web browser,
+                        allowing you to try Esolang without installing anything on your computer.
+                     </p>
+                     <p>Try changing the text being printed to <code>Hello, Mom!</code> and click run to see what happens.</p>
+                  </div>
+               </div>
             </div>
-            <div class="foxes">Let's begin by saying <strong class="font-bold">Hello, World</strong>.</div>
-        </div>
-            </div>
-
             <div id="pane-1" class="flex flex-col h-2/6 md:h-full w-full md:w-[50%] bg-code-background">
-                <div class="flex flex-col justify-between text-white" style="height: 50%">
-                <div id="code" class="flex-1 flex flex-col overflow-auto"></div>
-                <div class="bg-code-background w-full bottom-0">
-                    <div class="flex gap-2 w-full justify-between md:justify-end items-center px-1">
+               <div class="flex flex-col justify-between text-white" style="height: 50%">
+                  <div id="code" class="flex-1 flex flex-col overflow-auto"></div>
+                  <div class="bg-code-background w-full bottom-0">
+                     <div class="flex gap-2 w-full justify-between md:justify-end items-center px-1">
                         {{ template "form" .}}
                         <button id="copy"
-                            class="flex btn btn-sm space-x-2 mr-4 items-center justify-center px-2 h-8 m-4 space-x-2 border border-white rounded text-sm text-white hover:text-[#000] hover:bg-white hover:border-none">
-                            <span>Copy</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="32" viewBox="0 0 24 24">
-                                <path fill="currentColor" fill-rule="evenodd"
-                                    d="M13.803 5.333c0-1.84 1.5-3.333 3.348-3.333A3.341 3.341 0 0 1 20.5 5.333c0 1.841-1.5 3.334-3.349 3.334a3.346 3.346 0 0 1-2.384-.994l-4.635 3.156a3.336 3.336 0 0 1-.182 1.917l5.082 3.34a3.346 3.346 0 0 1 2.12-.753a3.341 3.341 0 0 1 3.348 3.334C20.5 20.507 19 22 17.151 22a3.341 3.341 0 0 1-3.348-3.333a3.3 3.3 0 0 1 .289-1.356L9.05 14a3.346 3.346 0 0 1-2.202.821A3.34 3.34 0 0 1 3.5 11.487a3.34 3.34 0 0 1 3.348-3.333c1.064 0 2.01.493 2.623 1.261l4.493-3.059a3.317 3.317 0 0 1-.161-1.023"
-                                    clip-rule="evenodd" />
-                            </svg>
+                           class="flex btn btn-sm space-x-2 mr-4 items-center justify-center px-2 h-8 m-4 space-x-2 border border-white rounded text-sm text-white hover:text-[#000] hover:bg-white hover:border-none">
+                           <span>Copy</span>
+                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="32" viewBox="0 0 24 24">
+                              <path fill="currentColor" fill-rule="evenodd"
+                                 d="M13.803 5.333c0-1.84 1.5-3.333 3.348-3.333A3.341 3.341 0 0 1 20.5 5.333c0 1.841-1.5 3.334-3.349 3.334a3.346 3.346 0 0 1-2.384-.994l-4.635 3.156a3.336 3.336 0 0 1-.182 1.917l5.082 3.34a3.346 3.346 0 0 1 2.12-.753a3.341 3.341 0 0 1 3.348 3.334C20.5 20.507 19 22 17.151 22a3.341 3.341 0 0 1-3.348-3.333a3.3 3.3 0 0 1 .289-1.356L9.05 14a3.346 3.346 0 0 1-2.202.821A3.34 3.34 0 0 1 3.5 11.487a3.34 3.34 0 0 1 3.348-3.333c1.064 0 2.01.493 2.623 1.261l4.493-3.059a3.317 3.317 0 0 1-.161-1.023"
+                                 clip-rule="evenodd" />
+                           </svg>
                         </button>
                         <form>
-                            <select id="codesamples" class="bg-code-background text-white border-none">
-                                <option value="1">Hello, World</option>
-                                <option value="2">Fibonacci</option>
-                                <option value="3">Array Sum</option>
-                                <option value="4">FizzBuzz</option>
-                                <option value="5">HTTP Post req</option>
-                            </select>
+                           <select id="codesamples" class="bg-code-background text-white border-none">
+                              <option value="1">Hello, World</option>
+                              <option value="2">Fibonacci</option>
+                              <option value="3">Array Sum</option>
+                              <option value="4">FizzBuzz</option>
+                              <option value="5">HTTP Post req</option>
+                           </select>
                         </form>
-
                         <button id="run"
-                            class="flex btn btn-sm space-x-2 mr-4 items-center justify-center px-2 h-8 m-4 space-x-2 border border-white rounded text-sm text-white hover:text-[#000] hover:bg-white hover:border-none">
-                            <span class="text-lighter">RUN
-
-                            </span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="32" viewBox="0 0 24 24">
-                                <path fill="currentColor"
-                                    d="M8 17.175V6.825q0-.425.3-.713t.7-.287q.125 0 .263.037t.262.113l8.15 5.175q.225.15.338.375t.112.475q0 .25-.112.475t-.338.375l-8.15 5.175q-.125.075-.262.113T9 18.175q-.4 0-.7-.288t-.3-.712m2-1.825L15.25 12L10 8.65z" />
-                            </svg>
+                           class="flex btn btn-sm space-x-2 mr-4 items-center justify-center px-2 h-8 m-4 space-x-2 border border-white rounded text-sm text-white hover:text-[#000] hover:bg-white hover:border-none">
+                           <span class="text-lighter">RUN
+                           </span>
+                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="32" viewBox="0 0 24 24">
+                              <path fill="currentColor"
+                                 d="M8 17.175V6.825q0-.425.3-.713t.7-.287q.125 0 .263.037t.262.113l8.15 5.175q.225.15.338.375t.112.475q0 .25-.112.475t-.338.375l-8.15 5.175q-.125.075-.262.113T9 18.175q-.4 0-.7-.288t-.3-.712m2-1.825L15.25 12L10 8.65z" />
+                           </svg>
                         </button>
-                    </div>
-                </div>
-
-                </div>
-                <div
-                    class="flex flex-col justify-between space-y-4 border-dark-separator_30 border-t output-container overflow-auto">
-                    <div id="output" class="h-auto flex-col overflow-auto p-4 text-white" x-show="output"></div>
-                </div>
-                {{ template "evaluatedView" .}}
-
+                     </div>
+                  </div>
+               </div>
+               <div
+                  style="border-top: 3px dotted #78E2A0;"
+                  class="flex flex-col justify-between space-y-4 border-dark-separator_30 border-t output-container overflow-auto">
+                  <div id="output" class="h-auto flex-col overflow-auto p-4 text-white" x-show="output"></div>
+               </div>
+               {{ template "evaluatedView" .}}
             </div>
-        </div>
-    </div>
-    </div>
-    <script type="text/javascript">
-        CodeMirror.commands.autocomplete = function (cm) {
-            CodeMirror.showHint(cm, CodeMirror.hint.html);
-        };
+         </div>
+      </div>
+      <script type="text/javascript">
+         CodeMirror.commands.autocomplete = function (cm) {
+             CodeMirror.showHint(cm, CodeMirror.hint.html);
+         };
+         
+         window.onload = function () {
+             editor = CodeMirror(document.getElementById("code"), {
+                 mode: "go",
+                 theme: "base16-dark",
+                 lineWrapping: true,
+                 lineNumbers: true,
+                 styleActiveLine: true,
+                 matchBrackets: true,
+         
+                 extraKeys: {
+                     "Ctrl-Space": "autocomplete",
+                 },
+                 value: "" + sampleCodes.helloWorld + "",
+             });
+         };
+         
+         const MarkdownToHtml = (markdown) => {
+             const md = window.markdownit();
+             const result = md.render(markdown);
+             return result;
+         }
+         clearEvaluated()
+         
+         
+         var sampleCodes = {
 
-        window.onload = function () {
-            editor = CodeMirror(document.getElementById("code"), {
-                mode: "text/javascript",
-                theme: "base16-dark",
-                lineWrapping: true,
-                lineNumbers: true,
-                styleActiveLine: true,
-                matchBrackets: true,
-
-                extraKeys: {
-                    "Ctrl-Space": "autocomplete",
-                },
-                value: "" + sampleCodes.helloWorld + "",
-            });
-        };
-
-        const MarkdownToHtml = (markdown) => {
-          console.log(markdown)
-            const md = window.markdownit();
-            const result = md.render(markdown);
-            console.log(result)
-            return result;
-        }
-
-
-        var sampleCodes = {
             helloWorld: `
 // You can edit this code!
 // Click here and start typing.
 
 print("Hello, World!");
-`,
-            fizzBuzz: `
-let fizzbuzz = fn(n, arr) {
+         `,
+             
+fizzBuzz: `
+func fizzBuzz(n, arr) {
     let i = 0
     when(i < n) {
         if (i % 15 == 0) { arr.append("FizzBuzz");}
         else {if (i % 3 == 0) {arr.append("Fizz");}
         else {if (i % 5 == 0) {arr.append("Buzz");}
         else {arr.append(i);}
-      }}
-        let i = i + 1
+            }}
+        i++
     }
     return arr
 }
+         
+fizzBuzz(100, [])`,
+             
+arraySum: `func sumArray(arr) {
+    let sum = 0;
+    let currIdx = 0;
 
-fizzbuzz(20, [])
-`,
-            arraySum: `
-// You can edit this code!
-// Click here and start typing.
-
-let sumArray = fn(arr) {
-  let currIdx = 0;
-  let sum = 0;
-
-  when(currIdx < count(arr)) {
-        let sum = sum + arr[currIdx];
-        let currIdx = currIdx + 1;
-  }
-
-  sum;
+    when(currIdx < arr.length) {
+        sum += arr[currIdx];
+        currIdx++;
+    }
+    sum;
 }
-
-sumArray(array_new(1,2,3,4,5));
-`,
-
-            fibonacci: `
-// A fibonacci function that returns the Nth Fibonacci number.
-// Note the recursive call of fibonacci itself!
-
-let fibonacci = fn(x) {
-   if (x < 2) {x} else {
-    fibonacci(x - 1) + fibonacci(x - 2);
-  }
+sumArray(array_new(1,2,3,4,5));`,
+         
+fibonacci: `func fibonacci(x) {
+    if (x < 2) { x }
+    else { fibonacci(x - 1) + fibonacci(x - 2) }
 }
-
-let x = 20
-print("fibonnaci of", x , "is", fibonacci(x))
-`,
-
-            httpPost: `
-
-let login_request = fn(url, username) {
-
-   let login_data = {
-       "username": username,
-       "password": "success-password" // try replace with failed-password
-   }
-
-   let req = Http("POST", url, login_data)
-      println(req["Body"]["message"])
+         
+x := 20
+print("fibonnaci of", x , "is", fibonacci(x))`,
+         
+             httpPost: `
+func loginRequest(uri, userName) {
+    let login_data = {
+        "username": username,
+        "password": "success-password"
+    }
+         
+    req := Http("POST", uri, login_data)
+    return req::Body["message"]
 }
+         
+login_url := "https://json-placeholder.mock.beeceptor.com/login"
+username := "user123"
+         
+println(loginRequest(login_url, username))`,
+    
+};
+         
+         var instructions ={
+             helloWorld: `## Hello, World!
+Here is a tiny program that prints out the text \`Hello, World!\`. We'll explain how it works shortly.
+         
+In a normal Esolang project this program would be run using the command \`esolang\`  on the command line,
+but here in this playground the program is compiled and runs inside your web browser,
+allowing you to try Esolang without installing anything on your computer.
 
-let login_url = "https://json-placeholder.mock.beeceptor.com/login"
-let username = "user123"
-
-login_request(login_url, username)
-`,
-        };
-
-        var instructions ={
-            helloWorld: `## Hello, World!
-Here is a tiny program that prints out the text "Hello, World!". We'll explain how it works shortly.
-
-In a normal Esolang project this program would be run using the command  on the command line,
-but here in this tour the program is compiled and run inside your web browser,
-allowing you to try Gleam without installing anything on your computer.
-
-Try changing the text being printed to Hello, Mom! and see what happens.`,
-            fizzBuzz: `## FizzBuzz
-
+Try changing the text being printed to \`Hello, Mom!\`  and see what happens.`,
+             fizzBuzz: `## FizzBuzz
+         
 FizzBuzz is a simple program that prints the numbers from 1 to 100.
-But for multiples of three it prints "Fizz" instead of the number and for the multiples of five it prints "Buzz".
-For numbers which are multiples of both three and five it prints "FizzBuzz".`,
+But for multiples of three it prints \`Fizz"\` instead of the number and for the multiples of five it prints \`Buzz\`.
+For numbers which are multiples of both three and five it prints \`FizzBuzz\`.`,
+         
+         fib: `## Fibonacci
 
-fib: `## Fibonacci
-
-The Fibonacci sequence is a series of numbers in which each number is the sum of the two preceding ones,
-usually starting with 0 and 1.
+The Fibonacci sequence is a series of numbers in which each number is the sum of the two preceding ones, usually starting with 0 and 1.
 The sequence is named after Leonardo of Pisa, who was known as Fibonacci.
 The sequence starts with 0 and 1, and then each subsequent number is the sum of the previous two.
 The first few numbers in the sequence are 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, and so on.
-
-`,
-
-sumOfArray: `## Sum of Array
-
+         
+         `,
+         
+         sumOfArray: `## Sum of Array
+         
 This program calculates the sum of an array of numbers.
-The array is created using the array_new function, which takes a list of numbers as arguments.
+The array is created using the built-in \`array_new()\` function, which takes a list of numbers as arguments.
 The sumArray function takes the array as an argument and returns the sum of all the numbers in the array.
 The sum is calculated by iterating over the array and adding each number to a running total.
 Finally, the sum is printed to the console.
-`,
-
-http: `## HTTP Request
-
-This program sends a POST and GET request to a mock API endpoint.
+         `,
+         
+         http: `## HTTP Request
+         
+This program sends a \`POST\` and \`GET\` request to a mock API endpoint.
 The login_request function takes a URL and a username as arguments and sends a POST request to the URL with the username as the payload.
 The response from the server is then printed to the console.
 The login_url variable contains the URL of the mock API endpoint, and the username variable contains the username to be sent in the request.
 Finally, the login_request function is called with the login_url and username as arguments.
-`,
-
-
-        }
-
-
-
-        var samples = {
-            helloWorld: {
-              info_div:  instructions.helloWorld,
-              code: sampleCodes.helloWorld,
-            },
-            fizzBuzz: {
-              info_div:  instructions.fizzBuzz,
-              code: sampleCodes.fizzBuzz,
-            },
-
-            fibonacci: {
-              info_div:  instructions.fib,
-              code: sampleCodes.fibonacci,
-            },
-
-            arraySum: {
-              info_div:  instructions.sumOfArray,
-              code: sampleCodes.arraySum,
-            },
-            http: {
-              info_div:  instructions.http,
-              code: sampleCodes.httpPost,
-            },
-
-        }
-
-
-        function clearEvaluated() {
-            document.querySelector("#evaluated").innerHTML = "";
-        }
-
-        function replaceInfoDiv(md) {
-            console.log(document.querySelector(".info-div").innerHTML)
-            var htmlContent = MarkdownToHtml(md);
-            var divDom = document.querySelector(".info-div")
-            divDom.innerHTML = htmlContent;
-        }
-
-        const copyToClipboard = () => {
-            var code = editor.getValue();
-            navigator.clipboard.writeText(code).then(function () {
-                console.log("Copied to clipboard successfully!");
-            }, function (err) {
-                console.error("Unable to write to clipboard. Error:");
-                console.error(err);
-            });
-        }
-
-        // on copy button click
-        document.querySelector("#copy").addEventListener("click", copyToClipboard);
-
-        const sb = document.querySelector("#codesamples");
-        sb.addEventListener("change", function () {
-            if (sb.selectedIndex == 0) {
-                editor.setValue(samples.helloWorld.code);
-                replaceInfoDiv(samples.helloWorld.info_div)
-                clearEvaluated();
-            } else if (sb.selectedIndex == 3) {
-                editor.setValue(samples.fizzBuzz.code);
-                replaceInfoDiv(samples.fizzBuzz.info_div)
-                clearEvaluated();
-            } else if (sb.selectedIndex == 2) {
-                editor.setValue(samples.arraySum.code);
-                replaceInfoDiv(samples.arraySum.info_div)
-
-                clearEvaluated();
-            } else if (sb.selectedIndex == 1) {
-                editor.setValue(samples.fibonacci.code);
-                replaceInfoDiv(samples.fibonacci.info_div)
-                clearEvaluated();
-            } else if (sb.selectedIndex == 4) {
-                editor.setValue(samples.http.code);
-                replaceInfoDiv(samples.http.info_div)
-                clearEvaluated();
-            }
-        });
-
-        const form = document.querySelector("form");
-
-        form.addEventListener("keydown", function (event) {
-            if (
-                event.key === "Enter" &&
-                (event.ctrlKey || event.metaKey)
-            ) {
-                // Check for both Ctrl (Windows/Linux) and Cmd (macOS)
-                event.preventDefault(); // Prevent default form submission
-                this.submit(); // Submit the fosrm
-            }
-        });
-
-        form.addEventListener("submit", function () {
-            var code = editor.getValue();
-            console.log(code);
-            // Set the value of the hidden textarea to the cm-code
-            this.querySelector(
-                "textarea[name='sourceCode']",
-            ).value = code;
-        });
-
-        // get the run button
-        const submitButton = document.getElementById("form_button");
-        const runButton = document.getElementById("run");
-
-        // add event listener to the run button
-        runButton.addEventListener("click", function () {
-            // submit the form
-            submitButton.click();
-        });
-
-        // get the clear output button
-        const clearOutputButton = document.getElementsByClassName("clear-output-btn")[0];
-        clearOutputButton.addEventListener("click", function () {
-            var evlautedBlock = document.getElementById("evaluated")
-            while (evlautedBlock.firstChild) {
-                evlautedBlock.removeChild(evlautedBlock.firstChild);
-            }
-
-        });
-
-    </script>
-    </div>
-    </div>
-</body>
-
+         `,
+         
+         
+         }  
+         
+         var samples = {
+             helloWorld: {
+               info_div:  instructions.helloWorld,
+               code: sampleCodes.helloWorld,
+             },
+             fizzBuzz: {
+               info_div:  instructions.fizzBuzz,
+               code: sampleCodes.fizzBuzz,
+             },
+         
+             fibonacci: {
+               info_div:  instructions.fib,
+               code: sampleCodes.fibonacci,
+             },
+         
+             arraySum: {
+               info_div:  instructions.sumOfArray,
+               code: sampleCodes.arraySum,
+             },
+             http: {
+               info_div:  instructions.http,
+               code: sampleCodes.httpPost,
+             },
+         
+         }
+         
+         
+         function clearEvaluated() {
+             document.querySelector("#evaluated").innerHTML = "";
+         }
+         
+         function replaceInfoDiv(md) {
+             console.log(document.querySelector(".info-div").innerHTML)
+             var htmlContent = MarkdownToHtml(md);
+             var divDom = document.querySelector(".info-div")
+             divDom.innerHTML = htmlContent;
+         }
+         
+         const copyToClipboard = () => {
+             var code = editor.getValue();
+             navigator.clipboard.writeText(code).then(function () {
+                 console.log("Copied to clipboard successfully!");
+             }, function (err) {
+                 console.error("Unable to write to clipboard. Error:");
+                 console.error(err);
+             });
+         }
+         
+         // on copy button click
+         document.querySelector("#copy").addEventListener("click", copyToClipboard);
+         
+         const sb = document.querySelector("#codesamples");
+         sb.addEventListener("change", function () {
+             if (sb.selectedIndex == 0) {
+                 editor.setValue(samples.helloWorld.code);
+                 replaceInfoDiv(samples.helloWorld.info_div)
+                 clearEvaluated();
+             } else if (sb.selectedIndex == 3) {
+                 editor.setValue(samples.fizzBuzz.code);
+                 replaceInfoDiv(samples.fizzBuzz.info_div)
+                 clearEvaluated();
+             } else if (sb.selectedIndex == 2) {
+                 editor.setValue(samples.arraySum.code);
+                 replaceInfoDiv(samples.arraySum.info_div)
+         
+                 clearEvaluated();
+             } else if (sb.selectedIndex == 1) {
+                 editor.setValue(samples.fibonacci.code);
+                 replaceInfoDiv(samples.fibonacci.info_div)
+                 clearEvaluated();
+             } else if (sb.selectedIndex == 4) {
+                 editor.setValue(samples.http.code);
+                 replaceInfoDiv(samples.http.info_div)
+                 clearEvaluated();
+             }
+         });
+         
+         const form = document.querySelector("form");
+         
+         form.addEventListener("keydown", function (event) {
+             if (
+                 event.key === "Enter" &&
+                 (event.ctrlKey || event.metaKey)
+             ) {
+                 // Check for both Ctrl (Windows/Linux) and Cmd (macOS)
+                 event.preventDefault(); // Prevent default form submission
+                 this.submit(); // Submit the fosrm
+             }
+         });
+         
+         form.addEventListener("submit", function () {
+             var code = editor.getValue();
+             this.querySelector(
+                 "textarea[name='sourceCode']",
+             ).value = code;
+         });
+         
+         // get the run button
+         const submitButton = document.getElementById("form_button");
+         const runButton = document.getElementById("run");
+         
+         // add event listener to the run button
+         runButton.addEventListener("click", function () {
+             // submit the form
+             submitButton.click();
+         });
+         
+         // get the clear output button
+         const clearOutputButton = document.getElementsByClassName("clear-output-btn")[0];
+         clearOutputButton.addEventListener("click", function () {
+             var evlautedBlock = document.getElementById("evaluated")
+             while (evlautedBlock.firstChild) {
+                 evlautedBlock.removeChild(evlautedBlock.firstChild);
+             }
+         
+         });
+         
+      </script>
+      </div>
+   </body>
 </html>
 {{ end }} {{block "form" .}}
 <form hx-swap="innerHTML" hx-target="#evaluated" hx-post="/playground">
-    <textarea name="sourceCode" hidden></textarea>
-    <button id="form_button" type="submit" hidden>Run</button>
+   <textarea name="sourceCode" hidden></textarea>
+   <button id="form_button" type="submit" hidden>Run</button>
 </form>
 {{end}} {{ block "evaluatedView" . }}
-
 <span id="evaluated" class="evaluated mx-2 overflow-y-auto" style="color: cyan; white-space: pre-wrap;">
-    {{ range .Esos }}
-    {{ .SourceCode }}
-    {{ end }}
+{{ range .Esos }}
+{{ .SourceCode }}
+{{ end }}
 </span>
-
-
 {{ end }}
