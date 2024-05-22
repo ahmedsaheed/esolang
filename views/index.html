@@ -16,7 +16,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Reenie+Beanie&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script src="https://esironal.github.io/cmtouch/lib/codemirror.js"></script>
     <script src="https://esironal.github.io/cmtouch/addon/hint/show-hint.js"></script>
     <script src="https://esironal.github.io/cmtouch/addon/hint/xml-hint.js"></script>
@@ -27,6 +27,7 @@
     <script src="https://esironal.github.io/cmtouch/mode/htmlmixed/htmlmixed.js"></script>
     <script src="https://esironal.github.io/cmtouch/addon/selection/active-line.js"></script>
     <script src="https://esironal.github.io/cmtouch/addon/edit/matchbrackets.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
     <link rel="stylesheet" href="https://esironal.github.io/cmtouch/theme/base16-dark.css" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
     <style type="text/css">
@@ -57,9 +58,20 @@
             width: 100%;
             border-bottom:
         }
-
+        .info-div {
+            @apply text-white !important;
+        }
         .text-white {
             color: #78E2A0 !important;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: white !important;
+            font-size: 1.5rem !important;
+        }
+
+        p {
+            font-size: 1.1rem !important;
         }
 
         @keyframes fadeInAnimation {
@@ -136,15 +148,15 @@
 <body class="dark bg-code-background flex flex-col h-full max-h-screen">
     <header style="border-bottom: 3px dotted #78E2A0;">
         <div  class="w-full flex items-center justify-between text-4xl text-white p-4">
-            <h1 class="reenie-beanie-regular"> try Esolang</h1>
-            <a href="https://ahmedsaheed.github.io/esolang/" target="_blank" class="reenie-beanie-regular"> Documentation</a>
+            <h1 class="reenie-beanie-regular text-white !text-4xl"> try Esolang</h1>
+            <a href="https://ahmedsaheed.github.io/esolang/posts/eso/" target="_blank" class="reenie-beanie-regular"> Documentation</a>
         </div>
         <div id="underheader"></div>
     </header>
     <div class="flex h-full overflow-hidden">
         <div id="panes" class="flex-1 flex flex-col md:flex-row max-h-fit">
             <div id="pane-0" class="flex flex-col h-4/6 md:h-full w-full md:w-[50%]">
-                  <div class="info-div text-slate-200 p-4">
+                  <div class="prose lg:prose-xl info-div !text-slate-200 p-4">
             <div id="tryeso-content">
                 <h1 id="tryeso-title">Got 30 minutes? </h1>
                <p>Give Esolang a shot right now!</p>
@@ -229,6 +241,15 @@
             });
         };
 
+        const MarkdownToHtml = (markdown) => {
+          console.log(markdown)
+            const md = window.markdownit();
+            const result = md.render(markdown);
+            console.log(result)
+            return result;
+        }
+
+
         var sampleCodes = {
             helloWorld: `
 // You can edit this code!
@@ -305,19 +326,76 @@ login_request(login_url, username)
 `,
         };
 
+        var instructions ={
+            helloWorld: `## Hello, World!
+Here is a tiny program that prints out the text "Hello, World!". We'll explain how it works shortly.
+
+In a normal Esolang project this program would be run using the command  on the command line,
+but here in this tour the program is compiled and run inside your web browser,
+allowing you to try Gleam without installing anything on your computer.
+
+Try changing the text being printed to Hello, Mom! and see what happens.`,
+            fizzBuzz: `## FizzBuzz
+
+FizzBuzz is a simple program that prints the numbers from 1 to 100.
+But for multiples of three it prints "Fizz" instead of the number and for the multiples of five it prints "Buzz".
+For numbers which are multiples of both three and five it prints "FizzBuzz".`,
+
+fib: `## Fibonacci
+
+The Fibonacci sequence is a series of numbers in which each number is the sum of the two preceding ones,
+usually starting with 0 and 1.
+The sequence is named after Leonardo of Pisa, who was known as Fibonacci.
+The sequence starts with 0 and 1, and then each subsequent number is the sum of the previous two.
+The first few numbers in the sequence are 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, and so on.
+
+`,
+
+sumOfArray: `## Sum of Array
+
+This program calculates the sum of an array of numbers.
+The array is created using the array_new function, which takes a list of numbers as arguments.
+The sumArray function takes the array as an argument and returns the sum of all the numbers in the array.
+The sum is calculated by iterating over the array and adding each number to a running total.
+Finally, the sum is printed to the console.
+`,
+
+http: `## HTTP Request
+
+This program sends a POST and GET request to a mock API endpoint.
+The login_request function takes a URL and a username as arguments and sends a POST request to the URL with the username as the payload.
+The response from the server is then printed to the console.
+The login_url variable contains the URL of the mock API endpoint, and the username variable contains the username to be sent in the request.
+Finally, the login_request function is called with the login_url and username as arguments.
+`,
+
+
+        }
+
+
 
         var samples = {
             helloWorld: {
-              info_div:  document.querySelector(".info-div").innerHTML,
+              info_div:  instructions.helloWorld,
               code: sampleCodes.helloWorld,
             },
             fizzBuzz: {
-              info_div:  `
-              <div>
-              <h1 class="text-2xl font-bold text-white">FizzBuzz</h1>
-              </div>
-              `,
+              info_div:  instructions.fizzBuzz,
               code: sampleCodes.fizzBuzz,
+            },
+
+            fibonacci: {
+              info_div:  instructions.fib,
+              code: sampleCodes.fibonacci,
+            },
+
+            arraySum: {
+              info_div:  instructions.sumOfArray,
+              code: sampleCodes.arraySum,
+            },
+            http: {
+              info_div:  instructions.http,
+              code: sampleCodes.httpPost,
             },
 
         }
@@ -327,10 +405,11 @@ login_request(login_url, username)
             document.querySelector("#evaluated").innerHTML = "";
         }
 
-        function replaceInfoDiv(htmlContent) {
-          console.log(htmlContent)
+        function replaceInfoDiv(md) {
             console.log(document.querySelector(".info-div").innerHTML)
-            document.querySelector(".info-div").innerHTML = htmlContent;
+            var htmlContent = MarkdownToHtml(md);
+            var divDom = document.querySelector(".info-div")
+            divDom.innerHTML = htmlContent;
         }
 
         const copyToClipboard = () => {
@@ -357,13 +436,17 @@ login_request(login_url, username)
                 replaceInfoDiv(samples.fizzBuzz.info_div)
                 clearEvaluated();
             } else if (sb.selectedIndex == 2) {
-                editor.setValue(sampleCodes.arraySum);
+                editor.setValue(samples.arraySum.code);
+                replaceInfoDiv(samples.arraySum.info_div)
+
                 clearEvaluated();
             } else if (sb.selectedIndex == 1) {
-                editor.setValue(sampleCodes.fibonacci);
+                editor.setValue(samples.fibonacci.code);
+                replaceInfoDiv(samples.fibonacci.info_div)
                 clearEvaluated();
             } else if (sb.selectedIndex == 4) {
-                editor.setValue(sampleCodes.httpPost);
+                editor.setValue(samples.http.code);
+                replaceInfoDiv(samples.http.info_div)
                 clearEvaluated();
             }
         });
