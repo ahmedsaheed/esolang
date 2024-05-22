@@ -1,6 +1,6 @@
 +++
 title = "Esolang"
-date = "2024-05-22T00:01:24+01:00"
+date = "2024-05-21T00:01:24+01:00"
 author = "Ahmed Saheed"
 cover = "img/hello.jpg"
 showFullContent = false

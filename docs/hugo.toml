@@ -3,7 +3,7 @@ languageCode = "en-us"
 # Add it only if you keep the theme in the `themes` directory.
 # Remove it if you use the theme as a remote Hugo Module.
 theme = "terminal"
-paginate = 5
+paginate = 3
 
 [params]
 # dir name of your main content (default is `content/posts`).
@@ -11,10 +11,10 @@ paginate = 5
 contentTypeName = "posts"
 
 # ["orange", "blue", "red", "green", "pink"]
-themeColor = "pink"
+themeColor = "green"
 
 # if you set this to 0, only submenu trigger will be visible
-showMenuItems = 2
+showMenuItems = 3
 
 # show selector to switch language
 showLanguageSelector = false
@@ -23,7 +23,7 @@ showLanguageSelector = false
 fullWidthTheme = false
 
 # center theme with default width
-centerTheme = false
+centerTheme = true
 
 # if your resource directory contains an image called `cover.(jpg|png|webp)`,
 # then the file will be used as a cover automatically.
@@ -55,13 +55,6 @@ showLastUpdated = false
 # TocTitle = "Table of Contents" # default
 
 
-[params.twitter]
-# set Twitter handles for Twitter cards
-# see https://developer.twitter.com/en/docs/tweets/optimize-with-cards/guides/getting-started#card-and-content-attribution
-# do not include @
-creator = ""
-site = ""
-
 [languages]
 [languages.en]
 languageName = "English"
@@ -91,5 +84,9 @@ name = "About"
 url = "/about"
 [[languages.en.menu.main]]
 identifier = "showcase"
-name = "Showcase"
-url = "/showcase"
+name = "Samples"
+url = "/code_samples"
+[[languages.en.menu.main]]
+identifier = "playground"
+name = "Playground"
+url = "https://esolang.onrender.com"
