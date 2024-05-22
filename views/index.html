@@ -40,18 +40,26 @@
           font-weight: 400;
           font-style: cursive;
         }
+
         .bg-code-background {
-            background-color: #151515;
+            background-color: #1f222a;
         }
 
         #pane-1 {
-            border-left: 1px solid;
-            border-color: rgb(34, 34, 34);
-            background-color: rgba(21, 21, 21, 1) !important;
+            border-left: 3px dotted #78E2A0;
+        }
+
+        #underheader:after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            display: block;
+            width: 100%;
+            border-bottom:
         }
 
         .text-white {
-            color: #b5e853 !important;
+            color: #78E2A0 !important;
         }
 
         @keyframes fadeInAnimation {
@@ -75,6 +83,11 @@
             font-family: "Roboto Mono", "Fira Mono", monospace;
             font-weight: 400;
             height: -webkit-fill-available;
+            background-color: #1f222a !important;
+        }
+        .CodeMirror-gutter {
+            background-color: #1f222a !important;
+
         }
 
         .CodeMirror-vscrollbar::-webkit-scrollbar {
@@ -121,11 +134,12 @@
 </head>
 
 <body class="dark bg-code-background flex flex-col h-full max-h-screen">
-    <header style="border-bottom: 1px dashed #b5e853;">
-        <div class="w-full flex items-center justify-between text-4xl text-white p-4" style="border-bottom: 1px dashed #b5e853;">
+    <header style="border-bottom: 3px dotted #78E2A0;">
+        <div  class="w-full flex items-center justify-between text-4xl text-white p-4">
             <h1 class="reenie-beanie-regular"> try Esolang</h1>
             <a href="https://ahmedsaheed.github.io/esolang/" target="_blank" class="reenie-beanie-regular"> Documentation</a>
         </div>
+        <div id="underheader"></div>
     </header>
     <div class="flex h-full overflow-hidden">
         <div id="panes" class="flex-1 flex flex-col md:flex-row max-h-fit">
@@ -145,7 +159,7 @@
         </div>
             </div>
 
-            <div id="pane-1" class="flex flex-col h-2/6 md:h-full w-full md:w-[50%] bg-stone-800">
+            <div id="pane-1" class="flex flex-col h-2/6 md:h-full w-full md:w-[50%] bg-code-background">
                 <div class="flex flex-col justify-between text-white" style="height: 50%">
                 <div id="code" class="flex-1 flex flex-col overflow-auto"></div>
                 <div class="bg-code-background w-full bottom-0">
