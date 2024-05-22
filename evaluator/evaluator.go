@@ -282,12 +282,9 @@ func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object
 		return val
 	}
 	if builtin, ok := builtins.Builtins[node.Value]; ok {
-		// if strings.HasPrefix(node.Value, "_") {
-		// 	return newError("identifier not found: " + node.Value)
-		// }
 		return builtin
 	}
-	return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "identifier not found: %s", node.Value)
+	return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "cannot find '%s' in scope", node.Value)
 }
 
 func evalIfExpression(ifExpressionNode *ast.IfExpression, env *object.Environment) object.Object {
