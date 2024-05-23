@@ -20,6 +20,18 @@ func NewErrorFromTypings(err string) Object {
 	return newErrorFromTypings(err)
 }
 
+func removeDuplicateFromObjectArray(arr []Object) []Object {
+	keys := make(map[string]bool)
+	list := []Object{}
+	for _, entry := range arr {
+		if _, value := keys[entry.Inspect()]; !value {
+			keys[entry.Inspect()] = true
+			list = append(list, entry)
+		}
+	}
+	return list
+}
+
 func arrayInvokables(method string, arr *Array, args ...Object) Object {
 	name := "Array." + method
 	if method == "count" || method == "length" {
@@ -87,6 +99,19 @@ func arrayInvokables(method string, arr *Array, args ...Object) Object {
 			return arr.Elements[len(arr.Elements)-1]
 		}
 		return &Null{}
+	}
+
+	if method == "to_set" {
+		if err := CheckTypings(
+			name, args,
+			ExactArgsLength(0),
+		); err != nil {
+			return newErrorFromTypings(err.Error())
+		}
+
+		elements := removeDuplicateFromObjectArray(arr.Elements)
+		set := &Set{Elements: elements}
+		return set
 	}
 
 	if method == "append" {

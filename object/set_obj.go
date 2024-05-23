@@ -12,6 +12,8 @@ func setInvokables(method string, set *Set, args ...Object) Object {
 		return setSize(set)
 	case "clear":
 		return setClear(set)
+	case "to_array":
+		return setToArray(set)
 	case "isEmpty":
 		return setIsEmpty(set)
 	}
@@ -85,6 +87,12 @@ func setIsEmpty(set *Set, args ...Object) Object {
 func setClear(set *Set) Object {
 	set.Elements = []Object{}
 	return set
+}
+
+func setToArray(set *Set) *Array {
+	arr := &Array{}
+	arr.Elements = set.Elements
+	return arr
 }
 
 func isObjectInSet(obj Object, set *Set) (bool, int) {
