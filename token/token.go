@@ -28,6 +28,7 @@ const (
 	MINUS_EQ    = "-="
 	MINUS_MINUS = "--"
 	COMMA       = ","
+	BACKTICK    = "`"
 	SEMICOLON   = ";"
 	LPAREN      = "("
 	RPAREN      = ")"

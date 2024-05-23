@@ -1,6 +1,8 @@
 package evaluator
 
 import (
+	"bytes"
+	"errors"
 	"esolang/lang-esolang/ast"
 	"esolang/lang-esolang/builtins"
 	"esolang/lang-esolang/lexer"
@@ -10,7 +12,10 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
+	"unicode"
 )
 
 var (
@@ -97,7 +102,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return &object.Null{}
 		}
 		return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "expected identifier on left got=%T", node.Left)
-
+	case *ast.BacktickLiteral:
+		return backTickOperation(node.Value)
 	case *ast.AssignStatement:
 		return evalAssignStatement(node, env)
 	case *ast.Identifier:
@@ -979,6 +985,123 @@ func evalProgram(program *ast.Program, env *object.Environment) object.Object {
 		}
 	}
 	return evaluatedResult
+}
+
+// backTickOperation executes a shell command and returns a hash object containing the result.
+// The hash includes 'stdout', 'stderr', and 'code' fields.
+// If the command is empty or parsing fails, an error hash is returned.
+func backTickOperation(command string) object.Object {
+	var (
+		args []string
+		err  error
+	)
+
+	// Trim leading and trailing whitespace from the command.
+	if command = strings.TrimSpace(command); command != "" {
+		// Split the command into arguments.
+		if args, err = parseCommandLine(command); err != nil {
+			// Return an error hash for parsing failure.
+			return createCommandExecHash(&object.String{Value: ""}, &object.String{Value: "parse error: " + err.Error()},
+				&object.Integer{Value: -1})
+		}
+	}
+
+	// Check if the command is empty after parsing.
+	if len(args) == 0 {
+		// Return an error hash for an empty command.
+		return createCommandExecHash(&object.String{Value: ""}, &object.String{Value: "no command"},
+			&object.Integer{Value: -1})
+	}
+
+	// Run the command.
+	cmd := exec.Command(filepath.Clean(args[0]), args[1:]...)
+
+	// Capture the command's stdout and stderr.
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	var exitCode int64 = 0
+
+	// Execute the command and handle errors.
+	err = cmd.Run()
+	if err != nil {
+		var exitError *exec.ExitError
+		if !errors.As(err, &exitError) {
+			// Handle non-ExitError errors (e.g., command not found).
+			return createCommandExecHash(&object.String{Value: ""}, &object.String{Value: fmt.Sprintf("Failed to run '%s' -> %s\n", command, err.Error())},
+				&object.Integer{Value: -1})
+		}
+		exitCode = int64(exitError.ExitCode())
+	}
+
+	// Create a hash with 'stdout', 'stderr', and 'code' fields.
+	return createCommandExecHash(&object.String{Value: stdout.String()}, &object.String{Value: stderr.String()},
+		&object.Integer{Value: exitCode})
+}
+
+// createCommandExecHash Create a hash with 'stdout', 'stderr', and 'code' fields.
+func createCommandExecHash(stdoutObj, stderrObj, errorObj object.Object) object.Object {
+	// Create keys for the hash.
+	stdoutKey := &object.String{Value: "stdout"}
+	stderrKey := &object.String{Value: "stderr"}
+	exitCodeKey := &object.String{Value: "exitCode"}
+
+	// Populate the hash with key-value pairs.
+	hashPairs := map[object.HashKey]object.HashPair{
+		stdoutKey.HashKey():   {Key: stdoutKey, Value: stdoutObj},
+		stderrKey.HashKey():   {Key: stderrKey, Value: stderrObj},
+		exitCodeKey.HashKey(): {Key: exitCodeKey, Value: errorObj},
+	}
+
+	// Create and return the hash object.
+	return &object.Hash{Pairs: hashPairs}
+}
+
+func parseCommandLine(command string) ([]string, error) {
+	var args []string
+	var current strings.Builder
+	inQuotes := false
+	var quoteChar rune
+
+	// flush appends the current argument to the args slice and resets the current string builder.
+	flush := func() {
+		if current.Len() > 0 {
+			args = append(args, current.String())
+			current.Reset()
+		}
+	}
+
+	// Iterate through each character in the command string.
+	for _, c := range command {
+		switch {
+		case unicode.IsSpace(c) && !inQuotes:
+			// If a space is encountered outside of quotes, flush the current argument.
+			flush()
+		case (c == '\'' || c == '"') && !inQuotes:
+			// If a single or double quote is encountered and we're not inside quotes,
+			// mark the start of quoted text and record the quote character.
+			inQuotes = true
+			quoteChar = c
+		case c == quoteChar && inQuotes:
+			// If the matching closing quote is found while inside quotes, mark the end of quoted text
+			// and flush the current argument.
+			inQuotes = false
+			flush()
+		default:
+			// Otherwise, append the character to the current argument.
+			current.WriteRune(c)
+		}
+	}
+
+	// If still inside quotes at the end of parsing, return an error for unclosed quotes.
+	if inQuotes {
+		return nil, fmt.Errorf("unclosed quote in command line: %s", command)
+	}
+
+	// Flush any remaining argument and return the parsed arguments.
+	flush()
+	return args, nil
 }
 
 func Module(node *ast.ImportExpression, name string) object.Object {

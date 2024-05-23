@@ -2,20 +2,8 @@ sec := import("second")
 math := import("eso/math")
 strings :=import("eso/string")
 bools := import("eso/bool")
-let fizzbuzz = fn(n, arr) {
-  let i = 0
-  when(i < n) {
-    if (i % 15 == 0) { arr.append("FizzBuzz");}
-    else {if (i % 3 == 0) {arr.append("Fizz");}
-      else {if (i % 5 == 0) {arr.append("Buzz");}
-        else {arr.append(i);}
-      }}
-      let i = i + 1
-    }
-    return arr
-}
 
-fizzbuzz(20, [])
+
 
 func hello() {
     printHi := fn() {
@@ -57,20 +45,19 @@ func testElif() {
 
 func fizzBuzz(n, arr) {
     let i = 1
-    when (i < n) {
-        if (i % 15 == 0) {
-            arr.append("FizzBuzz")
-        } elif (i % 3 == 0) {
-            arr.append("Fizz")
-        } (elif i % 5 == 0) {
-            arr.append("Buzz")
-        } else {
-            println(i)
-        }
-        i++
+    when(i < n) {
+      if (i % 15 == 0) { arr.append("FizzBuzz") }
+      elif (i % 3 == 0) { arr.append("Fizz") }
+      elif (i % 5 == 0) { arr.append("Buzz")}
+      else { arr.append(i) }
+      i++
     }
     return arr
 }
+
+fizzBuzz(100, [])
+
+
 
 let p = Person("John", 30, "Software Developer")
 println("sum is " + math::Add(50, 10).to_string())
@@ -79,3 +66,4 @@ println(strings::IsEmpty(""))
 println(bools::Negate(true))
 hello()
 testElif()
+println(fizzBuzz(20, []))

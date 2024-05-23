@@ -5,7 +5,9 @@ It goes through the input and outputs the next recognised token by calling `next
 package lexer
 
 import (
+	"errors"
 	"esolang/lang-esolang/token"
+	"fmt"
 	"strings"
 	"unicode"
 )
@@ -110,6 +112,18 @@ func (L *Lexer) NextToken() token.Token {
 		} else {
 			tok = newToken(token.ILLEGAL, L.char, L.line, L.column, L.fileName)
 		}
+
+	case '`':
+		str, err := L.readString('`')
+		tok.FileName = L.fileName
+		tok.Line = L.line
+		tok.Column = L.column
+		if err != nil {
+			tok.Literal = err.Error()
+			tok.Type = token.ILLEGAL
+		}
+		tok.Literal = str
+		tok.Type = token.BACKTICK
 	case ':':
 		if L.peekChar() == ':' {
 			char := L.char
@@ -127,8 +141,16 @@ func (L *Lexer) NextToken() token.Token {
 	case '%':
 		tok = newToken(token.MOD, L.char, L.line, L.column, L.fileName)
 	case '"':
+		str, err := L.readString('"')
+		tok.FileName = L.fileName
+		tok.Line = L.line
+		tok.Column = L.column
+		if err != nil {
+			tok.Literal = err.Error()
+			tok.Type = token.ILLEGAL
+		}
+		tok.Literal = str
 		tok.Type = token.STRING
-		tok.Literal = L.readString()
 	case ';':
 		tok = newToken(token.SEMICOLON, L.char, L.line, L.column, L.fileName)
 	case '(':
@@ -235,16 +257,52 @@ func newToken(tokenType token.TokenType, ch byte, line, col int, fileName string
 	return token.Token{Type: tokenType, Literal: string(ch), Line: line, Column: col, FileName: fileName}
 }
 
-func (L *Lexer) readString() string {
-	position := L.position + 1
+func (L *Lexer) readString(delim rune) (string, error) {
+	out := ""
+
 	for {
 		L.readChar()
-		if L.char == '"' || L.char == 0 {
+
+		if rune(L.char) == rune(0) {
+			return "", fmt.Errorf("unterminated string")
+		}
+		if rune(L.char) == delim {
 			break
 		}
-	}
-	return L.input[position:L.position]
+		if L.char == '\\' {
+			// Line ending with "\" + newline
+			if L.peekChar() == '\n' {
+				// consume the newline.
+				L.readChar()
+				continue
+			}
 
+			L.readChar()
+
+			if rune(L.char) == rune(0) {
+				return "", errors.New("unterminated string")
+			}
+			if rune(L.char) == rune('n') {
+				L.char = '\n'
+			}
+			if rune(L.char) == rune('r') {
+				L.char = '\r'
+			}
+			if rune(L.char) == rune('t') {
+				L.char = '\t'
+			}
+			if rune(L.char) == rune('"') {
+				L.char = '"'
+			}
+			if rune(L.char) == rune('\\') {
+				L.char = '\\'
+			}
+		}
+		out = out + string(L.char)
+
+	}
+
+	return out, nil
 }
 
 func (L *Lexer) skipComment() {
