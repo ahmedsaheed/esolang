@@ -20,6 +20,12 @@ var SetUtils string
 //go:embed stdlib/math.eso
 var Math string
 
+//go:embed stdlib/os.eso
+var Os string
+
+//go:embed stdlib/http.eso
+var Http string
+
 func getAllStdLib() string {
 	return ArrayUtils + "\n" + BoolUtils + "\n" + StringUtils + "\n" + SetUtils
 }
@@ -36,6 +42,10 @@ func GetStdLib(lib string) (string, error) {
 		return SetUtils, nil
 	case "math":
 		return Math, nil
+	case "os":
+		return Os, nil
+	case "http":
+		return Http, nil
 	default:
 		return "", fmt.Errorf("stdlib: %s not found", lib)
 	}

@@ -1,0 +1,12 @@
+func GET(url) {
+    return Http("GET", url)
+}
+
+
+func POST(url, data) {
+    return Http("POST", url, data)
+}
+
+func PATCH(url, data) {
+    return Http("PATCH", url, data)
+}

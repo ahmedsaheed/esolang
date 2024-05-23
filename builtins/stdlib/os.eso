@@ -1,0 +1,27 @@
+// Readfile reads the file named by filename and returns the contents.
+func Readfile(filename) {
+    return ReadFile(filename)
+}
+
+// Writefile writes data to a file named by filename.
+// If the file does not exist, Writefile creates it with using 0666 permissions;
+func Writefile(filename, data) {
+    return WriteFile(filename, data)
+}
+
+// Appendfile appends data to a file named by filename.
+// It adds the data to the end of the file.
+func Appendfile(filename, data, flag) {
+    if (flag.equals("a+")){
+        return WriteFile(filename, data, flag)
+    }
+}
+
+// Prependfile prepends data to a file named by filename.
+// It adds the data to the beginning of the file.
+func Prependfile(filename, data, flag) {
+    if (flag.equals("+a")){
+        return WriteFile(filename, data, flag)
+    }
+}
+

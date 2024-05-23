@@ -286,7 +286,7 @@ func (m Module) Inspect() string { return fmt.Sprintf("<module '%s'>", m.Name) }
 
 // InvokeMethod implements Object.
 func (m *Module) InvokeMethod(method string, env Environment, args ...Object) Object {
-	panic("unimplemented")
+	return nil
 }
 
 type Copyable interface {

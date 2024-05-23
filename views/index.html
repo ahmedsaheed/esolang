@@ -26,7 +26,7 @@
       <script src="https://esironal.github.io/cmtouch/addon/selection/active-line.js"></script>
       <script src="https://esironal.github.io/cmtouch/addon/edit/matchbrackets.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/3.18.0/mode/go/go.js" integrity="sha512-42Om+Wb4tXwYV5q6UTkjTO2igtqqmMU+/aA60M42LM8xCU71cjJ+JJe8BZqR7SyJerbp6Oc9TZDJitOfJo7XaA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/3.18.0/mode/go/go.js" integrity="sha512-42Om+Wb4tXwYV5q6UTkjTO2igtqqmMU+/aA60M42LM8xCU71cjJ+JJe8BZqR7SyJerbp6Oc9TZDJitOfJo7XaA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
       <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
       <link rel="stylesheet" href="https://esironal.github.io/cmtouch/theme/base16-dark.css" />
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
@@ -193,7 +193,7 @@
          CodeMirror.commands.autocomplete = function (cm) {
              CodeMirror.showHint(cm, CodeMirror.hint.html);
          };
-         
+
          window.onload = function () {
              editor = CodeMirror(document.getElementById("code"), {
                  mode: "go",
@@ -202,22 +202,22 @@
                  lineNumbers: true,
                  styleActiveLine: true,
                  matchBrackets: true,
-         
+
                  extraKeys: {
                      "Ctrl-Space": "autocomplete",
                  },
                  value: "" + sampleCodes.helloWorld + "",
              });
          };
-         
+
          const MarkdownToHtml = (markdown) => {
              const md = window.markdownit();
              const result = md.render(markdown);
              return result;
          }
          clearEvaluated()
-         
-         
+
+
          var sampleCodes = {
 
             helloWorld: `
@@ -226,7 +226,7 @@
 
 print("Hello, World!");
          `,
-             
+
 fizzBuzz: `
 func fizzBuzz(n, arr) {
     let i = 0
@@ -240,92 +240,94 @@ func fizzBuzz(n, arr) {
     }
     return arr
 }
-         
+
 fizzBuzz(100, [])`,
-             
+
 arraySum: `func sumArray(arr) {
     let sum = 0;
     let currIdx = 0;
 
-    when(currIdx < arr.length) {
+    when(currIdx < arr.length()) {
         sum += arr[currIdx];
         currIdx++;
     }
     sum;
 }
 sumArray(array_new(1,2,3,4,5));`,
-         
+
 fibonacci: `func fibonacci(x) {
     if (x < 2) { x }
     else { fibonacci(x - 1) + fibonacci(x - 2) }
 }
-         
+
 x := 20
 print("fibonnaci of", x , "is", fibonacci(x))`,
-         
+
              httpPost: `
+Http := import("eso/http")
+
 func loginRequest(uri, userName) {
     let login_data = {
         "username": username,
         "password": "success-password"
     }
-         
-    req := Http("POST", uri, login_data)
+
+    req := Http::POST(uri, login_data)
     return req::Body["message"]
 }
-         
+
 login_url := "https://json-placeholder.mock.beeceptor.com/login"
 username := "user123"
-         
+
 println(loginRequest(login_url, username))`,
-    
+
 };
-         
+
          var instructions ={
              helloWorld: `## Hello, World!
 Here is a tiny program that prints out the text \`Hello, World!\`. We'll explain how it works shortly.
-         
+
 In a normal Esolang project this program would be run using the command \`esolang\`  on the command line,
 but here in this playground the program is compiled and runs inside your web browser,
 allowing you to try Esolang without installing anything on your computer.
 
 Try changing the text being printed to \`Hello, Mom!\`  and see what happens.`,
              fizzBuzz: `## FizzBuzz
-         
+
 FizzBuzz is a simple program that prints the numbers from 1 to 100.
 But for multiples of three it prints \`Fizz"\` instead of the number and for the multiples of five it prints \`Buzz\`.
 For numbers which are multiples of both three and five it prints \`FizzBuzz\`.`,
-         
+
          fib: `## Fibonacci
 
 The Fibonacci sequence is a series of numbers in which each number is the sum of the two preceding ones, usually starting with 0 and 1.
 The sequence is named after Leonardo of Pisa, who was known as Fibonacci.
 The sequence starts with 0 and 1, and then each subsequent number is the sum of the previous two.
 The first few numbers in the sequence are 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, and so on.
-         
+
          `,
-         
+
          sumOfArray: `## Sum of Array
-         
+
 This program calculates the sum of an array of numbers.
 The array is created using the built-in \`array_new()\` function, which takes a list of numbers as arguments.
 The sumArray function takes the array as an argument and returns the sum of all the numbers in the array.
 The sum is calculated by iterating over the array and adding each number to a running total.
 Finally, the sum is printed to the console.
          `,
-         
+
          http: `## HTTP Request
-         
+
 This program sends a \`POST\` and \`GET\` request to a mock API endpoint.
 The login_request function takes a URL and a username as arguments and sends a POST request to the URL with the username as the payload.
 The response from the server is then printed to the console.
 The login_url variable contains the URL of the mock API endpoint, and the username variable contains the username to be sent in the request.
 Finally, the login_request function is called with the login_url and username as arguments.
          `,
-         
-         
-         }  
-         
+
+
+         }
+
          var samples = {
              helloWorld: {
                info_div:  instructions.helloWorld,
@@ -335,12 +337,12 @@ Finally, the login_request function is called with the login_url and username as
                info_div:  instructions.fizzBuzz,
                code: sampleCodes.fizzBuzz,
              },
-         
+
              fibonacci: {
                info_div:  instructions.fib,
                code: sampleCodes.fibonacci,
              },
-         
+
              arraySum: {
                info_div:  instructions.sumOfArray,
                code: sampleCodes.arraySum,
@@ -349,21 +351,21 @@ Finally, the login_request function is called with the login_url and username as
                info_div:  instructions.http,
                code: sampleCodes.httpPost,
              },
-         
+
          }
-         
-         
+
+
          function clearEvaluated() {
              document.querySelector("#evaluated").innerHTML = "";
          }
-         
+
          function replaceInfoDiv(md) {
              console.log(document.querySelector(".info-div").innerHTML)
              var htmlContent = MarkdownToHtml(md);
              var divDom = document.querySelector(".info-div")
              divDom.innerHTML = htmlContent;
          }
-         
+
          const copyToClipboard = () => {
              var code = editor.getValue();
              navigator.clipboard.writeText(code).then(function () {
@@ -373,10 +375,10 @@ Finally, the login_request function is called with the login_url and username as
                  console.error(err);
              });
          }
-         
+
          // on copy button click
          document.querySelector("#copy").addEventListener("click", copyToClipboard);
-         
+
          const sb = document.querySelector("#codesamples");
          sb.addEventListener("change", function () {
              if (sb.selectedIndex == 0) {
@@ -390,7 +392,7 @@ Finally, the login_request function is called with the login_url and username as
              } else if (sb.selectedIndex == 2) {
                  editor.setValue(samples.arraySum.code);
                  replaceInfoDiv(samples.arraySum.info_div)
-         
+
                  clearEvaluated();
              } else if (sb.selectedIndex == 1) {
                  editor.setValue(samples.fibonacci.code);
@@ -402,9 +404,9 @@ Finally, the login_request function is called with the login_url and username as
                  clearEvaluated();
              }
          });
-         
+
          const form = document.querySelector("form");
-         
+
          form.addEventListener("keydown", function (event) {
              if (
                  event.key === "Enter" &&
@@ -415,24 +417,24 @@ Finally, the login_request function is called with the login_url and username as
                  this.submit(); // Submit the fosrm
              }
          });
-         
+
          form.addEventListener("submit", function () {
              var code = editor.getValue();
              this.querySelector(
                  "textarea[name='sourceCode']",
              ).value = code;
          });
-         
+
          // get the run button
          const submitButton = document.getElementById("form_button");
          const runButton = document.getElementById("run");
-         
+
          // add event listener to the run button
          runButton.addEventListener("click", function () {
              // submit the form
              submitButton.click();
          });
-         
+
          // get the clear output button
          const clearOutputButton = document.getElementsByClassName("clear-output-btn")[0];
          clearOutputButton.addEventListener("click", function () {
@@ -440,9 +442,9 @@ Finally, the login_request function is called with the login_url and username as
              while (evlautedBlock.firstChild) {
                  evlautedBlock.removeChild(evlautedBlock.firstChild);
              }
-         
+
          });
-         
+
       </script>
       </div>
    </body>
