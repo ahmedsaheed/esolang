@@ -22,6 +22,7 @@ const (
 	BUILTIN_OBJ      = "BUILTIN"
 	ARRAY_OBJ        = "ARRAY"
 	HASH_OBJ         = "HASH"
+	SET_OBJ          = "SET"
 	MODULE_TYPE      = "MODULE"
 )
 
@@ -149,6 +150,27 @@ func (ao *Array) Inspect() string {
 }
 func (ao *Array) InvokeMethod(method string, env Environment, args ...Object) Object {
 	return arrayInvokables(method, ao, args...)
+}
+
+type Set struct {
+	Elements []Object
+}
+
+func (s *Set) Type() ObjectType { return SET_OBJ }
+func (s *Set) Inspect() string {
+	var out bytes.Buffer
+	elements := []string{}
+	for _, element := range s.Elements {
+		elements = append(elements, element.Inspect())
+	}
+	out.WriteString("{")
+	out.WriteString(strings.Join(elements, ", "))
+	out.WriteString("}")
+
+	return out.String()
+}
+func (s *Set) InvokeMethod(method string, env Environment, args ...Object) Object {
+	return setInvokables(method, s, args...)
 }
 
 // HashKey is a key for a hash.

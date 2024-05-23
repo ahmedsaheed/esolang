@@ -11,6 +11,14 @@ import (
 var NULL = &object.Null{}
 
 var Builtins = map[string]*object.Builtin{
+	"Set": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) == 0 {
+				return &object.Set{Elements: []object.Object{}}
+			}
+			return newError("wrong number of arguments. got=%d, want=0", len(args))
+		},
+	},
 	"count": &object.Builtin{
 		Fn: arrayLen,
 	},

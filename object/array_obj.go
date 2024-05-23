@@ -92,16 +92,8 @@ func arrayInvokables(method string, arr *Array, args ...Object) Object {
 	if method == "append" {
 		if err := CheckTypings(
 			name, args,
+			// TODO: Can't we allow multiple arguments here?
 			ExactArgsLength(1),
-			// WithTypes(
-			// 	INTEGER_OBJ,
-			// 	STRING_OBJ,
-			// 	BOOLEAN_OBJ,
-			// 	NULL_OBJ,
-			// 	ARRAY_OBJ,
-			// 	HASH_OBJ,
-			// 	FUNCTION_OBJ,
-			// ),
 		); err != nil {
 			return newErrorFromTypings(err.Error())
 		}
