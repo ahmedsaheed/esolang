@@ -229,14 +229,13 @@ print("Hello, World!");
 
 fizzBuzz: `
 func fizzBuzz(n, arr) {
-    let i = 0
+    let i = 1
     when(i < n) {
-        if (i % 15 == 0) { arr.append("FizzBuzz");}
-        else {if (i % 3 == 0) {arr.append("Fizz");}
-        else {if (i % 5 == 0) {arr.append("Buzz");}
-        else {arr.append(i);}
-            }}
-        i++
+      if (i % 15 == 0) { arr.append("FizzBuzz") }
+      elif (i % 3 == 0) { arr.append("Fizz") }
+      elif (i % 5 == 0) { arr.append("Buzz")}
+      else { arr.append(i) }
+      i++
     }
     return arr
 }

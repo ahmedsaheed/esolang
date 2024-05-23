@@ -42,9 +42,40 @@ let Person = fn(name, age, occupation) {
   person
 }
 
+
+func testElif() {
+    let x = 20
+    if (x == 10) {
+        println("x is 10")
+    } elif (x == 20) {
+        println("x is 20")
+    } else {
+        println("x is not 10 or 20")
+    }
+}
+
+
+func fizzBuzz(n, arr) {
+    let i = 1
+    when (i < n) {
+        if (i % 15 == 0) {
+            arr.append("FizzBuzz")
+        } elif (i % 3 == 0) {
+            arr.append("Fizz")
+        } (elif i % 5 == 0) {
+            arr.append("Buzz")
+        } else {
+            println(i)
+        }
+        i++
+    }
+    return arr
+}
+
 let p = Person("John", 30, "Software Developer")
 println("sum is " + math::Add(50, 10).to_string())
 println(2.5 + 2.5)
 println(strings::IsEmpty(""))
 println(bools::Negate(true))
 hello()
+testElif()

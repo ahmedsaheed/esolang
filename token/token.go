@@ -48,6 +48,7 @@ const (
 	FALSE       = "FALSE"
 	IF          = "IF"
 	ELSE        = "ELSE"
+	ELSE_IF     = "ELIF"
 	RETURN      = "RETURN"
 	EQ          = "=="
 	NOT_EQ      = "!="
@@ -73,6 +74,7 @@ var keywords = map[string]TokenType{
 	"false":  FALSE,
 	"if":     IF,
 	"else":   ELSE,
+	"elif":   ELSE_IF,
 	"return": RETURN,
 	"when":   WHEN,
 	"import": IMPORT,

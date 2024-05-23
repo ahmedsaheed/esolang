@@ -179,6 +179,18 @@ func (P *Parser) parseIfExpression() ast.Expression {
 
 	expression.Consequence = P.parseBlockStatement()
 
+	if P.peekTokenLS(token.ELSE_IF) {
+		P.nextToken()
+		expression.Alternative = &ast.BlockStatement{
+			Statements: []ast.Statement{
+				&ast.ExpressionStatement{
+					Expression: P.parseIfExpression(),
+				},
+			},
+		}
+		return expression
+	}
+
 	if P.peekTokenLS(token.ELSE) {
 		P.nextToken()
 
