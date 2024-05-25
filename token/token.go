@@ -62,7 +62,9 @@ const (
 	WHEN        = "WHEN"
 	MOD         = "%"
 	AND         = "&&"
-	OR          = "-|"
+	OR          = "||"
+	STRING_OR   = "OR"
+	STRING_AND  = "AND"
 	PERIOD      = "."
 	IMPORT      = "IMPORT"
 )
@@ -71,6 +73,8 @@ const (
 var keywords = map[string]TokenType{
 	"fn":     FUNCTION,
 	"let":    LET,
+	"and":    AND,
+	"or":     OR,
 	"true":   TRUE,
 	"false":  FALSE,
 	"if":     IF,

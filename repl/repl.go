@@ -76,7 +76,7 @@ func Start(in io.Reader, out io.Writer) {
 			}
 		} else {
 			line = strings.Trim(line, " ")
-			if line[0] == ':' {
+			if len(line) != 0 && line[0] == ':' {
 				evaluateReplCommand(line[1:])
 			} else {
 				evaluteInput("repl.eso", line, logger, environmnet)

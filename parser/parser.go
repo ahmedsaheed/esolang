@@ -128,6 +128,8 @@ func New(L *lexer.Lexer) *Parser {
 	p.registerInfix(token.MOD, p.parseInfixExpression)
 	p.registerInfix(token.AND, p.parseInfixExpression)
 	p.registerInfix(token.OR, p.parseInfixExpression)
+	p.registerInfix(token.STRING_OR, p.parseInfixExpression)
+	p.registerInfix(token.STRING_AND, p.parseInfixExpression)
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
 	p.registerInfix(token.PERIOD, p.parseMethodCallExpression)
@@ -180,7 +182,7 @@ func (P *Parser) parseIfExpression() ast.Expression {
 
 	expression.Consequence = P.parseBlockStatement()
 
-	if P.peekTokenLS(token.ELSE_IF) {
+	if P.peekTokenMatches(token.ELSE_IF) {
 		P.nextToken()
 		expression.Alternative = &ast.BlockStatement{
 			Statements: []ast.Statement{
@@ -192,7 +194,7 @@ func (P *Parser) parseIfExpression() ast.Expression {
 		return expression
 	}
 
-	if P.peekTokenLS(token.ELSE) {
+	if P.peekTokenMatches(token.ELSE) {
 		P.nextToken()
 
 		if !P.expectPeek(token.LBRACE) {
@@ -213,7 +215,7 @@ parseBoolean parses a boolean expression
 func (P *Parser) parseBoolean() ast.Expression {
 	return &ast.Boolean{
 		Token: P.currentToken,
-		Value: P.currentTokenLS(token.TRUE),
+		Value: P.currentTokenMatches(token.TRUE),
 	}
 }
 
@@ -297,7 +299,7 @@ func (P *Parser) parseReturnStatement() *ast.ReturnStatement {
 	stmt := &ast.ReturnStatement{Token: P.currentToken}
 	P.nextToken()
 	stmt.ReturnValue = P.parseExpression(LOWEST)
-	if P.peekTokenLS(token.SEMICOLON) {
+	if P.peekTokenMatches(token.SEMICOLON) {
 		P.nextToken()
 	}
 	return stmt
@@ -321,7 +323,7 @@ func (P *Parser) parseLetStatement() *ast.LetStatement {
 
 	stmt.Value = P.parseExpression(LOWEST)
 
-	if P.peekTokenLS(token.SEMICOLON) {
+	if P.peekTokenMatches(token.SEMICOLON) {
 		P.nextToken()
 	}
 
@@ -330,7 +332,7 @@ func (P *Parser) parseLetStatement() *ast.LetStatement {
 
 // expectPeek checks if the next token is as expected - returns a boolean
 func (P *Parser) expectPeek(t token.TokenType) bool {
-	if P.peekTokenLS(t) {
+	if P.peekTokenMatches(t) {
 		P.nextToken()
 		return true
 	} else {
@@ -339,11 +341,11 @@ func (P *Parser) expectPeek(t token.TokenType) bool {
 	}
 }
 
-// currentTokenLS checks if the current matches the expected tokenType - returns a boolean
-func (P *Parser) currentTokenLS(t token.TokenType) bool { return P.currentToken.Type == t }
+// currentTokenMatches checks if the current token type matches the expected tokenType - returns a boolean
+func (P *Parser) currentTokenMatches(t token.TokenType) bool { return P.currentToken.Type == t }
 
-// peekTokenLS checks if the next token matches the expected tokenType - returns a boolean
-func (P *Parser) peekTokenLS(t token.TokenType) bool { return P.peekToken.Type == t }
+// peekTokenMatches checks if the next token matches the expected tokenType - returns a boolean
+func (P *Parser) peekTokenMatches(t token.TokenType) bool { return P.peekToken.Type == t }
 
 // parseExpressionStatement parses an expression statement such as 5 + 5 or x * y;
 func (P *Parser) parseExpressionStatement() *ast.ExpressionStatement {
@@ -351,7 +353,7 @@ func (P *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	stmt := &ast.ExpressionStatement{Token: P.currentToken}
 	stmt.Expression = P.parseExpression(LOWEST)
 
-	for P.peekTokenLS(token.SEMICOLON) {
+	for P.peekTokenMatches(token.SEMICOLON) {
 		P.nextToken()
 	}
 	return stmt
@@ -419,7 +421,7 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 		return nil
 	}
 	leftExp := prefix()
-	for !p.peekTokenLS(token.SEMICOLON) && precedence < p.peekPrecedence() {
+	for !p.peekTokenMatches(token.SEMICOLON) && precedence < p.peekPrecedence() {
 		infix := p.infixParseFns[p.peekToken.Type]
 		if infix == nil {
 			return leftExp
@@ -453,7 +455,7 @@ func (P *Parser) parseBlockStatement() *ast.BlockStatement {
 
 	P.nextToken()
 
-	for !P.currentTokenLS(token.RBRACE) && !P.currentTokenLS(token.EOF) {
+	for !P.currentTokenMatches(token.RBRACE) && !P.currentTokenMatches(token.EOF) {
 		stmt := P.parseStatement()
 		if stmt != nil {
 			block.Statements = append(block.Statements, stmt)
@@ -486,7 +488,7 @@ func (P *Parser) parseFunctionLiteral() ast.Expression {
 func (P *Parser) parseFunctionParameters() []*ast.Identifier {
 	identifiers := []*ast.Identifier{}
 
-	if P.peekTokenLS(token.RPAREN) {
+	if P.peekTokenMatches(token.RPAREN) {
 		P.nextToken()
 		return identifiers
 	}
@@ -495,7 +497,7 @@ func (P *Parser) parseFunctionParameters() []*ast.Identifier {
 	ident := &ast.Identifier{Token: P.currentToken, Value: P.currentToken.Literal}
 	identifiers = append(identifiers, ident)
 
-	for P.peekTokenLS(token.COMMA) {
+	for P.peekTokenMatches(token.COMMA) {
 		P.nextToken()
 		P.nextToken()
 		ident := &ast.Identifier{
@@ -528,7 +530,7 @@ func (P *Parser) parseCallArguments() []ast.Expression {
 	args := []ast.Expression{}
 
 	// no arguments
-	if P.peekTokenLS(token.RPAREN) {
+	if P.peekTokenMatches(token.RPAREN) {
 		P.nextToken()
 		return args
 	}
@@ -538,7 +540,7 @@ func (P *Parser) parseCallArguments() []ast.Expression {
 	args = append(args, P.parseExpression(LOWEST))
 
 	// get args separated by commas
-	for P.peekTokenLS(token.COMMA) {
+	for P.peekTokenMatches(token.COMMA) {
 		P.nextToken()
 		P.nextToken()
 		args = append(args, P.parseExpression(LOWEST))
@@ -568,7 +570,7 @@ func (P *Parser) parseArrayLiteral() ast.Expression {
 func (P *Parser) parseExpressionList(end token.TokenType) []ast.Expression {
 	list := []ast.Expression{}
 
-	if P.peekTokenLS(end) {
+	if P.peekTokenMatches(end) {
 		P.nextToken()
 		return list
 	}
@@ -576,7 +578,7 @@ func (P *Parser) parseExpressionList(end token.TokenType) []ast.Expression {
 	P.nextToken()
 	list = append(list, P.parseExpression(LOWEST))
 
-	for P.peekTokenLS(token.COMMA) {
+	for P.peekTokenMatches(token.COMMA) {
 		P.nextToken()
 		P.nextToken()
 		list = append(list, P.parseExpression(LOWEST))
@@ -625,7 +627,7 @@ func (P *Parser) parseHashLiteral() ast.Expression {
 	hash := &ast.HashLiteral{Token: P.currentToken}
 	hash.Pairs = make(map[ast.Expression]ast.Expression)
 
-	for !P.peekTokenLS(token.RBRACE) {
+	for !P.peekTokenMatches(token.RBRACE) {
 		P.nextToken()
 
 		key := P.parseExpression(LOWEST)
@@ -638,7 +640,7 @@ func (P *Parser) parseHashLiteral() ast.Expression {
 		value := P.parseExpression(LOWEST)
 
 		hash.Pairs[key] = value
-		if !P.peekTokenLS(token.RBRACE) && !P.expectPeek(token.COMMA) {
+		if !P.peekTokenMatches(token.RBRACE) && !P.expectPeek(token.COMMA) {
 			return nil
 		}
 	}
@@ -726,16 +728,16 @@ func (P *Parser) parseFunctionDefParameter() (map[string]ast.Expression, []*ast.
 	identifiers := make([]*ast.Identifier, 0)
 
 	// Is the next parameter ")" ?  If so we're done. No args.
-	if P.peekTokenLS(token.RPAREN) {
+	if P.peekTokenMatches(token.RPAREN) {
 		P.nextToken()
 		return m, identifiers
 	}
 	P.nextToken()
 
 	// Keep going until we find a ")"
-	for !P.currentTokenLS(token.RPAREN) {
+	for !P.currentTokenMatches(token.RPAREN) {
 
-		if P.currentTokenLS(token.EOF) {
+		if P.currentTokenMatches(token.EOF) {
 			P.errors = append(P.errors, "unterminated function parameters")
 			return nil, nil
 		}
@@ -747,7 +749,7 @@ func (P *Parser) parseFunctionDefParameter() (map[string]ast.Expression, []*ast.
 
 		// If there is "=xx" after the name then that's
 		// the default parameter.
-		if P.currentTokenLS(token.ASSIGN) {
+		if P.currentTokenMatches(token.ASSIGN) {
 			P.nextToken()
 			// Save the default value.
 			m[ident.Value] = P.parseExpressionStatement().Expression
@@ -755,7 +757,7 @@ func (P *Parser) parseFunctionDefParameter() (map[string]ast.Expression, []*ast.
 		}
 
 		// Skip any comma.
-		if P.currentTokenLS(token.COMMA) {
+		if P.currentTokenMatches(token.COMMA) {
 			P.nextToken()
 		}
 	}

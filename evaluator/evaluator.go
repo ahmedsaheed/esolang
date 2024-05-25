@@ -98,10 +98,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			} else {
 				env.Set(ident.Value, value)
 			}
-
-			return &object.Null{}
-		}
-		return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "expected identifier on left got=%T", node.Left)
+		} else {
+		return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "expected identifier on left got=%T", node.Left) }
 	case *ast.BacktickLiteral:
 		return backTickOperation(node.Value)
 	case *ast.AssignStatement:
@@ -330,9 +328,9 @@ func evalInfixExpression(operator string, node ast.Expression, leftOperand, righ
 			return nativeBoolToBooleanObject(leftOperand == rightOperand)
 		case operator == "!=":
 			return nativeBoolToBooleanObject(leftOperand != rightOperand)
-		case operator == "&&":
+		case operator == "&&" || operator == "and":
 			return nativeBoolToBooleanObject(objectToNativeBoolean(leftOperand) && objectToNativeBoolean(rightOperand))
-		case operator == "-|":
+		case operator == "||" || operator == "or":
 			return nativeBoolToBooleanObject(objectToNativeBoolean(leftOperand) || objectToNativeBoolean(rightOperand))
 		case leftOperand.Type() != rightOperand.Type():
 			return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "type mismatch: %s %s %s", leftOperand.Type(), operator, rightOperand.Type())
