@@ -167,8 +167,8 @@ func TestIfElseExpression(t *testing.T) {
 		{"if (true && false) {10}", nil},
 		{"if (false && false) {true}", true},
 		{"if (true && !true) {false}", false},
-		{"if (true -| false) {10}", 10},
-		{"if (true -| false) {10} else {20}", 10},
+		{"if (true || false) {10}", 10},
+		{"if (true || false) {10} else {20}", 10},
 	}
 
 	for _, test := range tests {

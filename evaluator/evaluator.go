@@ -99,7 +99,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 				env.Set(ident.Value, value)
 			}
 		} else {
-		return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "expected identifier on left got=%T", node.Left) }
+			return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "expected identifier on left got=%T", node.Left)
+		}
 	case *ast.BacktickLiteral:
 		return backTickOperation(node.Value)
 	case *ast.AssignStatement:
@@ -305,11 +306,12 @@ func evalIfExpression(ifExpressionNode *ast.IfExpression, env *object.Environmen
 	}
 }
 
-func evalInfixExpression(operator string, node ast.Expression, leftOperand, rightOperand object.Object) object.Object {
+type InfixExpressions interface {
+	*ast.InfixExpression | *ast.AssignStatement
+}
 
-	// check node type is ast.InfixExpression
-
-	switch node := node.(type) {
+func evalInfixExpression[T InfixExpressions](operator string, node T, leftOperand, rightOperand object.Object) object.Object {
+	switch node := any(node).(type) {
 	case *ast.InfixExpression:
 		switch {
 		case leftOperand.Type() == object.INTEGER_OBJ && rightOperand.Type() == object.INTEGER_OBJ:
@@ -371,9 +373,9 @@ func evalInfixExpression(operator string, node ast.Expression, leftOperand, righ
 }
 
 // evalStringInfixExpression evaluates the string concatenation
-func evalStringInfixExpression(node ast.Expression, leftOperand, rightOperand object.Object) object.Object {
+func evalStringInfixExpression[T InfixExpressions](node T, leftOperand, rightOperand object.Object) object.Object {
 
-	switch node := node.(type) {
+	switch node := any(node).(type) {
 
 	case *ast.InfixExpression:
 		operator := node.Operator
@@ -436,11 +438,11 @@ func evalStringInfixExpression(node ast.Expression, leftOperand, rightOperand ob
 }
 
 // evalIntegerInfixExpression evaluates is where the actual arithmetic operations for + , - , / and * performed
-func evalIntegerInfixExpression(node ast.Expression, operator string, leftOperand, rightOperand object.Object) object.Object {
+func evalIntegerInfixExpression[T InfixExpressions](node T, operator string, leftOperand, rightOperand object.Object) object.Object {
 	leftValue := leftOperand.(*object.Integer).Value
 	rightValue := rightOperand.(*object.Integer).Value
 
-	switch node := node.(type) {
+	switch node := any(node).(type) {
 	case *ast.InfixExpression:
 		switch operator {
 		case "+":
@@ -527,11 +529,11 @@ func evalIntegerInfixExpression(node ast.Expression, operator string, leftOperan
 	return NULL
 }
 
-func evalFloatInfixExpression(node ast.Expression, operator string, leftOperand, rightOperand object.Object) object.Object {
+func evalFloatInfixExpression[T InfixExpressions](node T, operator string, leftOperand, rightOperand object.Object) object.Object {
 	leftValue := leftOperand.(*object.Float).Value
 	rightValue := rightOperand.(*object.Float).Value
 
-	switch node := node.(type) {
+	switch node := any(node).(type) {
 	case *ast.InfixExpression:
 
 		switch operator {
@@ -605,11 +607,11 @@ func evalFloatInfixExpression(node ast.Expression, operator string, leftOperand,
 	return NULL
 }
 
-func evalFloatIntegerInfixExpression(node ast.Expression, operator string, left, right object.Object) object.Object {
+func evalFloatIntegerInfixExpression[T InfixExpressions](node T, operator string, left, right object.Object) object.Object {
 	leftVal := left.(*object.Float).Value
 	rightVal := float64(right.(*object.Integer).Value)
 
-	switch node := node.(type) {
+	switch node := any(node).(type) {
 	case *ast.InfixExpression:
 		switch operator {
 		case "+":
@@ -684,11 +686,11 @@ func evalFloatIntegerInfixExpression(node ast.Expression, operator string, left,
 	return NULL
 }
 
-func evalIntegerFloatInfixExpression(node ast.Expression, operator string, left, right object.Object) object.Object {
+func evalIntegerFloatInfixExpression[T InfixExpressions](node T, operator string, left, right object.Object) object.Object {
 	leftVal := float64(left.(*object.Integer).Value)
 	rightVal := right.(*object.Float).Value
 
-	switch node := node.(type) {
+	switch node := any(node).(type) {
 	case *ast.InfixExpression:
 		switch operator {
 		case "+":

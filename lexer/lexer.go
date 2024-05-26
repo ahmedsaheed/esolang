@@ -226,6 +226,15 @@ func (L *Lexer) NextToken() token.Token {
 		} else {
 			tok = newToken(token.MINUS, L.char, L.line, L.column, L.fileName)
 		}
+	case '|':
+		if L.peekChar() == '|' {
+			if L.peekChar() == '|' {
+				char := L.char
+				L.readChar()
+				literal := string(char) + string(L.char)
+				tok = token.Token{Type: token.OR, Literal: literal, Line: L.line, Column: L.column, FileName: L.fileName}
+			}
+		}
 	case '<':
 		if L.peekChar() == '=' {
 			char := L.char
