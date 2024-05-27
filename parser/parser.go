@@ -121,6 +121,8 @@ func New(L *lexer.Lexer) *Parser {
 	p.registerInfix(token.ASTERISK, p.parseInfixExpression)
 	p.registerInfix(token.EQ, p.parseInfixExpression)
 	p.registerInfix(token.NOT_EQ, p.parseInfixExpression)
+	p.registerInfix(token.STRING_EQ, p.parseInfixExpression)
+	p.registerInfix(token.STRING_NOT_EQ, p.parseInfixExpression)
 	p.registerInfix(token.LT, p.parseInfixExpression)
 	p.registerInfix(token.GT, p.parseInfixExpression)
 	p.registerInfix(token.LT_EQ, p.parseInfixExpression)
@@ -416,7 +418,7 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 		return (postfix())
 	}
 	prefix := p.prefixParseFns[p.currentToken.Type]
-	if prefix == nil {
+    if prefix == nil {
 		p.noPrefixParseFnError(p.currentToken.Type)
 		return nil
 	}

@@ -326,9 +326,9 @@ func evalInfixExpression[T InfixExpressions](operator string, node T, leftOperan
 			return evalStringInfixExpression(node, leftOperand, rightOperand)
 		case leftOperand.Type() == object.ARRAY_OBJ && rightOperand.Type() == object.ARRAY_OBJ && operator == "+":
 			return &object.Array{Elements: append(leftOperand.(*object.Array).Elements, rightOperand.(*object.Array).Elements...)}
-		case operator == "==":
+		case operator == "==" || operator == "is":
 			return nativeBoolToBooleanObject(leftOperand == rightOperand)
-		case operator == "!=":
+		case operator == "!=" || operator == "is_not":
 			return nativeBoolToBooleanObject(leftOperand != rightOperand)
 		case operator == "&&" || operator == "and":
 			return nativeBoolToBooleanObject(objectToNativeBoolean(leftOperand) && objectToNativeBoolean(rightOperand))
@@ -394,6 +394,10 @@ func evalStringInfixExpression[T InfixExpressions](node T, leftOperand, rightOpe
 			switch operator {
 			case "+":
 				return &object.String{Value: leftValue + rightValue}
+			case "is":
+				return nativeBoolToBooleanObject(leftValue == rightValue)
+			case "is_not":
+				return nativeBoolToBooleanObject(leftValue != rightValue)
 			case "==":
 				return nativeBoolToBooleanObject(leftValue == rightValue)
 			case "!=":
@@ -467,7 +471,11 @@ func evalIntegerInfixExpression[T InfixExpressions](node T, operator string, lef
 			return nativeBoolToBooleanObject(leftValue > rightValue)
 		case "==":
 			return nativeBoolToBooleanObject(leftValue == rightValue)
-		case "!=":
+		case "is":
+			return nativeBoolToBooleanObject(leftValue == rightValue)
+		case "is_not":
+			return nativeBoolToBooleanObject(leftValue != rightValue)
+        case "!=":
 			return nativeBoolToBooleanObject(leftValue != rightValue)
 		case "-=":
 			return &object.Integer{Value: leftValue - rightValue}
@@ -509,7 +517,11 @@ func evalIntegerInfixExpression[T InfixExpressions](node T, operator string, lef
 			return nativeBoolToBooleanObject(leftValue == rightValue)
 		case "!=":
 			return nativeBoolToBooleanObject(leftValue != rightValue)
-		case "-=":
+		case "is":
+			return nativeBoolToBooleanObject(leftValue == rightValue)
+		case "is_not":
+			return nativeBoolToBooleanObject(leftValue != rightValue)
+        case "-=":
 			return &object.Integer{Value: leftValue - rightValue}
 		case "*=":
 			return &object.Integer{Value: leftValue * rightValue}
@@ -556,6 +568,10 @@ func evalFloatInfixExpression[T InfixExpressions](node T, operator string, leftO
 			return nativeBoolToBooleanObject(leftValue == rightValue)
 		case "!=":
 			return nativeBoolToBooleanObject(leftValue != rightValue)
+		case "is":
+			return nativeBoolToBooleanObject(leftValue == rightValue)
+		case "is_not":
+			return nativeBoolToBooleanObject(leftValue != rightValue)
 		case "-=":
 			return &object.Float{Value: leftValue - rightValue}
 		case "*=":
@@ -590,7 +606,11 @@ func evalFloatInfixExpression[T InfixExpressions](node T, operator string, leftO
 			return nativeBoolToBooleanObject(leftValue == rightValue)
 		case "!=":
 			return nativeBoolToBooleanObject(leftValue != rightValue)
-		case "-=":
+		case "is":
+			return nativeBoolToBooleanObject(leftValue == rightValue)
+		case "is_not":
+			return nativeBoolToBooleanObject(leftValue != rightValue)
+        case "-=":
 			return &object.Float{Value: leftValue - rightValue}
 		case "*=":
 			return &object.Float{Value: leftValue * rightValue}
@@ -643,6 +663,10 @@ func evalFloatIntegerInfixExpression[T InfixExpressions](node T, operator string
 			return nativeBoolToBooleanObject(leftVal == rightVal)
 		case "!=":
 			return nativeBoolToBooleanObject(leftVal != rightVal)
+		case "is":
+			return nativeBoolToBooleanObject(leftVal == rightVal)
+		case "is_not":
+			return nativeBoolToBooleanObject(leftVal != rightVal)
 		default:
 			return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "unknown operator: %s %s %s",
 				left.Type(), operator, right.Type())
@@ -677,6 +701,10 @@ func evalFloatIntegerInfixExpression[T InfixExpressions](node T, operator string
 		case "==":
 			return nativeBoolToBooleanObject(leftVal == rightVal)
 		case "!=":
+			return nativeBoolToBooleanObject(leftVal != rightVal)
+		case "is":
+			return nativeBoolToBooleanObject(leftVal == rightVal)
+		case "is_not":
 			return nativeBoolToBooleanObject(leftVal != rightVal)
 		default:
 			return newError(node.Token.FileName, node.Token.Line, node.Token.Column, "unknown operator: %s %s %s",
@@ -713,6 +741,10 @@ func evalIntegerFloatInfixExpression[T InfixExpressions](node T, operator string
 			return nativeBoolToBooleanObject(leftVal == rightVal)
 		case "!=":
 			return nativeBoolToBooleanObject(leftVal != rightVal)
+		case "is":
+			return nativeBoolToBooleanObject(leftVal == rightVal)
+		case "is_not":
+			return nativeBoolToBooleanObject(leftVal != rightVal)
 		case "-=":
 			return &object.Float{Value: leftVal - rightVal}
 		case "*=":
@@ -748,6 +780,10 @@ func evalIntegerFloatInfixExpression[T InfixExpressions](node T, operator string
 		case "==":
 			return nativeBoolToBooleanObject(leftVal == rightVal)
 		case "!=":
+			return nativeBoolToBooleanObject(leftVal != rightVal)
+		case "is":
+			return nativeBoolToBooleanObject(leftVal == rightVal)
+		case "is_not":
 			return nativeBoolToBooleanObject(leftVal != rightVal)
 		case "-=":
 			return &object.Float{Value: leftVal - rightVal}

@@ -53,6 +53,8 @@ const (
 	RETURN      = "RETURN"
 	EQ          = "=="
 	NOT_EQ      = "!="
+    STRING_EQ   = "IS"
+    STRING_NOT_EQ = "IS_NOT"
 	STRING      = "STRING"
 	LBRACKET    = "["
 	RBRACKET    = "]"
@@ -75,6 +77,8 @@ var keywords = map[string]TokenType{
 	"let":    LET,
 	"and":    AND,
 	"or":     OR,
+    "is":     EQ,
+    "is_not": NOT_EQ,
 	"true":   TRUE,
 	"false":  FALSE,
 	"if":     IF,
