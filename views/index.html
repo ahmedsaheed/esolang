@@ -36,8 +36,32 @@
          color: hsla(0, 0%, 93%, 1);
          user-select: none;
          }
+        button {
+    display: inline-block;
+    margin-right: auto;
+    appearance: none;
+    background: linear-gradient(135deg, #C63531, #EA5A00) !important;
+    border-radius: 5rem;
+    border: 1pt solid transparent;
+    cursor: pointer;
+    font-size: 1.5rem;
+    font-family: var(--font-geist-sans);
+    font-weight: 500;
+    color: var(--bg);
+    padding: 1rem 1.2rem;
+    transition: box-shadow 800ms, border 500ms;
+    transition-timing-function: cubic-bezier(0,1.5,1,1);
+
+    &:hover {
+        border: 1pt solid var(--bg);
+        box-shadow: 2px 4px 2rem #FF730077, -2px -4px 2rem #EC401077;
+    }
+        }
          header {
-         background-color: darkslategray
+    
+         box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+         border-bottom: double 1pt transparent;
+         background: linear-gradient(135deg, #987947a8, #ea5a001c);
          }
          .reenie-beanie-regular {
          font-family: "Reenie Beanie", cursive !important;
@@ -45,27 +69,19 @@
          font-style: cursive;
          }
          .bg-code-background {
-         background-color: #1f222a;
+         background-color: #160F0C;
          }
          .prose code {
-         color: #ae2e93
+         color: #ea5a00;
          }
          #pane-1 {
-         border-left: 3px dotted #78E2A0;
-         /* add a shadow */
-         box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            border-left: double 1pt transparent;
+            background-image:
+                radial-gradient(ellipse at top, #49423f, #211f1d 50%, var(--bg)),
+                radial-gradient(ellipse at top, white, var(--bg) 90%);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
          }
-         #underheader:after {
-         content: '';
-         position: absolute;
-         bottom: 2px;
-         display: block;
-         width: 100%;
-         border-bottom: 3px dotted #78E2A0;
-         }
-         .text-white {
-         color: #78E2A0 !important;
-         }
+        
          h1, h2, h3, h4, h5, h6 {
          color: white !important;
          font-size: 1.5rem !important;
@@ -94,10 +110,10 @@
          font-family: "Roboto Mono", "Fira Mono", monospace;
          font-weight: 400;
          height: -webkit-fill-available;
-         background-color: #1f222a !important;
+         background-color: #160F0C !important;
          }
          .CodeMirror-gutter {
-         background-color: #1f222a !important;
+         background-color: #160F0C !important;
          }
          .CodeMirror-vscrollbar::-webkit-scrollbar {
          width: 0.5rem;
@@ -119,11 +135,18 @@
          border-radius: 0.815rem;
          background-color: #484845;
          }
+         #output-container{
+            borde-top: double 1pt transparent;
+            background-image:
+                radial-gradient(ellipse at top, #49423f, #211f1d 50%, var(--bg)),
+                radial-gradient(ellipse at top, white, var(--bg) 90%);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+         }
       </style>
-      <title>Esolang :: Playground</title>
+      <title>Esolang</title>
    </head>
    <body class="dark bg-code-background flex flex-col h-full max-h-screen">
-      <header style="border-bottom: 3px dotted #78E2A0;">
+      <header>
          <div  class="w-full flex items-center justify-between text-4xl text-white p-4">
             <h1 class="reenie-beanie-regular text-white !text-4xl"> try Esolang</h1>
             <a href="https://ahmedsaheed.github.io/esolang/posts/eso/" target="_blank" class="reenie-beanie-regular"> Documentation</a>
@@ -151,7 +174,7 @@
                      <div class="flex gap-2 w-full justify-between md:justify-end items-center px-1">
                         {{ template "form" .}}
                         <button id="copy"
-                           class="flex btn btn-sm space-x-2 mr-4 items-center justify-center px-2 h-8 m-4 space-x-2 border border-white rounded text-sm text-white hover:text-[#000] hover:bg-white hover:border-none">
+                           class="flex btn btn-sm space-x-2 mr-4 items-center justify-center px-2 h-8 m-4 space-x-2">
                            <span>Copy</span>
                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="32" viewBox="0 0 24 24">
                               <path fill="currentColor" fill-rule="evenodd"
@@ -169,8 +192,8 @@
                            </select>
                         </form>
                         <button id="run"
-                           class="flex btn btn-sm space-x-2 mr-4 items-center justify-center px-2 h-8 m-4 space-x-2 border border-white rounded text-sm text-white hover:text-[#000] hover:bg-white hover:border-none">
-                           <span class="text-lighter">RUN
+                           class="flex btn btn-sm space-x-2 mr-4 items-center justify-center px-2 h-8 m-4 space-x-2">
+                           <span class="text-lighter">Run
                            </span>
                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="32" viewBox="0 0 24 24">
                               <path fill="currentColor"
@@ -181,8 +204,8 @@
                   </div>
                </div>
                <div
-                  style="border-top: 3px dotted #78E2A0;"
-                  class="flex flex-col justify-between space-y-4 border-dark-separator_30 border-t output-container overflow-auto">
+                  id="output-container"
+                  class="output-container overflow-auto">
                   <div id="output" class="h-auto flex-col overflow-auto p-4 text-white" x-show="output"></div>
                </div>
                {{ template "evaluatedView" .}}
@@ -454,7 +477,7 @@ Finally, the login_request function is called with the login_url and username as
    <button id="form_button" type="submit" hidden>Run</button>
 </form>
 {{end}} {{ block "evaluatedView" . }}
-<span id="evaluated" class="evaluated mx-2 overflow-y-auto" style="color: cyan; white-space: pre-wrap;">
+<span id="evaluated" class="evaluated mx-2 px-4 overflow-y-auto" style="color: cyan; white-space: pre-wrap;">
 {{ range .Esos }}
 {{ .SourceCode }}
 {{ end }}
