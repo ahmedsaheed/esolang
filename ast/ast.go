@@ -1,5 +1,5 @@
 /*
-Package ast implements the Abstract Syntax Tree for the Monkey programming language.
+Package ast implements the Abstract Syntax Tree.
 */
 
 package ast
