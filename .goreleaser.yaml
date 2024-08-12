@@ -44,3 +44,14 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
+
+brews:
+  - tap:
+      owner: ahmedsaheed 
+      name: esolang 
+    url_template: "http://github.com/ahmedsaheed/esolang/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    folder: Formula
+    homepage: "https://github.com/ahmedsaheed/esolang"
+    description: "Esolang - A novice oriented programming language."
+
