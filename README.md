@@ -1,7 +1,3 @@
-
-
-<img align="right" width="100" alt="Screenshot 2024-08-12 at 15 52 37" src="https://github.com/user-attachments/assets/6244f41d-c30c-4b9e-b143-b3d6a3fb3200">
-
 ## esolang
 
 a novice oriented progamming language
